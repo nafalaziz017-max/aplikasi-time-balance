@@ -1,2 +1,0 @@
-# aplikasi-time-balance
-josjis
