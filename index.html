@@ -1,0 +1,32 @@
+<!DOCTYPE html>
+<html lang="id">
+<head>
+<meta charset="UTF-8"/>
+<meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover"/>
+<title>TimeBalance — Kerja Dulu, Santai Kemudian</title>
+<meta name="description" content="Pomodoro Timer & manajemen waktu dengan Work–Reward Mechanism."/>
+<meta name="theme-color" content="#3d6b35"/>
+<link rel="manifest" href="manifest.json"/>
+<link rel="icon" href="icons/icon-192.png"/>
+<link rel="apple-touch-icon" href="icons/icon-192.png"/>
+<link rel="stylesheet" href="style.css"/>
+</head>
+<body>
+<header class="top">
+  <div class="brand"><img src="icons/icon-192.png" alt=""/><b><span>Time</span>Balance</b></div>
+  <span id="badge" class="pill"></span>
+</header>
+<main id="view"></main>
+<nav id="nav">
+  <button data-tab="tasks"><i>✅</i>Tugas</button>
+  <button data-tab="focus"><i>🍅</i>Fokus</button>
+  <button data-tab="wallet"><i>🎮</i>Santai</button>
+  <button data-tab="stats"><i>📊</i>Statistik</button>
+  <button data-tab="me"><i>👤</i>Profil</button>
+</nav>
+<div id="toast"></div>
+<div id="alert" class="alert" hidden></div>
+<section id="report"></section>
+<script src="app.js"></script>
+</body>
+</html>
