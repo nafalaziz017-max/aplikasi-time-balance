@@ -1,76 +1,28 @@
-{
-  "id": "./",
-  "name": "TimeBalance — Pomodoro & Work–Reward",
-  "short_name": "TimeBalance",
-  "description": "Kerja dulu, santai kemudian. Pomodoro Timer, To-Do, dan dompet waktu santai.",
-  "lang": "id",
-  "start_url": "./index.html",
-  "scope": "./",
-  "display": "standalone",
-  "orientation": "portrait",
-  "background_color": "#f3f6f0",
-  "theme_color": "#2f6b3a",
-  "categories": [
-    "productivity"
-  ],
-  "icons": [
-    {
-      "src": "icons/icon-192.png",
-      "sizes": "192x192",
-      "type": "image/png",
-      "purpose": "any"
-    },
-    {
-      "src": "icons/icon-512.png",
-      "sizes": "512x512",
-      "type": "image/png",
-      "purpose": "any"
-    },
-    {
-      "src": "icons/icon-maskable-512.png",
-      "sizes": "512x512",
-      "type": "image/png",
-      "purpose": "maskable"
-    }
-  ],
-  "dir": "ltr",
-  "display_override": [
-    "standalone",
-    "minimal-ui"
-  ],
-  "shortcuts": [
-    {
-      "name": "Mulai Fokus",
-      "short_name": "Fokus",
-      "url": "./index.html?tab=focus",
-      "icons": [
-        {
-          "src": "icons/icon-192.png",
-          "sizes": "192x192"
-        }
-      ]
-    },
-    {
-      "name": "Daftar Tugas",
-      "short_name": "Tugas",
-      "url": "./index.html?tab=tasks",
-      "icons": [
-        {
-          "src": "icons/icon-192.png",
-          "sizes": "192x192"
-        }
-      ]
-    },
-    {
-      "name": "Statistik",
-      "short_name": "Statistik",
-      "url": "./index.html?tab=stats",
-      "icons": [
-        {
-          "src": "icons/icon-192.png",
-          "sizes": "192x192"
-        }
-      ]
-    }
-  ]
-}
+<!DOCTYPE html>
+<html lang="id">
+<head>
+<meta charset="UTF-8"/>
+<meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover"/>
+<title>TimeBalance — Kerja Dulu, Santai Kemudian</title>
+<meta name="description" content="Pomodoro Timer & manajemen waktu dengan Work–Reward Mechanism."/>
+<meta name="theme-color" content="#2f5a28"/>
+<link rel="manifest" href="manifest.json"/>
+<link rel="icon" href="icons/icon-192.png"/>
+<link rel="apple-touch-icon" href="icons/icon-192.png"/>
+<meta name="apple-mobile-web-app-capable" content="yes"/>
+<meta name="mobile-web-app-capable" content="yes"/>
+<link rel="stylesheet" href="style.css"/>
+</head>
+<body>
+<div id="splash"><img src="icons/icon-192.png" alt=""/><b><span>Time</span>Balance</b><small>Kerja dulu, santai kemudian</small></div>
+<header class="top"><div><small id="sub"></small><h1 id="ttl">TimeBalance</h1></div>
+  <div class="row"><span id="badge" class="pill"></span><button class="av" data-act="profile" id="av" aria-label="Profil"></button></div></header>
+<main id="view"></main>
+<nav id="nav"></nav>
+<div id="sheet" hidden></div>
+<div id="toast"></div>
+<div id="alert" class="alert" hidden></div>
+<section id="report"></section>
+<script src="app.js"></script>
+</body>
+</html>
