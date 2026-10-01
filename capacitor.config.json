@@ -1,0 +1,10 @@
+{
+  "appId": "id.timebalance.app",
+  "appName": "TimeBalance",
+  "webDir": "www",
+  "backgroundColor": "#f3f6ef",
+  "android": { "allowMixedContent": false },
+  "plugins": {
+    "LocalNotifications": { "iconColor": "#3d6b35" }
+  }
+}

@@ -26,12 +26,41 @@ const rp = n => "Rp " + n.toLocaleString("id-ID");
 const IC = { home: "M3 11l9-8 9 8v10a1 1 0 0 1-1 1h-5v-7H9v7H4a1 1 0 0 1-1-1z", check: "M5 13l4 4L19 7", timer: "M12 5a8 8 0 1 0 0 16 8 8 0 0 0 0-16zM12 9v4l2.5 2M9 2h6", wallet: "M3 7a2 2 0 0 1 2-2h13v4M3 7v11a2 2 0 0 0 2 2h15a1 1 0 0 0 1-1v-9a1 1 0 0 0-1-1H5a2 2 0 0 1-2-2zM17 14.5h.01", chart: "M4 20V10M10 20V4M16 20v-7M22 20H2", plus: "M12 5v14M5 12h14", lock: "M6 11h12v10H6zM8 11V7a4 4 0 0 1 8 0v4", star: "M12 3l2.7 5.6 6.1.9-4.4 4.3 1 6.1L12 17l-5.4 2.9 1-6.1L3.2 9.5l6.1-.9z", fire: "M12 3c1 4 5 5 5 10a5 5 0 0 1-10 0c0-2 1-3 2-4 0 2 1 3 2 3 0-3-1-5 1-9z", bell: "M6 16V11a6 6 0 0 1 12 0v5l2 2H4zM10 21h4", moon: "M20 14A8 8 0 1 1 10 4a6 6 0 0 0 10 10z", trash: "M4 7h16M9 7V4h6v3M6 7l1 13h10l1-13", play: "M7 4l13 8-13 8z", pause: "M7 4h4v16H7zM13 4h4v16h-4z", skip: "M5 4l10 8-10 8zM19 4v16", stop: "M6 6h12v12H6z", search: "M11 4a7 7 0 1 0 0 14 7 7 0 0 0 0-14zM21 21l-5-5", close: "M6 6l12 12M18 6L6 18", crown: "M3 8l4 4 5-7 5 7 4-4-2 11H5z", shield: "M12 3l8 3v6c0 5-3.5 8-8 9-4.5-1-8-4-8-9V6z", download: "M12 4v12M7 11l5 5 5-5M5 20h14", cal: "M4 6h16v14H4zM4 10h16M8 3v4M16 3v4", sliders: "M4 7h10M18 7h2M4 17h2M10 17h10M14 4v6M6 14v6", info: "M12 3a9 9 0 1 0 0 18 9 9 0 0 0 0-18zM12 11v6M12 8h.01", bolt: "M13 2L4 14h7l-1 8 9-12h-7z", gift: "M4 10h16v10H4zM3 7h18v3H3zM12 7v13", file: "M6 3h9l4 4v14H6zM14 3v5h5", cloud: "M7 18a4 4 0 0 1-.5-8A6 6 0 0 1 18 9a4.5 4.5 0 0 1-.5 9z", target: "M12 3a9 9 0 1 0 0 18 9 9 0 0 0 0-18zM12 8a4 4 0 1 0 0 8 4 4 0 0 0 0-8z", sun: "M12 8a4 4 0 1 0 0 8 4 4 0 0 0 0-8zM12 2v2M12 20v2M2 12h2M20 12h2M5 5l1.5 1.5M17.5 17.5L19 19M5 19l1.5-1.5M17.5 6.5L19 5", mail: "M3 5h18v14H3zM3 6l9 7 9-7", user: "M12 12a4 4 0 1 0 0-8 4 4 0 0 0 0 8zM4 21a8 8 0 0 1 16 0" };
 const ic = (n, c = "") => `<svg class="i ${c}" viewBox="0 0 24 24"><path d="${IC[n]}"/></svg>`;
 
+/* ---------- Jembatan Android (Capacitor/APK). Di web biasa semua fungsi ini tidak berefek ---------- */
+const CAP = () => window.Capacitor;
+const isNative = () => !!(CAP() && CAP().isNativePlatform && CAP().isNativePlatform());
+const NL = () => isNative() && CAP().Plugins && CAP().Plugins.LocalNotifications;
+let nTimer;
+const nid = s => 10000 + (Array.from(String(s)).reduce((a, c) => (a * 31 + c.charCodeAt(0)) | 0, 7) >>> 0) % 900000;
+async function nPerm() { const n = NL(); if (!n) return false; try { let p = await n.checkPermissions(); if (p.display !== "granted") p = await n.requestPermissions(); return p.display === "granted"; } catch (e) { return false; } }
+function nCancel(ids) { const n = NL(); if (n && ids.length) n.cancel({ notifications: ids.map(id => ({ id })) }).catch(() => {}); }
+function nSched(id, title, body, at, daily) {
+  const n = NL(); if (!n || !S.notif) return;
+  const schedule = daily ? { on: { hour: daily[0], minute: daily[1] }, allowWhileIdle: true } : { at: new Date(at), allowWhileIdle: true };
+  n.schedule({ notifications: [{ id, title, body, schedule }] }).catch(() => {});
+}
+function nRun(r) { nCancel([1]); if (r && !r.paused) nSched(1, r.phase === "focus" ? "🍅 Sesi fokus selesai!" : "☕ Istirahat selesai", r.phase === "focus" ? "Buka TimeBalance untuk mengambil reward waktu santai." : "Siap fokus lagi?", r.end); }
+function nQueue() { if (!NL()) return; clearTimeout(nTimer); nTimer = setTimeout(nSync, 1200); }
+function nSync() {
+  if (!NL() || !S.notif) return; nCancel(S.nids || []); const ids = [];
+  S.sched.forEach(s => { const id = nid("s" + s.id), hm = s.time.split(":").map(Number); nSched(id, "⏰ Jadwal", s.title, 0, hm); ids.push(id); });
+  S.tasks.forEach(t => { if (!t.done && t.due) { const at = new Date(t.due).getTime() - 36e5; if (at > Date.now()) { const id = nid("d" + t.id); nSched(id, "⚠️ Deadline < 1 jam", t.title, at); ids.push(id); } } });
+  S.nids = ids; try { localStorage.setItem(K, JSON.stringify(S)); } catch (e) {}
+}
+async function nativeInit() {
+  if (!isNative()) return;
+  if (await nPerm()) { S.notif = true; save(); nSync(); nRun(S.run); if (S.leisure) nSched(2, "⏰ Waktu santai habis", "Kembali produktif!", S.leisure.end); }
+  const app = CAP().Plugins.App;
+  if (app) app.addListener("backButton", () => { if (!$("#sheet").hidden) { if (!S.onb) return; closeSheet(); } else if (S.tab !== "home") { S.tab = "home"; render(); } else app.exitApp(); });
+}
+async function nShareFile(name, data, title) { const P = CAP().Plugins, f = await P.Filesystem.writeFile({ path: name, data, directory: "CACHE", encoding: "utf8" }); await P.Share.share({ title, files: [f.uri] }); }
+
 const DEF = { name: "", onb: 0, tasks: [], sched: [], log: [], wallet: 0, xp: 0, cyc: 0, streak: { last: "", n: 0 }, badges: {}, run: null, leisure: null, fired: {},
   premium: null, demo: false, theme: "auto", snd: true, vib: true, notif: false, goal: 120, tab: "home", seg: "todo", flt: "all", sseg: "an", range: 7, plan: "annual",
   rules: { focus: 25, brk: 5, long: 15, ratio: 25, strict: false, lock: false } };
 let S, q = "", dp = null, ovOpen = false;
 try { S = Object.assign({}, DEF, JSON.parse(localStorage.getItem(K) || "{}")); S.rules = Object.assign({}, DEF.rules, S.rules); } catch (e) { S = JSON.parse(JSON.stringify(DEF)); }
-const save = () => { try { localStorage.setItem(K, JSON.stringify(S)); } catch (e) {} };
+const save = () => { try { localStorage.setItem(K, JSON.stringify(S)); } catch (e) {} nQueue(); };
 const prem = () => (DEMO_TOGGLE && S.demo) || !!(S.premium && S.premium.until > Date.now());
 const R = () => prem() ? S.rules : Object.assign({}, S.rules, { focus: 25, brk: 5, long: 15, ratio: 25, strict: false, lock: false });
 const ratio = () => R().ratio + (prem() ? Math.min(10, S.streak.n * 2) : 0);   // Dynamic Time Quota
@@ -45,7 +74,7 @@ function notify(title, body) {
   toast(title + (body ? " — " + body : ""));
   if (S.vib) try { navigator.vibrate && navigator.vibrate([200, 100, 200]); } catch (e) {}
   if (S.snd) try { const a = new (window.AudioContext || window.webkitAudioContext)(), o = a.createOscillator(); o.connect(a.destination); o.frequency.value = 880; o.start(); setTimeout(() => o.stop(), 250); } catch (e) {}
-  if (S.notif && "Notification" in window && Notification.permission === "granted") try { reg ? reg.showNotification(title, { body, icon: "icons/icon-192.png", badge: "icons/icon-192.png" }) : new Notification(title, { body }); } catch (e) {}
+  if (!isNative() && S.notif && "Notification" in window && Notification.permission === "granted") try { reg ? reg.showNotification(title, { body, icon: "icons/icon-192.png", badge: "icons/icon-192.png" }) : new Notification(title, { body }); } catch (e) {}
 }
 const addLog = (type, min, x) => S.log.push(Object.assign({ ts: Date.now(), type, min }, x || {}));
 function sheet(html, cls = "") { const s = $("#sheet"); s.innerHTML = `<div class="bk" data-act="close"></div><div class="pn ${cls}">${cls === "full" ? "" : '<div class="grab"></div>'}${html}</div>`; s.hidden = false; ovOpen = true; }
@@ -117,11 +146,11 @@ const segTasks = () => `<div class="seg"><button data-act="seg" data-v="todo" cl
 let wake = null, leftAt = 0;
 async function lockOn() { try { if ("wakeLock" in navigator) wake = await navigator.wakeLock.request("screen"); } catch (e) {} if (R().lock) try { await document.documentElement.requestFullscreen(); } catch (e) {} }
 function lockOff() { try { wake && wake.release(); } catch (e) {} wake = null; try { document.fullscreenElement && document.exitFullscreen(); } catch (e) {} }
-async function askNotif() { if (S.notif || !("Notification" in window) || Notification.permission === "denied") return; try { S.notif = (await Notification.requestPermission()) === "granted"; save(); } catch (e) {} }
+async function askNotif() { if (isNative() || S.notif || !("Notification" in window) || Notification.permission === "denied") return; try { S.notif = (await Notification.requestPermission()) === "granted"; save(); } catch (e) {} }
 function startRun(phase, taskId) {
   const m = phase === "focus" ? R().focus : phase === "long" ? R().long : R().brk;
   S.run = { phase, total: m * 60, end: Date.now() + m * 60000, taskId: taskId || (S.run && S.run.taskId) || "", viol: 0, paused: false, remain: 0 };
-  save(); if (phase === "focus") lockOn(); render();
+  save(); nRun(S.run); if (phase === "focus") lockOn(); render();
 }
 function finishRun() {
   const r = S.run; if (!r) return;
@@ -152,9 +181,9 @@ function viewFocus() {
 function startLeisure(m) {
   m = Math.floor(m); if (S.run && S.run.phase === "focus") return toast("Selesaikan sesi fokus dulu");
   if (!(m > 0) || m > S.wallet) return toast("Waktu santai belum cukup — selesaikan tugas dulu!");
-  S.wallet -= m; S.leisure = { end: Date.now() + m * 60000, total: m }; save(); render();
+  S.wallet -= m; S.leisure = { end: Date.now() + m * 60000, total: m }; nSched(2, "⏰ Waktu santai habis", "Kembali produktif!", S.leisure.end); save(); render();
 }
-function stopLeisure(auto) { const l = S.leisure; if (!l) return; const rem = auto ? 0 : Math.max(0, (l.end - Date.now()) / 60000); S.wallet += rem; addLog("leisure", r1(l.total - rem)); S.leisure = null; save(); if (auto) notify("⏰ Waktu santai habis", "Kembali produktif!"); render(); }
+function stopLeisure(auto) { const l = S.leisure; if (!l) return; nCancel([2]); const rem = auto ? 0 : Math.max(0, (l.end - Date.now()) / 60000); S.wallet += rem; addLog("leisure", r1(l.total - rem)); S.leisure = null; save(); if (auto) notify("⏰ Waktu santai habis", "Kembali produktif!"); render(); }
 function viewWallet() {
   const w = Math.floor(S.wallet), l = S.leisure;
   const hist = S.log.filter(x => x.type !== "task" || x.earn).slice(-12).reverse().map(x => x.type === "leisure" ? `<div class="li"><div class="ico gold">${ic("play")}</div><div>Waktu santai<small>${new Date(x.ts).toLocaleString("id-ID", { dateStyle: "medium", timeStyle: "short" })}</small></div><b style="color:var(--red)">−${x.min}m</b></div>` : `<div class="li"><div class="ico">${ic(x.type === "focus" ? "timer" : "check")}</div><div>${x.type === "focus" ? "Sesi fokus " + x.min + "m" : "Tugas selesai"}<small>${new Date(x.ts).toLocaleString("id-ID", { dateStyle: "medium", timeStyle: "short" })}</small></div><b style="color:var(--g)">+${r1(x.earn)}m</b></div>`).join("") || `<p class="mu center" style="padding:16px">Belum ada riwayat.</p>`;
@@ -166,12 +195,14 @@ function viewWallet() {
 }
 
 /* ---------- beranda ---------- */
+const standalone = () => matchMedia("(display-mode: standalone)").matches || navigator.standalone === true;
 function viewHome() {
   const h = new Date().getHours(), gr = h < 11 ? "Selamat pagi" : h < 15 ? "Selamat siang" : h < 19 ? "Selamat sore" : "Selamat malam";
   const Q = ["Kerja dulu, santai kemudian.", "Satu sesi fokus lebih baik dari seribu rencana.", "Disiplin hari ini, bebas besok.", "Mulai kecil, selesaikan, nikmati reward-mu.", "Fokus 25 menit — kamu pasti bisa!"], quote = Q[new Date().getDate() % Q.length];
   const tf = todayFocus(), pct = tf / S.goal, next = S.tasks.filter(t => !t.done).sort((a, b) => b.prio - a.prio).slice(0, 3);
   const wk = [6, 5, 4, 3, 2, 1, 0].map(i => { const k = dkey(Date.now() - i * DAY), a = S.log.some(l => dkey(l.ts) === k && l.type !== "leisure"); return `<div class="${a ? "on" : ""}"><i>${a ? ic("check") : ""}</i>${["M", "S", "S", "R", "K", "J", "S"][new Date(Date.now() - i * DAY).getDay()]}</div>`; }).join("");
-  return `${dp ? `<div class="card promo row sp"><div><b>Pasang TimeBalance</b><div class="mu">Akses cepat dari layar utama, tetap jalan offline.</div></div><button class="b sm" data-act="install">Pasang</button></div>` : ""}
+  const inst = !standalone() && !dp && !S.hideInst ? `<div class="card promo"><b>📲 Pasang sebagai aplikasi</b><div class="mu">Chrome Android: menu ⋮ → <b>Pasang aplikasi</b>.<br/>iPhone (Safari): Bagikan → <b>Tambah ke Layar Utama</b>.</div><button class="b sm" data-act="hideInst" style="margin-top:8px">Mengerti</button></div>` : "";
+  return `${inst}${dp ? `<div class="card promo row sp"><div><b>Pasang TimeBalance</b><div class="mu">Akses cepat dari layar utama, tetap jalan offline.</div></div><button class="b sm" data-act="install">Pasang</button></div>` : ""}
   <div class="card hero"><h3 style="font-size:1.1rem">${gr}${S.name ? ", " + esc(S.name) : ""} 👋</h3><p class="mu">${quote}</p><br/><button class="b w full" data-act="tab" data-v="focus">${ic("play")} Mulai Fokus</button></div>
   <div class="g2"><div class="card center" style="margin:0">${ring(pct, 112, 10, "var(--g)", `<b style="font-size:1.3rem">${tf}</b><span class="mu" style="font-size:.62rem">/ ${S.goal} mnt</span>`)}<p class="mu" style="margin-top:6px">Target harian</p></div>
   <div class="card center" style="margin:0" data-act="tab" data-v="wallet"><div class="ico gold" style="margin:6px auto">${ic("wallet")}</div><div class="big" style="font-size:2rem;color:var(--g)">${Math.floor(S.wallet)}</div><p class="mu">menit santai</p></div></div><br/>
@@ -268,20 +299,21 @@ const A = {
   delSched: e => { S.sched = S.sched.filter(t => t.id !== e.dataset.id); save(); render(); },
   focusTask: e => { S.tab = "focus"; render(); const s = $("#ftask"); if (s) s.value = e.dataset.id; scrollTo(0, 0); },
   start: () => { if (S.leisure) return toast("Akhiri waktu santai dulu"); askNotif(); startRun("focus", ($("#ftask") || {}).value); },
-  pause: () => { const r = S.run; if (r.paused) { r.end = Date.now() + r.remain * 1000; r.paused = false; } else { r.remain = (r.end - Date.now()) / 1000; r.paused = true; } save(); render(); },
-  skip: () => { if (confirm("Lewati sesi ini? Sesi fokus yang dilewati tidak memberi reward.")) { const p = S.run.phase; lockOff(); if (p === "focus") startRun("brk"); else { S.run = null; save(); render(); } } },
-  stop: () => { if (confirm("Berhenti? Reward sesi ini hangus.")) { S.run = null; lockOff(); save(); render(); } },
+  pause: () => { const r = S.run; if (r.paused) { r.end = Date.now() + r.remain * 1000; r.paused = false; } else { r.remain = (r.end - Date.now()) / 1000; r.paused = true; } nRun(r); save(); render(); },
+  skip: () => { if (confirm("Lewati sesi ini? Sesi fokus yang dilewati tidak memberi reward.")) { const p = S.run.phase; lockOff(); if (p === "focus") startRun("brk"); else { S.run = null; nRun(null); save(); render(); } } },
+  stop: () => { if (confirm("Berhenti? Reward sesi ini hangus.")) { S.run = null; nRun(null); lockOff(); save(); render(); } },
   leisure: e => startLeisure(+e.dataset.m), stopLeisure: () => stopLeisure(false), range: e => { S.range = +e.dataset.v; save(); render(); },
   report: () => report(), theme: e => { S.theme = e.dataset.v; save(); render(); profile(); },
   install: async () => { if (dp) { dp.prompt(); await dp.userChoice; dp = null; render(); } },
+  hideInst: () => { S.hideInst = true; save(); render(); },
   obNext: () => { obI++; onboarding(); },
-  export: () => { const a = document.createElement("a"); a.href = URL.createObjectURL(new Blob([JSON.stringify(S)], { type: "application/json" })); a.download = "timebalance-backup-" + dkey(Date.now()) + ".json"; a.click(); },
+  export: async () => { if (isNative()) { try { await nShareFile("timebalance-backup-" + dkey(Date.now()) + ".json", JSON.stringify(S), "Backup TimeBalance"); } catch (e) { toast("Gagal membagikan backup"); } return; } const a = document.createElement("a"); a.href = URL.createObjectURL(new Blob([JSON.stringify(S)], { type: "application/json" })); a.download = "timebalance-backup-" + dkey(Date.now()) + ".json"; a.click(); },
   reset: () => { if (confirm("Hapus SEMUA data? Tidak bisa dibatalkan.")) { localStorage.removeItem(K); location.reload(); } },
   tg: async e => {
     const k = e.dataset.k, on = e.checked;
     if (["lock", "strict"].includes(k)) { if (!prem()) { e.checked = false; return paywall(); } S.rules[k] = on; }
     else if (k === "demo") { S.demo = on; }
-    else if (k === "notif") { if (on && "Notification" in window) { S.notif = (await Notification.requestPermission()) === "granted"; if (!S.notif) { e.checked = false; toast("Izin notifikasi ditolak"); } } else S.notif = on; }
+    else if (k === "notif") { if (on) { const ok = isNative() ? await nPerm() : ("Notification" in window && (await Notification.requestPermission()) === "granted"); S.notif = ok; if (!ok) { e.checked = false; toast("Izin notifikasi ditolak"); } } else S.notif = false; }
     else S[k] = on;
     save(); render(); if (!$("#sheet").hidden && k !== "lock" && k !== "strict") profile(); else if (!$("#sheet").hidden) { /* biarkan */ }
   }
@@ -310,6 +342,7 @@ document.addEventListener("submit", e => {
 function report() {
   const s = stats(), d = byDay(30).filter(x => x.f || x.t), done = S.tasks.filter(t => t.done).slice(-20).map(t => `<tr><td>${esc(t.title)}</td><td>${PR[t.prio]}</td><td>${t.doneAt ? dkey(t.doneAt) : "-"}</td></tr>`).join("");
   $("#report").innerHTML = `<h1>Laporan Produktivitas TimeBalance</h1><p>${esc(S.name || "Pengguna")} · ${new Date().toLocaleString("id-ID")} · Level ${level()} · Streak ${S.streak.n} hari</p><h3>Ringkasan</h3><p>Sesi fokus: ${s.sess} · Menit fokus: ${s.fmin} · Tugas selesai: ${s.tdone} · Waktu santai didapat: ${r1(s.earned)} menit · dipakai: ${r1(s.used)} menit</p><h3>30 Hari Terakhir</h3><table><tr><th>Tanggal</th><th>Menit fokus</th><th>Tugas selesai</th></tr>${d.map(x => `<tr><td>${x.k}</td><td>${x.f}</td><td>${x.t}</td></tr>`).join("") || "<tr><td colspan=3>Belum ada data</td></tr>"}</table><h3>Tugas Selesai (20 terbaru)</h3><table><tr><th>Tugas</th><th>Prioritas</th><th>Tanggal</th></tr>${done || "<tr><td colspan=3>-</td></tr>"}</table><h3>Achievement</h3><p>${BADGES.filter(b => S.badges[b[0]]).map(b => b[1] + " " + b[2]).join(" · ") || "-"}</p>`;
+  if (isNative()) { const h = "<!doctype html><meta charset=utf-8><meta name=viewport content=\"width=device-width\"><title>Laporan TimeBalance</title>" + $("#report").innerHTML; nShareFile("laporan-timebalance-" + dkey(Date.now()) + ".html", h, "Laporan TimeBalance").catch(() => toast("Gagal membagikan laporan")); return; }
   setTimeout(() => window.print(), 200);
 }
 
@@ -335,6 +368,7 @@ document.addEventListener("visibilitychange", () => {
 window.addEventListener("beforeunload", e => { if (S.run && S.run.phase === "focus" && R().lock) { e.preventDefault(); e.returnValue = ""; } });
 window.addEventListener("beforeinstallprompt", e => { e.preventDefault(); dp = e; render(); });
 window.addEventListener("appinstalled", () => { dp = null; render(); toast("Aplikasi terpasang 🎉"); });
-if ("serviceWorker" in navigator) window.addEventListener("load", () => navigator.serviceWorker.register("sw.js").then(r => reg = r).catch(() => {}));
+if ("serviceWorker" in navigator && !isNative()) window.addEventListener("load", () => navigator.serviceWorker.register("sw.js").then(r => reg = r).catch(() => {}));
 render();
+nativeInit();
 setTimeout(() => { $("#splash").classList.add("off"); if (!S.onb) onboarding(); }, 900);
