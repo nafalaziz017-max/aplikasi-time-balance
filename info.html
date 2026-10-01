@@ -1,0 +1,723 @@
+<!DOCTYPE html>
+<html lang="id">
+<head>
+  <meta charset="UTF-8"/>
+  <meta name="viewport" content="width=device-width,initial-scale=1.0"/>
+  <meta name="description" content="Cara kerja TimeBalance, panduan penggunaan, dan FAQ lengkap tentang aplikasi Pomodoro Timer & manajemen waktu."/>
+  <title>Info & FAQ — TimeBalance</title>
+  <link rel="icon" type="image/jpeg" href="assets/images/logo.jpeg"/>
+  <link rel="preconnect" href="https://fonts.googleapis.com"/>
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin/>
+  <link href="https://fonts.googleapis.com/css2?family=Poppins:wght@300;400;500;600;700;800;900&display=swap" rel="stylesheet"/>
+  <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.0/css/all.min.css"/>
+  <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/aos/2.3.4/aos.css"/>
+  <link rel="stylesheet" href="assets/css/style.css"/>
+  <link rel="stylesheet" href="assets/css/components.css"/>
+  <link rel="stylesheet" href="assets/css/responsive.css"/>
+
+  <link rel="stylesheet" href="assets/css/info.css"/>
+</head>
+
+<body>
+
+<div id="loading">
+  <div class="loading-logo">
+    <span>Time</span>Balance
+  </div>
+  <div class="spinner"></div>
+</div>
+
+<button id="btt" aria-label="Kembali ke atas" onclick="scrollTop()">
+  <i class="fas fa-arrow-up"></i>
+</button>
+
+<div class="mobile-overlay" id="mob-overlay" onclick="closeMobileMenu()"></div>
+
+<nav class="mobile-menu" id="mob-menu">
+  <a href="index.html" onclick="closeMobileMenu()">
+    <i class="fas fa-home"></i> Home
+  </a>
+
+  <a href="about.html" onclick="closeMobileMenu()">
+    <i class="fas fa-seedling"></i> About
+  </a>
+
+  <a href="info.html" onclick="closeMobileMenu()">
+    <i class="fas fa-info-circle"></i> Info
+  </a>
+
+  <a href="content.html" onclick="closeMobileMenu()">
+    <i class="fas fa-cube"></i> Fitur
+  </a>
+
+  <a href="pricing.html" onclick="closeMobileMenu()">
+    <i class="fas fa-tag"></i> Harga
+  </a>
+
+  <a href="payment.html" onclick="closeMobileMenu()">
+    <i class="fas fa-credit-card"></i> Bayar
+  </a>
+
+  <a href="download.html" class="mob-dl" onclick="closeMobileMenu()">
+    <i class="fas fa-download"></i> Download APK
+  </a>
+</nav>
+
+<header class="navbar" id="navbar">
+  <div class="nav-inner">
+
+    <a href="index.html" class="nav-logo">
+      <img src="assets/images/logo.jpeg" alt="TimeBalance logo"/>
+      <span>
+        <span class="time">Time</span>
+        <span class="bal">Balance</span>
+      </span>
+    </a>
+
+    <nav class="nav-links">
+      <a href="index.html">Home</a>
+      <a href="about.html">About</a>
+      <a href="info.html">Info</a>
+      <a href="content.html">Fitur</a>
+      <a href="pricing.html">Harga</a>
+      <a href="payment.html">Bayar</a>
+    </nav>
+
+    <div class="nav-actions">
+      <button class="dark-toggle" onclick="toggleDark()">
+        <i class="fas fa-moon dark-icon"></i>
+      </button>
+
+      <a href="download.html" class="btn-nav-dl">
+        <i class="fas fa-download"></i> Download APK
+      </a>
+
+      <button class="hamburger" onclick="openMobileMenu()">
+        <span></span>
+        <span></span>
+        <span></span>
+      </button>
+    </div>
+
+  </div>
+</header>
+
+
+<!-- PAGE HERO -->
+<div class="page-hero">
+  <div class="container">
+
+    <div class="section-badge">
+      <i class="fas fa-info-circle"></i> Informasi
+    </div>
+
+    <h1>Info & <span>Cara Kerja</span></h1>
+
+    <p>
+      Pelajari cara menggunakan TimeBalance, cara kerja sistem,
+      dan temukan jawaban dari pertanyaan umum.
+    </p>
+
+  </div>
+</div>
+
+
+<!-- HOW IT WORKS -->
+<section aria-labelledby="h-how">
+  <div class="container">
+
+    <div class="section-header" data-aos="fade-up">
+
+      <div class="section-badge">
+        <i class="fas fa-route"></i> Cara Kerja
+      </div>
+
+      <h2 class="section-title" id="h-how">
+        Mulai Produktif dalam <span>5 Langkah</span>
+      </h2>
+
+      <p class="section-desc">
+        Proses yang sederhana, efektif, dan menyenangkan
+        untuk membangun keseimbangan hidup ideal.
+      </p>
+
+    </div>
+
+    <div class="steps-grid">
+
+      <div class="step-card" data-aos="fade-up" data-aos-delay="0">
+        <div class="step-num">1</div>
+
+        <div class="step-icon">
+          <i class="fas fa-plus"></i>
+        </div>
+
+        <h4>Buat Tugas</h4>
+
+        <p>
+          Tambahkan tugas dan atur prioritas serta tenggat waktu.
+        </p>
+      </div>
+
+
+      <div class="step-card" data-aos="fade-up" data-aos-delay="60">
+        <div class="step-num">2</div>
+
+        <div class="step-icon">
+          <i class="fas fa-hourglass-half"></i>
+        </div>
+
+        <h4>Fokus Bekerja</h4>
+
+        <p>
+          Aktifkan Pomodoro Timer dan Focus Lock —
+          semua distraksi dikunci.
+        </p>
+      </div>
+
+
+      <div class="step-card" data-aos="fade-up" data-aos-delay="120">
+        <div class="step-num">3</div>
+
+        <div class="step-icon">
+          <i class="fas fa-check-circle"></i>
+        </div>
+
+        <h4>Selesaikan Tugas</h4>
+
+        <p>
+          Tandai tugas selesai dan rasakan kepuasannya.
+        </p>
+      </div>
+
+
+      <div class="step-card" data-aos="fade-up" data-aos-delay="180">
+        <div class="step-num">4</div>
+
+        <div class="step-icon">
+          <i class="fas fa-gift"></i>
+        </div>
+
+        <h4>Dapat Reward</h4>
+
+        <p>
+          Dompet waktu santai terisi otomatis sebagai hadiah.
+        </p>
+      </div>
+
+
+      <div class="step-card" data-aos="fade-up" data-aos-delay="240">
+        <div class="step-num">5</div>
+
+        <div class="step-icon">
+          <i class="fas fa-smile"></i>
+        </div>
+
+        <h4>Nikmati Hiburan</h4>
+
+        <p>
+          Buka YouTube, TikTok, atau game tanpa rasa bersalah!
+        </p>
+      </div>
+
+    </div>
+
+
+    <div style="text-align:center;margin-top:40px">
+
+      <a href="download.html" class="btn btn-primary">
+        <i class="fas fa-download"></i>
+        Download & Coba Sekarang
+      </a>
+
+    </div>
+
+  </div>
+</section>
+
+
+<!-- PROBLEM & SOLUTION -->
+<section style="background:var(--card-bg)" aria-labelledby="h-ps">
+
+  <div class="container">
+
+    <div class="section-header" data-aos="fade-up">
+
+      <div class="section-badge">
+        <i class="fas fa-lightbulb"></i> Masalah &amp; Solusi
+      </div>
+
+      <h2 class="section-title" id="h-ps">
+        Kenali <span>Masalahnya,</span> Temukan Solusinya
+      </h2>
+
+      <p class="section-desc">
+        Banyak orang tahu apa yang harus dilakukan,
+        tapi tetap menundanya. TimeBalance hadir untuk
+        mengubah pola itu.
+      </p>
+
+    </div>
+
+
+    <div class="ps-grid" data-aos="fade-up" data-aos-delay="100">
+
+      <div class="ps-box ps-problem">
+
+        <h3>😩 Masalah Umum</h3>
+
+        <div class="ps-item">
+          <div class="dot dot-red"></div>
+          Sering prokrastinasi dan menunda pekerjaan
+        </div>
+
+        <div class="ps-item">
+          <div class="dot dot-red"></div>
+          Sulit fokus di era penuh distraksi digital
+        </div>
+
+        <div class="ps-item">
+          <div class="dot dot-red"></div>
+          Tidak bisa mengatur waktu kerja dan hiburan
+        </div>
+
+        <div class="ps-item">
+          <div class="dot dot-red"></div>
+          Burnout karena bekerja tanpa henti
+        </div>
+
+        <div class="ps-item">
+          <div class="dot dot-red"></div>
+          Work-Life Balance yang buruk dan tidak sehat
+        </div>
+
+      </div>
+
+
+      <div class="ps-box ps-solution">
+
+        <h3>✅ Solusi TimeBalance</h3>
+
+        <div class="ps-item">
+          <div class="dot dot-green"></div>
+          <strong>Smart To-Do List</strong> — Prioritaskan tugas otomatis
+        </div>
+
+        <div class="ps-item">
+          <div class="dot dot-green"></div>
+          <strong>Focus Lock</strong> — Kunci aplikasi pengganggu saat fokus
+        </div>
+
+        <div class="ps-item">
+          <div class="dot dot-green"></div>
+          <strong>Pomodoro Timer</strong> — Sesi fokus 25 menit terstruktur
+        </div>
+
+        <div class="ps-item">
+          <div class="dot dot-green"></div>
+          <strong>Leisure Time Wallet</strong> — Reward waktu santai terukur
+        </div>
+
+        <div class="ps-item">
+          <div class="dot dot-green"></div>
+          <strong>Productivity Analytics</strong> — Pantau progres harian
+        </div>
+
+      </div>
+
+    </div>
+
+  </div>
+</section>
+
+
+<!-- REQUIREMENTS -->
+<section aria-labelledby="h-req">
+
+  <div class="container">
+
+    <div class="section-header" data-aos="fade-up">
+
+      <div class="section-badge">
+        <i class="fas fa-mobile-alt"></i> Persyaratan
+      </div>
+
+      <h2 class="section-title" id="h-req">
+        Persyaratan <span>Aplikasi</span>
+      </h2>
+
+      <p class="section-desc">
+        Pastikan perangkat Anda memenuhi spesifikasi minimum berikut.
+      </p>
+
+    </div>
+
+
+    <div class="req-grid" data-aos="fade-up" data-aos-delay="80">
+
+      <div class="req-item">
+        <i class="fas fa-android"></i>
+
+        <div>
+          <strong>OS Android</strong>
+          <p>
+            Android 6.0 (Marshmallow) atau lebih tinggi
+          </p>
+        </div>
+      </div>
+
+
+      <div class="req-item">
+        <i class="fas fa-microchip"></i>
+
+        <div>
+          <strong>RAM</strong>
+          <p>
+            Minimal 2 GB RAM
+          </p>
+        </div>
+      </div>
+
+
+      <div class="req-item">
+        <i class="fas fa-hdd"></i>
+
+        <div>
+          <strong>Storage</strong>
+          <p>
+            Minimal 100 MB ruang kosong
+          </p>
+        </div>
+      </div>
+
+
+      <div class="req-item">
+        <i class="fas fa-wifi"></i>
+
+        <div>
+          <strong>Koneksi Internet</strong>
+          <p>
+            Diperlukan untuk sinkronisasi data (opsional)
+          </p>
+        </div>
+      </div>
+
+    </div>
+
+  </div>
+</section>
+
+
+<!-- FAQ -->
+<section style="background:var(--card-bg)" aria-labelledby="h-faq">
+
+  <div class="container">
+
+    <div class="section-header" data-aos="fade-up">
+
+      <div class="section-badge">
+        <i class="fas fa-question-circle"></i> FAQ
+      </div>
+
+      <h2 class="section-title" id="h-faq">
+        Pertanyaan yang <span>Sering Ditanyakan</span>
+      </h2>
+
+      <p class="section-desc">
+        Temukan jawaban dari pertanyaan paling umum tentang TimeBalance.
+      </p>
+
+    </div>
+
+
+    <div class="faq-list" data-aos="fade-up" data-aos-delay="80">
+
+      <!-- FAQ 1 -->
+      <div class="faq-item">
+
+        <button class="faq-q" onclick="toggleFaq(this)">
+          Apakah TimeBalance benar-benar gratis?
+          <i class="fas fa-chevron-down"></i>
+        </button>
+
+        <div class="faq-a">
+          Ya! TimeBalance bisa diunduh dan digunakan gratis selamanya
+          dengan fitur dasar yang sudah sangat berguna:
+          Smart To-Do List, Pomodoro Timer dasar, Checklist,
+          Jadwal Harian, dan Leisure Time Wallet.
+          Upgrade ke Premium untuk fitur canggih seperti
+          Focus Lock, Analytics, dan Achievement System.
+        </div>
+
+      </div>
+
+
+      <!-- FAQ 2 -->
+      <div class="faq-item">
+
+        <button class="faq-q" onclick="toggleFaq(this)">
+          Apa itu Work–Reward Mechanism?
+          <i class="fas fa-chevron-down"></i>
+        </button>
+
+        <div class="faq-a">
+          Work–Reward Mechanism adalah sistem inti TimeBalance:
+          Anda harus menyelesaikan tugas terlebih dahulu sebelum
+          waktu hiburan (santai) bisa dibuka.
+          Semakin banyak tugas yang diselesaikan, semakin besar
+          "dompet waktu santai" Anda.
+          Ini menciptakan motivasi positif yang berkelanjutan.
+        </div>
+
+      </div>
+
+
+      <!-- FAQ 3 -->
+      <div class="faq-item">
+
+        <button class="faq-q" onclick="toggleFaq(this)">
+          Bagaimana cara Focus Lock bekerja?
+          <i class="fas fa-chevron-down"></i>
+        </button>
+
+        <div class="faq-a">
+          Focus Lock (fitur Premium) menggunakan izin aksesibilitas
+          Android untuk memblokir aplikasi yang Anda pilih
+          (seperti Instagram, TikTok, game) selama sesi fokus aktif.
+          Ketika Anda mencoba membuka aplikasi tersebut,
+          TimeBalance akan mengingatkan Anda untuk kembali fokus.
+          Tidak ada cara bypass selama mode Strict aktif.
+        </div>
+
+      </div>
+
+
+      <!-- FAQ 4 -->
+      <div class="faq-item">
+
+        <button class="faq-q" onclick="toggleFaq(this)">
+          Apakah data saya aman?
+          <i class="fas fa-chevron-down"></i>
+        </button>
+
+        <div class="faq-a">
+          Data tugas dan progres Anda tersimpan di perangkat secara lokal.
+          Untuk pengguna Premium, tersedia opsi backup data ke cloud
+          yang dienkripsi.
+          Kami tidak menjual atau membagikan data pribadi Anda
+          kepada pihak ketiga.
+        </div>
+
+      </div>
+
+
+      <!-- FAQ 5 -->
+      <div class="faq-item">
+
+        <button class="faq-q" onclick="toggleFaq(this)">
+          Bagaimana cara upgrade ke Premium?
+          <i class="fas fa-chevron-down"></i>
+        </button>
+
+        <div class="faq-a">
+          Kunjungi halaman
+          <a href="pricing.html" style="color:var(--primary);font-weight:600">
+            Harga
+          </a>,
+          pilih paket yang sesuai
+          (bulanan Rp 19.000 atau tahunan Rp 50.000),
+          lalu lanjutkan ke halaman
+          <a href="payment.html" style="color:var(--primary);font-weight:600">
+            Pembayaran
+          </a>
+          untuk menyelesaikan transaksi via QRIS.
+        </div>
+
+      </div>
+
+
+      <!-- FAQ 6 -->
+      <div class="faq-item">
+
+        <button class="faq-q" onclick="toggleFaq(this)">
+          Apakah tersedia untuk iOS / iPhone?
+          <i class="fas fa-chevron-down"></i>
+        </button>
+
+        <div class="faq-a">
+          Saat ini TimeBalance hanya tersedia untuk Android.
+          Versi iOS sedang dalam tahap perencanaan.
+          Ikuti Instagram kami
+          <a
+            href="https://www.instagram.com/timebalance_?igsh=ZGgwaGxwZGZveGdx&utm_source=qr"
+            target="_blank"
+            rel="noopener"
+            style="color:var(--primary);font-weight:600"
+          >
+            @timebalance_
+          </a>
+          untuk update terbaru.
+        </div>
+
+      </div>
+
+
+      <!-- FAQ 7 -->
+      <div class="faq-item">
+
+        <button class="faq-q" onclick="toggleFaq(this)">
+          Bagaimana cara menghubungi dukungan?
+          <i class="fas fa-chevron-down"></i>
+        </button>
+
+        <div class="faq-a">
+          Hubungi kami melalui email di
+          <a
+            href="mailto:nafalaziz016@gmail.com"
+            style="color:var(--primary);font-weight:600"
+          >
+            nafalaziz016@gmail.com
+          </a>
+          atau DM Instagram
+          <a
+            href="https://www.instagram.com/timebalance_?igsh=ZGgwaGxwZGZveGdx&utm_source=qr"
+            target="_blank"
+            rel="noopener"
+            style="color:var(--primary);font-weight:600"
+          >
+            @timebalance_
+          </a>.
+          Kami akan merespons dalam 1×24 jam pada hari kerja.
+        </div>
+
+      </div>
+
+    </div>
+
+  </div>
+</section>
+
+
+<!-- FOOTER -->
+<footer>
+
+  <div class="container">
+
+    <div class="footer-inner">
+
+      <div class="footer-brand">
+
+        <div class="logo-txt">
+          <span class="time">Time</span>
+          <span class="bal">Balance</span>
+        </div>
+
+        <p>
+          Aplikasi manajemen waktu dan produktivitas
+          dengan Work–Reward Mechanism.
+        </p>
+
+        <div class="footer-social">
+
+          <a
+            href="https://www.facebook.com/share/1AvatuDTF9/?mibextid=wwXIfr"
+            aria-label="Facebook"
+            target="_blank"
+            rel="noopener"
+          >
+            <i class="fab fa-facebook-f"></i>
+          </a>
+
+          <a
+            href="https://www.instagram.com/timebalance_?igsh=ZGgwaGxwZGZveGdx&utm_source=qr"
+            aria-label="Instagram"
+            target="_blank"
+            rel="noopener"
+          >
+            <i class="fab fa-instagram"></i>
+          </a>
+
+          <a
+            href="https://www.tiktok.com/@timebalance1?_r=1&_t=ZS-97Hd7sNsI6M"
+            aria-label="TikTok"
+            target="_blank"
+            rel="noopener"
+          >
+            <i class="fab fa-tiktok"></i>
+          </a>
+
+        </div>
+
+      </div>
+
+
+      <div class="footer-col">
+
+        <h4>Navigasi</h4>
+
+        <ul>
+          <li><a href="index.html">Home</a></li>
+          <li><a href="about.html">About</a></li>
+          <li><a href="info.html">Info &amp; FAQ</a></li>
+          <li><a href="content.html">Fitur</a></li>
+          <li><a href="pricing.html">Harga</a></li>
+          <li><a href="download.html">Download APK</a></li>
+        </ul>
+
+      </div>
+
+
+      <div class="footer-col">
+
+        <h4>Kontak</h4>
+
+        <ul>
+
+          <li>
+            <a href="mailto:nafalaziz016@gmail.com">
+              nafalaziz016@gmail.com
+            </a>
+          </li>
+
+          <li>
+            <a
+              href="https://www.instagram.com/timebalance_?igsh=ZGgwaGxwZGZveGdx&utm_source=qr"
+              target="_blank"
+              rel="noopener"
+            >
+              @timebalance_
+            </a>
+          </li>
+
+        </ul>
+
+      </div>
+
+    </div>
+
+
+    <div class="footer-bottom">
+
+      <p>
+        © 2026 TimeBalance. All Rights Reserved.
+        Made with 💚 in Indonesia
+      </p>
+
+      <div class="footer-bottom-links">
+        <a href="#">Privasi</a>
+        <a href="#">Ketentuan</a>
+      </div>
+
+    </div>
+
+  </div>
+
+</footer>
+
+
+<script src="https://cdnjs.cloudflare.com/ajax/libs/aos/2.3.4/aos.js"></script>
+<script src="assets/js/main.js"></script>
+<script src="assets/js/navigation.js"></script>
+
+</body>
+</html>

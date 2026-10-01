@@ -1,0 +1,15 @@
+/* responsive.css — media queries */
+@media(max-width:900px){
+  .nav-links,.btn-nav-dl{display:none}
+  .hamburger{display:flex}
+  .footer-inner{grid-template-columns:1fr 1fr}
+  .footer-brand{grid-column:1/-1}
+  section{padding:64px 0}
+}
+@media(max-width:600px){
+  .container{padding:0 18px}
+  .nav-logo img{height:40px;width:40px}
+  .footer-inner{grid-template-columns:1fr;gap:32px}
+  .footer-bottom{flex-direction:column;text-align:center;align-items:center}
+  .page-hero{padding:120px 0 50px}
+}

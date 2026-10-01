@@ -1,0 +1,268 @@
+/* download.css — style khusus halaman download */
+    .dl-hero {
+      background: var(--hero-gradient);
+      padding: 140px 0 100px;
+      text-align: center;
+      position: relative;
+      overflow: hidden;
+    }
+
+    .dl-hero::after {
+      content: '';
+      position: absolute;
+      bottom: 0;
+      left: 0;
+      right: 0;
+      height: 60px;
+      background: var(--bg);
+      clip-path: ellipse(55% 100% at 50% 100%);
+    }
+
+    .dl-hero-inner {
+      position: relative;
+      z-index: 1;
+    }
+
+    .dl-logo {
+      width: 88px;
+      height: 88px;
+      border-radius: 24px;
+      margin: 0 auto 24px;
+      display: block;
+      box-shadow: 0 12px 40px rgba(0,0,0,.25);
+    }
+
+    .dl-hero h1 {
+      font-size: clamp(2rem,4vw,3rem);
+      font-weight: 900;
+      color: #fff;
+      margin-bottom: 14px;
+    }
+
+    .dl-hero h1 span {
+      color: var(--gold-light);
+    }
+
+    .dl-hero p {
+      color: rgba(255,255,255,.8);
+      font-size: 1.05rem;
+      max-width: 500px;
+      margin: 0 auto 36px;
+      line-height: 1.7;
+    }
+
+    .dl-buttons {
+      display: flex;
+      gap: 16px;
+      justify-content: center;
+      flex-wrap: wrap;
+    }
+
+    /* Main download card */
+    .dl-main-card {
+      background: var(--card-bg);
+      border-radius: var(--radius);
+      padding: 40px;
+      border: 1px solid var(--border);
+      box-shadow: var(--shadow-md);
+      max-width: 560px;
+      margin: 60px auto 0;
+      text-align: center;
+    }
+
+    .dl-version-badge {
+      display: inline-flex;
+      align-items: center;
+      gap: 6px;
+      background: rgba(46,94,78,.1);
+      color: var(--primary);
+      padding: 5px 14px;
+      border-radius: 20px;
+      font-size: .75rem;
+      font-weight: 700;
+      margin-bottom: 20px;
+    }
+
+    .dl-app-icon {
+      width: 72px;
+      height: 72px;
+      border-radius: 20px;
+      margin: 0 auto 16px;
+      display: block;
+    }
+
+    .dl-main-card h2 {
+      font-size: 1.4rem;
+      font-weight: 800;
+      margin-bottom: 6px;
+    }
+
+    .dl-main-card .dl-meta {
+      font-size: .82rem;
+      color: var(--text-muted);
+      margin-bottom: 28px;
+      display: flex;
+      gap: 16px;
+      justify-content: center;
+      flex-wrap: wrap;
+    }
+
+    .dl-meta span {
+      display: flex;
+      align-items: center;
+      gap: 5px;
+    }
+
+    .dl-meta i {
+      color: var(--secondary);
+    }
+
+    .dl-cta-btn {
+      display: inline-flex;
+      align-items: center;
+      gap: 10px;
+      background: var(--btn-gradient);
+      color: #1E2A24;
+      padding: 16px 36px;
+      border-radius: var(--radius-pill);
+      font-size: 1rem;
+      font-weight: 800;
+      border: none;
+      cursor: pointer;
+      box-shadow: 0 6px 22px rgba(212,169,55,.4);
+      transition: all var(--transition);
+      font-family: 'Poppins', sans-serif;
+      text-decoration: none;
+    }
+
+    .dl-cta-btn:hover {
+      transform: translateY(-2px);
+      box-shadow: 0 10px 32px rgba(212,169,55,.55);
+    }
+
+    .dl-cta-btn i {
+      font-size: 1.2rem;
+    }
+
+    .dl-secure {
+      font-size: .77rem;
+      color: var(--text-muted);
+      margin-top: 14px;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      gap: 5px;
+    }
+
+    /* Install steps */
+    .install-steps {
+      display: flex;
+      flex-direction: column;
+      gap: 14px;
+      margin-top: 32px;
+      text-align: left;
+    }
+
+    .install-step {
+      display: flex;
+      gap: 14px;
+      align-items: flex-start;
+      padding: 14px;
+      background: var(--bg);
+      border-radius: 14px;
+      border: 1px solid var(--border);
+    }
+
+    .install-step-num {
+      width: 28px;
+      height: 28px;
+      border-radius: 50%;
+      flex-shrink: 0;
+      background: var(--hero-gradient);
+      color: #fff;
+      font-size: .75rem;
+      font-weight: 800;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      margin-top: 1px;
+    }
+
+    .install-step p {
+      font-size: .83rem;
+      color: var(--text-muted);
+      line-height: 1.55;
+    }
+
+    .install-step strong {
+      color: var(--text);
+    }
+
+    /* Spec grid */
+    .spec-grid {
+      display: grid;
+      grid-template-columns: repeat(auto-fit,minmax(180px,1fr));
+      gap: 16px;
+      margin-top: 40px;
+    }
+
+    .spec-item {
+      background: var(--card-bg);
+      border-radius: var(--radius);
+      padding: 22px 18px;
+      border: 1px solid var(--border);
+      text-align: center;
+    }
+
+    .spec-item i {
+      font-size: 1.5rem;
+      color: var(--primary);
+      margin-bottom: 10px;
+      display: block;
+    }
+
+    .spec-item h4 {
+      font-size: .88rem;
+      font-weight: 700;
+      margin-bottom: 4px;
+    }
+
+    .spec-item p {
+      font-size: .78rem;
+      color: var(--text-muted);
+    }
+
+    /* Notice box */
+    .notice-box {
+      background: rgba(212,169,55,.08);
+      border: 1px solid rgba(212,169,55,.25);
+      border-radius: 14px;
+      padding: 16px 20px;
+      display: flex;
+      gap: 12px;
+      align-items: flex-start;
+      margin-top: 24px;
+    }
+
+    .notice-box i {
+      color: var(--gold);
+      flex-shrink: 0;
+      margin-top: 2px;
+    }
+
+    .notice-box p {
+      font-size: .83rem;
+      color: var(--text-muted);
+      line-height: 1.6;
+    }
+
+    @media(max-width:600px) {
+      .dl-buttons {
+        flex-direction: column;
+        align-items: center;
+      }
+    }
+  
+/* failsafe */
+#loading{animation:tbHideLoader .4s ease 3s forwards}
+@keyframes tbHideLoader{to{opacity:0;visibility:hidden;pointer-events:none}}

@@ -1,0 +1,65 @@
+/* content.css — style khusus halaman content */
+    .features-grid-6 {
+      display: grid;
+      grid-template-columns: repeat(3, 1fr);
+      gap: 22px;
+      margin-top: 48px;
+    }
+
+    .compare-table {
+      width: 100%;
+      border-collapse: collapse;
+      margin-top: 40px;
+      border-radius: var(--radius);
+      overflow: hidden;
+      box-shadow: var(--shadow-sm);
+    }
+
+    .compare-table th {
+      background: var(--hero-gradient);
+      color: #fff;
+      padding: 14px 18px;
+      text-align: left;
+      font-size: .85rem;
+    }
+
+    .compare-table td {
+      padding: 13px 18px;
+      font-size: .84rem;
+      border-bottom: 1px solid var(--border);
+      background: var(--card-bg);
+    }
+
+    .compare-table tr:last-child td {
+      border-bottom: none;
+    }
+
+    .compare-table tr:nth-child(even) td {
+      background: var(--bg);
+    }
+
+    .tick {
+      color: var(--success);
+      font-size: .9rem;
+    }
+
+    .cross {
+      color: #ccc;
+      font-size: .9rem;
+    }
+
+    @media(max-width:900px) {
+      .features-grid-6 {
+        grid-template-columns: 1fr 1fr;
+      }
+    }
+
+    @media(max-width:600px) {
+      .features-grid-6 {
+        grid-template-columns: 1fr;
+      }
+    }
+  
+/* failsafe */
+#loading{animation:tbHideLoader .4s ease 3s forwards}
+@keyframes tbHideLoader{to{opacity:0;visibility:hidden;pointer-events:none}}

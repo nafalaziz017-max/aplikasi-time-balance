@@ -1,0 +1,802 @@
+<!DOCTYPE html>
+<html lang="id">
+<head>
+  <meta charset="UTF-8"/>
+  <meta name="viewport" content="width=device-width,initial-scale=1.0"/>
+  <meta name="description" content="Harga paket TimeBalance — Free selamanya, Premium Bulanan Rp 19.000, dan Premium Tahunan Rp 50.000. Pilih paket yang tepat untuk Anda."/>
+  <title>Harga — TimeBalance</title>
+
+  <link rel="icon" type="image/jpeg" href="assets/images/logo.jpeg"/>
+
+  <link rel="preconnect" href="https://fonts.googleapis.com"/>
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin/>
+  <link href="https://fonts.googleapis.com/css2?family=Poppins:wght@300;400;500;600;700;800;900&display=swap" rel="stylesheet"/>
+
+  <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.0/css/all.min.css"/>
+  <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/aos/2.3.4/aos.css"/>
+
+  <link rel="stylesheet" href="assets/css/style.css"/>
+  <link rel="stylesheet" href="assets/css/components.css"/>
+  <link rel="stylesheet" href="assets/css/responsive.css"/>
+
+  <link rel="stylesheet" href="assets/css/pricing.css"/>
+</head>
+
+<body>
+
+<div id="loading">
+  <div class="loading-logo">
+    <span>Time</span>Balance
+  </div>
+  <div class="spinner"></div>
+</div>
+
+<button id="btt" aria-label="Kembali ke atas" onclick="scrollTop()">
+  <i class="fas fa-arrow-up"></i>
+</button>
+
+<div class="mobile-overlay" id="mob-overlay" onclick="closeMobileMenu()"></div>
+
+<nav class="mobile-menu" id="mob-menu">
+
+  <a href="index.html" onclick="closeMobileMenu()">
+    <i class="fas fa-home"></i> Home
+  </a>
+
+  <a href="about.html" onclick="closeMobileMenu()">
+    <i class="fas fa-seedling"></i> About
+  </a>
+
+  <a href="info.html" onclick="closeMobileMenu()">
+    <i class="fas fa-info-circle"></i> Info
+  </a>
+
+  <a href="content.html" onclick="closeMobileMenu()">
+    <i class="fas fa-cube"></i> Fitur
+  </a>
+
+  <a href="pricing.html" onclick="closeMobileMenu()">
+    <i class="fas fa-tag"></i> Harga
+  </a>
+
+  <a href="payment.html" onclick="closeMobileMenu()">
+    <i class="fas fa-credit-card"></i> Bayar
+  </a>
+
+  <a href="download.html" class="mob-dl" onclick="closeMobileMenu()">
+    <i class="fas fa-download"></i> Download APK
+  </a>
+
+</nav>
+
+<header class="navbar" id="navbar">
+
+  <div class="nav-inner">
+
+    <a href="index.html" class="nav-logo">
+      <img src="assets/images/logo.jpeg" alt="TimeBalance logo"/>
+
+      <span>
+        <span class="time">Time</span>
+        <span class="bal">Balance</span>
+      </span>
+    </a>
+
+    <nav class="nav-links">
+      <a href="index.html">Home</a>
+      <a href="about.html">About</a>
+      <a href="info.html">Info</a>
+      <a href="content.html">Fitur</a>
+      <a href="pricing.html">Harga</a>
+      <a href="payment.html">Bayar</a>
+    </nav>
+
+    <div class="nav-actions">
+
+      <button class="dark-toggle" onclick="toggleDark()">
+        <i class="fas fa-moon dark-icon"></i>
+      </button>
+
+      <a href="download.html" class="btn-nav-dl">
+        <i class="fas fa-download"></i> Download APK
+      </a>
+
+      <button class="hamburger" onclick="openMobileMenu()">
+        <span></span>
+        <span></span>
+        <span></span>
+      </button>
+
+    </div>
+
+  </div>
+
+</header>
+
+
+<!-- PAGE HERO -->
+
+<div class="page-hero">
+
+  <div class="container">
+
+    <div class="section-badge">
+      <i class="fas fa-tag"></i> Harga
+    </div>
+
+    <h1>
+      Pilih Paket yang <span>Tepat untuk Anda</span>
+    </h1>
+
+    <p>
+      Mulai gratis selamanya, atau upgrade ke Premium untuk pengalaman produktivitas tanpa batas.
+    </p>
+
+  </div>
+
+</div>
+
+
+<!-- PRICING -->
+
+<section aria-labelledby="h-pricing">
+
+  <div class="container">
+
+    <div class="section-header" data-aos="fade-up">
+
+      <div class="section-badge">
+        <i class="fas fa-crown"></i> Paket
+      </div>
+
+      <h2 class="section-title" id="h-pricing">
+        Harga yang <span>Transparan &amp; Terjangkau</span>
+      </h2>
+
+      <p class="section-desc">
+        Tidak ada biaya tersembunyi. Batalkan kapan saja. Mulai gratis tanpa kartu kredit.
+      </p>
+
+    </div>
+
+
+    <div class="pricing-grid" data-aos="fade-up" data-aos-delay="80">
+
+
+      <!-- FREE -->
+
+      <div class="pricing-card">
+
+        <div class="pricing-plan">
+          Free
+        </div>
+
+        <div class="pricing-price">
+          Rp 0
+        </div>
+
+        <div class="pricing-period">
+          Selamanya · tanpa kartu kredit
+        </div>
+
+        <div class="pricing-divider"></div>
+
+        <div class="pricing-features">
+
+          <div class="pricing-feat">
+            <i class="fas fa-check-circle check"></i>
+            Smart To-Do List
+          </div>
+
+          <div class="pricing-feat">
+            <i class="fas fa-check-circle check"></i>
+            Basic Pomodoro Timer
+          </div>
+
+          <div class="pricing-feat">
+            <i class="fas fa-check-circle check"></i>
+            Leisure Time Wallet
+          </div>
+
+          <div class="pricing-feat">
+            <i class="fas fa-check-circle check"></i>
+            Jadwal Harian
+          </div>
+
+          <div class="pricing-feat">
+            <i class="fas fa-check-circle check"></i>
+            Checklist Sederhana
+          </div>
+
+          <div class="pricing-feat">
+            <i class="fas fa-check-circle check"></i>
+            Reminder &amp; Notifikasi
+          </div>
+
+          <div class="pricing-feat" style="opacity:.5">
+            <i class="fas fa-times-circle cross"></i>
+            Tampil iklan ringan
+          </div>
+
+        </div>
+
+        <a href="download.html" class="btn-pricing btn-p-free">
+          Download Gratis
+        </a>
+
+      </div>
+
+
+      <!-- PREMIUM BULANAN -->
+
+      <div class="pricing-card featured">
+
+        <div class="pricing-badge">
+          🔥 Paling Populer
+        </div>
+
+        <div class="pricing-plan">
+          Premium Bulanan
+        </div>
+
+        <div class="pricing-price">
+          Rp 19.000
+        </div>
+
+        <div class="pricing-period">
+          per bulan · batalkan kapan saja
+        </div>
+
+        <div class="pricing-divider"></div>
+
+        <div class="pricing-features">
+
+          <div class="pricing-feat">
+            <i class="fas fa-check-circle check"></i>
+            Semua fitur Gratis
+          </div>
+
+          <div class="pricing-feat">
+            <i class="fas fa-check-circle check"></i>
+            Focus Lock (App Blocking)
+          </div>
+
+          <div class="pricing-feat">
+            <i class="fas fa-check-circle check"></i>
+            Dynamic Time Quota
+          </div>
+
+          <div class="pricing-feat">
+            <i class="fas fa-check-circle check"></i>
+            Strict Mode (No Skip)
+          </div>
+
+          <div class="pricing-feat">
+            <i class="fas fa-check-circle check"></i>
+            Productivity Insights
+          </div>
+
+          <div class="pricing-feat">
+            <i class="fas fa-check-circle check"></i>
+            Achievement &amp; Rewards
+          </div>
+
+          <div class="pricing-feat">
+            <i class="fas fa-check-circle check"></i>
+            Bebas Iklan Sepenuhnya
+          </div>
+
+        </div>
+
+        <a href="payment.html?plan=monthly" class="btn-pricing btn-p-premium">
+          Beli Sekarang
+        </a>
+
+      </div>
+
+
+      <!-- PREMIUM TAHUNAN -->
+
+      <div class="pricing-card">
+
+        <div class="pricing-badge" style="background:rgba(46,94,78,.1);color:var(--primary)">
+          💰 Hemat 78%
+        </div>
+
+        <div class="pricing-plan">
+          Premium Tahunan
+        </div>
+
+        <div class="pricing-price">
+          Rp 50.000
+        </div>
+
+        <div class="pricing-period">
+          per tahun · ~Rp 4.200/bulan
+        </div>
+
+        <div class="pricing-divider"></div>
+
+        <div class="pricing-features">
+
+          <div class="pricing-feat">
+            <i class="fas fa-check-circle check"></i>
+            Semua fitur Premium
+          </div>
+
+          <div class="pricing-feat">
+            <i class="fas fa-check-circle check"></i>
+            Early Access fitur baru
+          </div>
+
+          <div class="pricing-feat">
+            <i class="fas fa-check-circle check"></i>
+            Premium Badge eksklusif
+          </div>
+
+          <div class="pricing-feat">
+            <i class="fas fa-check-circle check"></i>
+            Prioritas Customer Support
+          </div>
+
+          <div class="pricing-feat">
+            <i class="fas fa-check-circle check"></i>
+            Export Laporan PDF
+          </div>
+
+          <div class="pricing-feat">
+            <i class="fas fa-check-circle check"></i>
+            Backup Data Cloud
+          </div>
+
+          <div class="pricing-feat">
+            <i class="fas fa-check-circle check"></i>
+            Bebas Iklan Sepenuhnya
+          </div>
+
+        </div>
+
+        <a href="payment.html?plan=annual" class="btn-pricing btn-p-free">
+          Pilih Paket Tahunan
+        </a>
+
+      </div>
+
+    </div>
+
+
+    <!-- GUARANTEE -->
+
+    <div class="guarantee-strip" data-aos="fade-up" data-aos-delay="120">
+
+      <div class="guarantee-icon">
+        🛡️
+      </div>
+
+      <div class="guarantee-text">
+
+        <h4>
+          Garansi Kepuasan
+        </h4>
+
+        <p>
+          Jika Anda tidak puas dalam 7 hari pertama setelah upgrade,
+          hubungi kami di
+
+          <a
+            href="mailto:nafalaziz016@gmail.com"
+            style="color:var(--primary);font-weight:600"
+          >
+            nafalaziz016@gmail.com
+          </a>
+
+          dan kami akan membantu menyelesaikan masalah Anda.
+          Transparansi adalah prioritas kami.
+        </p>
+
+      </div>
+
+    </div>
+
+  </div>
+
+</section>
+
+
+<!-- TESTIMONIALS -->
+
+<section style="background:var(--card-bg)" aria-labelledby="h-test">
+
+  <div class="container">
+
+    <div class="section-header" data-aos="fade-up">
+
+      <div class="section-badge">
+        <i class="fas fa-heart"></i> Testimoni
+      </div>
+
+      <h2 class="section-title" id="h-test">
+        Apa Kata <span>Pengguna Kami?</span>
+      </h2>
+
+      <p class="section-desc">
+        Ribuan pengguna telah merasakan manfaat nyata TimeBalance.
+      </p>
+
+    </div>
+
+
+    <div class="test-grid">
+
+
+      <!-- TESTIMONI 1 -->
+
+      <div class="test-card" data-aos="fade-up" data-aos-delay="0">
+
+        <div class="test-quote">
+          "Sejak pakai TimeBalance, nilai akademik saya meningkat drastis.
+          Saya lebih disiplin belajar, tidak lagi menunda tugas sampai malam.
+          Yang terbaik? Waktu nonton Netflix saya tetap ada tapi sekarang
+          terasa lebih nikmat karena memang sudah earned!"
+        </div>
+
+        <div class="test-footer">
+
+          <div class="test-avatar">
+            AR
+          </div>
+
+          <div>
+
+            <div class="test-name">
+              Aditya Rahmat
+            </div>
+
+            <div class="test-role">
+              Mahasiswa Teknik, UNDIP
+            </div>
+
+            <div class="test-stars">
+              ★★★★★
+            </div>
+
+          </div>
+
+        </div>
+
+      </div>
+
+
+      <!-- TESTIMONI 2 -->
+
+      <div class="test-card" data-aos="fade-up" data-aos-delay="80">
+
+        <div class="test-quote">
+          "Sebagai freelancer yang kerja dari rumah, dulu saya susah banget
+          memisahkan waktu kerja dan istirahat. TimeBalance benar-benar
+          mengubah hidup saya — produktivitas naik 40% dan saya tidak burnout lagi!"
+        </div>
+
+        <div class="test-footer">
+
+          <div
+            class="test-avatar"
+            style="background:linear-gradient(135deg,#D4A937,#E8C76A);color:#1E2A24"
+          >
+            SR
+          </div>
+
+          <div>
+
+            <div class="test-name">
+              Sari Rahayu
+            </div>
+
+            <div class="test-role">
+              Freelance Graphic Designer, Jakarta
+            </div>
+
+            <div class="test-stars">
+              ★★★★★
+            </div>
+
+          </div>
+
+        </div>
+
+      </div>
+
+
+      <!-- TESTIMONI 3 -->
+
+      <div class="test-card" data-aos="fade-up" data-aos-delay="160">
+
+        <div class="test-quote">
+          "Sistem reward-nya bikin saya ketagihan produktif!
+          Dulu main game itu penuh rasa bersalah, sekarang malah jadi
+          motivasi buat cepat-cepat selesaikan kerjaan.
+          Work from home jadi jauh lebih menyenangkan!"
+        </div>
+
+        <div class="test-footer">
+
+          <div
+            class="test-avatar"
+            style="background:linear-gradient(135deg,#2E5E4E,#D4A937)"
+          >
+            DW
+          </div>
+
+          <div>
+
+            <div class="test-name">
+              Dewi Wulandari
+            </div>
+
+            <div class="test-role">
+              Remote Worker, Software Company
+            </div>
+
+            <div class="test-stars">
+              ★★★★★
+            </div>
+
+          </div>
+
+        </div>
+
+      </div>
+
+    </div>
+
+  </div>
+
+</section>
+
+
+<!-- FAQ PRICING -->
+
+<section aria-labelledby="h-faq-price">
+
+  <div class="container">
+
+    <div class="section-header" data-aos="fade-up">
+
+      <div class="section-badge">
+        <i class="fas fa-question-circle"></i> FAQ Harga
+      </div>
+
+      <h2 class="section-title" id="h-faq-price">
+        Pertanyaan tentang <span>Harga</span>
+      </h2>
+
+    </div>
+
+
+    <div class="faq-list" data-aos="fade-up" data-aos-delay="60">
+
+
+      <div class="faq-item">
+
+        <button class="faq-q" onclick="toggleFaq(this)">
+          Apakah versi gratis benar-benar selamanya?
+          <i class="fas fa-chevron-down"></i>
+        </button>
+
+        <div class="faq-a">
+          Ya, versi gratis TimeBalance tersedia selamanya tanpa batas waktu.
+          Anda bisa menggunakan Smart To-Do List, Pomodoro Timer,
+          Leisure Time Wallet, dan fitur dasar lainnya tanpa biaya apapun.
+        </div>
+
+      </div>
+
+
+      <div class="faq-item">
+
+        <button class="faq-q" onclick="toggleFaq(this)">
+          Bagaimana cara membayar?
+          <i class="fas fa-chevron-down"></i>
+        </button>
+
+        <div class="faq-a">
+          Saat ini kami menerima pembayaran melalui QRIS.
+          Kunjungi halaman
+
+          <a
+            href="payment.html"
+            style="color:var(--primary);font-weight:600"
+          >
+            Pembayaran
+          </a>
+
+          setelah memilih paket untuk melihat instruksi lengkap.
+        </div>
+
+      </div>
+
+
+      <div class="faq-item">
+
+        <button class="faq-q" onclick="toggleFaq(this)">
+          Bisakah saya beralih dari bulanan ke tahunan?
+          <i class="fas fa-chevron-down"></i>
+        </button>
+
+        <div class="faq-a">
+
+          Tentu. Hubungi kami di
+
+          <a
+            href="mailto:nafalaziz016@gmail.com"
+            style="color:var(--primary);font-weight:600"
+          >
+            nafalaziz016@gmail.com
+          </a>
+
+          dan kami akan membantu proses migrasi paket Anda.
+
+        </div>
+
+      </div>
+
+
+      <div class="faq-item">
+
+        <button class="faq-q" onclick="toggleFaq(this)">
+          Apakah ada diskon untuk pelajar?
+          <i class="fas fa-chevron-down"></i>
+        </button>
+
+        <div class="faq-a">
+
+          Kami sedang menyiapkan program diskon khusus pelajar.
+          Ikuti Instagram kami
+
+          <a
+            href="https://www.instagram.com/timebalance_?igsh=ZGgwaGxwZGZveGdx&utm_source=qr"
+            target="_blank"
+            rel="noopener"
+            style="color:var(--primary);font-weight:600"
+          >
+            @timebalance_
+          </a>
+
+          untuk informasi promo terbaru.
+
+        </div>
+
+      </div>
+
+    </div>
+
+
+    <div style="text-align:center;margin-top:32px">
+
+      <a href="info.html#h-faq" class="btn btn-ghost">
+        <i class="fas fa-question-circle"></i>
+        Lihat FAQ Lengkap
+      </a>
+
+    </div>
+
+  </div>
+
+</section>
+
+
+<!-- FOOTER -->
+
+<footer>
+
+  <div class="container">
+
+    <div class="footer-inner">
+
+
+      <div class="footer-brand">
+
+        <div class="logo-txt">
+          <span class="time">Time</span>
+          <span class="bal">Balance</span>
+        </div>
+
+        <p>
+          Aplikasi manajemen waktu dan produktivitas dengan
+          Work–Reward Mechanism.
+        </p>
+
+        <div class="footer-social">
+
+          <a
+            href="https://www.facebook.com/share/1AvatuDTF9/?mibextid=wwXIfr"
+            aria-label="Facebook"
+            target="_blank"
+            rel="noopener"
+          >
+            <i class="fab fa-facebook-f"></i>
+          </a>
+
+          <a
+            href="https://www.instagram.com/timebalance_?igsh=ZGgwaGxwZGZveGdx&utm_source=qr"
+            aria-label="Instagram"
+            target="_blank"
+            rel="noopener"
+          >
+            <i class="fab fa-instagram"></i>
+          </a>
+
+          <a
+            href="https://www.tiktok.com/@timebalance1?_r=1&_t=ZS-97Hd7sNsI6M"
+            aria-label="TikTok"
+            target="_blank"
+            rel="noopener"
+          >
+            <i class="fab fa-tiktok"></i>
+          </a>
+
+        </div>
+
+      </div>
+
+
+      <div class="footer-col">
+
+        <h4>Navigasi</h4>
+
+        <ul>
+          <li><a href="index.html">Home</a></li>
+          <li><a href="about.html">About</a></li>
+          <li><a href="info.html">Info &amp; FAQ</a></li>
+          <li><a href="content.html">Fitur</a></li>
+          <li><a href="pricing.html">Harga</a></li>
+          <li><a href="download.html">Download APK</a></li>
+        </ul>
+
+      </div>
+
+
+      <div class="footer-col">
+
+        <h4>Kontak</h4>
+
+        <ul>
+
+          <li>
+            <a href="mailto:nafalaziz016@gmail.com">
+              nafalaziz016@gmail.com
+            </a>
+          </li>
+
+        </ul>
+
+      </div>
+
+    </div>
+
+
+    <div class="footer-bottom">
+
+      <p>
+        © 2026 TimeBalance. All Rights Reserved.
+        Made with 💚 in Indonesia
+      </p>
+
+      <div class="footer-bottom-links">
+        <a href="#">Privasi</a>
+        <a href="#">Ketentuan</a>
+      </div>
+
+    </div>
+
+  </div>
+
+</footer>
+
+
+<script src="https://cdnjs.cloudflare.com/ajax/libs/aos/2.3.4/aos.js"></script>
+<script src="assets/js/main.js"></script>
+<script src="assets/js/navigation.js"></script>
+
+</body>
+</html>

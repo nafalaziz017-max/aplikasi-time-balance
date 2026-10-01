@@ -1,0 +1,43 @@
+/* about.css — style khusus halaman about */
+    .values-grid { display: grid; grid-template-columns: repeat(auto-fit,minmax(220px,1fr)); gap: 20px; margin-top: 48px; }
+    .value-card {
+      background: var(--bg); border-radius: var(--radius); padding: 26px 22px;
+      border: 1px solid var(--border); transition: all var(--transition); position: relative; overflow: hidden;
+    }
+    .value-card::before {
+      content: ''; position: absolute; top: 0; left: 0; right: 0; height: 3px;
+      background: var(--hero-gradient); border-radius: 3px 3px 0 0;
+      transform: scaleX(0); transform-origin: left; transition: transform var(--transition);
+    }
+    .value-card:hover::before { transform: scaleX(1); }
+    .value-card:hover { transform: translateY(-4px); box-shadow: var(--shadow-md); }
+    .value-icon { font-size: 2rem; margin-bottom: 12px; }
+    .value-card h3 { font-size: .95rem; font-weight: 700; margin-bottom: 8px; }
+    .value-card p  { font-size: .82rem; color: var(--text-muted); line-height: 1.65; }
+    .value-quote { font-size: .77rem; color: var(--primary); font-style: italic; margin-top: 10px; font-weight: 500; }
+
+    .who-grid  { display: grid; grid-template-columns: repeat(auto-fit,minmax(230px,1fr)); gap: 20px; margin-top: 40px; }
+    .who-card  {
+      background: var(--card-bg); border-radius: var(--radius); padding: 26px 22px;
+      border: 1px solid var(--border); box-shadow: var(--shadow-sm); transition: all var(--transition);
+      display: flex; flex-direction: column; gap: 12px;
+    }
+    .who-card:hover { transform: translateY(-4px); box-shadow: var(--shadow-md); }
+    .who-card .who-avatar { font-size: 2.2rem; }
+    .who-card h4 { font-size: .95rem; font-weight: 700; }
+    .who-card p  { font-size: .82rem; color: var(--text-muted); line-height: 1.6; }
+
+    .uvp-list { display: flex; flex-direction: column; gap: 16px; margin-top: 32px; }
+    .uvp-item { display: flex; align-items: flex-start; gap: 14px; }
+    .uvp-num {
+      width: 32px; height: 32px; border-radius: 50%;
+      background: var(--hero-gradient); color: #fff;
+      font-size: .8rem; font-weight: 800;
+      display: flex; align-items: center; justify-content: center; flex-shrink: 0;
+    }
+    .uvp-text h4  { font-size: .92rem; font-weight: 700; margin-bottom: 4px; }
+    .uvp-text p   { font-size: .82rem; color: var(--text-muted); line-height: 1.6; }
+  
+/* failsafe */
+#loading{animation:tbHideLoader .4s ease 3s forwards}
+@keyframes tbHideLoader{to{opacity:0;visibility:hidden;pointer-events:none}}
