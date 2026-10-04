@@ -1,0 +1,394 @@
+<!DOCTYPE html>
+<html lang="id">
+<head>
+  <meta charset="UTF-8"/>
+  <meta name="viewport" content="width=device-width,initial-scale=1.0"/>
+  <meta name="description" content="Halaman pembayaran TimeBalance Premium — masuk akun, bayar via QRIS, Premium aktif otomatis."/>
+  <title>Pembayaran — TimeBalance</title>
+
+  <link rel="icon" type="image/jpeg" href="assets/images/logobaru1.jpeg"/>
+
+  <link rel="preconnect" href="https://fonts.googleapis.com"/>
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin/>
+
+  <link href="https://fonts.googleapis.com/css2?family=Poppins:wght@300;400;500;600;700;800;900&display=swap" rel="stylesheet"/>
+
+  <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.0/css/all.min.css"/>
+  <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/aos/2.3.4/aos.css"/>
+
+  <link rel="stylesheet" href="assets/css/style.css"/>
+  <link rel="stylesheet" href="assets/css/components.css"/>
+  <link rel="stylesheet" href="assets/css/responsive.css"/>
+
+  <style>
+    .payment-grid { display: grid; grid-template-columns: 1fr 1.1fr; gap: 32px; margin-top: 48px; align-items: start; }
+    .plan-selector { display: flex; gap: 12px; margin-bottom: 24px; flex-wrap: wrap; }
+    .plan-btn { flex: 1; min-width: 140px; padding: 14px 16px; border-radius: var(--radius); border: 2px solid var(--border); background: var(--bg); cursor: pointer; text-align: center; transition: all var(--transition); font-family: 'Poppins', sans-serif; }
+    .plan-btn:hover { border-color: var(--secondary); }
+    .plan-btn.active { border-color: var(--primary); background: rgba(46,94,78,.06); }
+    .plan-btn .plan-name { font-size: .85rem; font-weight: 700; color: var(--text); display: block; margin-bottom: 4px; }
+    .plan-btn .plan-price { font-size: 1.1rem; font-weight: 800; color: var(--primary); }
+    .order-card { background: var(--card-bg); border-radius: var(--radius); padding: 28px; border: 1px solid var(--border); box-shadow: var(--shadow-sm); }
+    .order-card h3 { font-size: 1rem; font-weight: 700; margin-bottom: 20px; display: flex; align-items: center; gap: 8px; }
+    .order-row { display: flex; justify-content: space-between; align-items: center; padding: 10px 0; border-bottom: 1px solid var(--border); font-size: .87rem; }
+    .order-row:last-of-type { border-bottom: none; }
+    .order-row .label { color: var(--text-muted); }
+    .order-row .val { font-weight: 600; }
+    .order-total { display: flex; justify-content: space-between; align-items: center; padding-top: 16px; margin-top: 8px; border-top: 2px solid var(--primary); }
+    .order-total .label { font-weight: 700; }
+    .order-total .val { font-size: 1.3rem; font-weight: 900; color: var(--primary); }
+    .qris-section { text-align: center; margin: 24px 0; }
+    .qris-section h4 { font-size: .92rem; font-weight: 700; margin-bottom: 16px; }
+    .qris-wrap { background: var(--bg); border: 2px dashed var(--border); border-radius: var(--radius); padding: 24px; display: inline-block; min-width: 220px; }
+    .qris-wrap img { max-width: 200px; border-radius: 10px; display: block; margin: 0 auto; }
+    .qris-placeholder-box { width: 180px; height: 180px; margin: 0 auto 12px; background: var(--card-bg); border-radius: 10px; border: 1px solid var(--border); display: flex; flex-direction: column; align-items: center; justify-content: center; gap: 8px; color: var(--text-muted); font-size: .78rem; }
+    .qris-placeholder-box i { font-size: 2.2rem; color: var(--secondary); }
+    .qris-note { font-size: .78rem; color: var(--text-muted); margin-top: 8px; }
+    .pay-steps { display: flex; flex-direction: column; gap: 12px; margin: 20px 0; }
+    .pay-step { display: flex; gap: 12px; align-items: flex-start; }
+    .pay-step-num { width: 24px; height: 24px; border-radius: 50%; flex-shrink: 0; background: var(--hero-gradient); color: #fff; font-size: .72rem; font-weight: 800; display: flex; align-items: center; justify-content: center; margin-top: 1px; }
+    .pay-step p { font-size: .83rem; color: var(--text-muted); line-height: 1.55; text-align: left; }
+    .pay-step strong { color: var(--text); }
+    .form-card { background: var(--card-bg); border-radius: var(--radius); padding: 28px; border: 1px solid var(--border); box-shadow: var(--shadow-sm); }
+    .form-card h3 { font-size: 1rem; font-weight: 700; margin-bottom: 20px; display: flex; align-items: center; gap: 8px; }
+    .pay-msg { margin-top: 14px; padding: 14px 18px; border-radius: 14px; font-size: .86rem; font-weight: 600; display: none; }
+    .pay-msg.success { background: rgba(125,163,107,.12); color: #3a6b30; border: 1px solid rgba(125,163,107,.3); display: block; }
+    .pay-msg.error { background: rgba(220,50,50,.08); color: #c0392b; border: 1px solid rgba(220,50,50,.2); display: block; }
+    .help-strip { background: rgba(46,94,78,.06); border: 1px solid rgba(46,94,78,.12); border-radius: 14px; padding: 16px 20px; display: flex; align-items: center; gap: 14px; margin-top: 20px; }
+    .help-strip i { color: var(--primary); font-size: 1.2rem; flex-shrink: 0; }
+    .help-strip p { font-size: .82rem; color: var(--text-muted); line-height: 1.55; }
+    .help-strip a { color: var(--primary); font-weight: 600; }
+
+    /* Upload bukti pembayaran */
+    .form-group .upload-box { display: flex; flex-direction: column; align-items: center; gap: 6px; padding: 24px 16px; margin-bottom: 0; border: 2px dashed var(--border); border-radius: var(--radius); background: var(--bg); color: var(--text-muted); cursor: pointer; text-align: center; font-size: .85rem; font-weight: 400; transition: all var(--transition); }
+    .upload-box i { font-size: 1.8rem; color: var(--secondary); }
+    .upload-box small { font-size: .74rem; }
+    .form-group .upload-box:hover, .form-group .upload-box.dragover { border-color: var(--primary); background: rgba(46,94,78,.06); }
+    .proof-preview { position: relative; margin-top: 12px; display: inline-block; }
+    .proof-preview img { max-width: 100%; max-height: 260px; border-radius: 12px; border: 1px solid var(--border); display: block; }
+    .proof-preview button { position: absolute; top: -8px; right: -8px; width: 28px; height: 28px; border-radius: 50%; border: none; background: #e05252; color: #fff; cursor: pointer; }
+
+
+    /* Akun & status pembayaran */
+    .auth-tabs { display: flex; gap: 8px; margin-bottom: 18px; }
+    .auth-tabs button { flex: 1; padding: 10px; border-radius: 12px; border: 2px solid var(--border); background: var(--bg); font-family: 'Poppins', sans-serif; font-weight: 600; font-size: .85rem; cursor: pointer; color: var(--text); }
+    .auth-tabs button.on { border-color: var(--primary); background: rgba(46,94,78,.08); color: var(--primary); }
+    .acct-box { display: flex; align-items: center; gap: 10px; padding: 12px 14px; border-radius: 12px; background: rgba(46,94,78,.06); border: 1px solid rgba(46,94,78,.14); font-size: .86rem; margin-bottom: 16px; word-break: break-all; }
+    .acct-box i { color: var(--primary); }
+    .link-btn { background: none; border: none; color: var(--primary); font-weight: 600; font-family: inherit; font-size: .82rem; cursor: pointer; text-decoration: underline; margin-left: auto; white-space: nowrap; }
+    .res-icon { font-size: 3.2rem; line-height: 1; margin-bottom: 12px; }
+    .res-actions { display: flex; gap: 10px; justify-content: center; flex-wrap: wrap; margin-top: 20px; }
+    .btn[disabled] { opacity: .6; cursor: wait; }
+
+    @media(max-width:900px) { .payment-grid { grid-template-columns: 1fr; } }
+  </style>
+</head>
+
+<body>
+
+<div id="loading">
+  <div class="loading-logo"><span>Time</span>Balance</div>
+  <div class="spinner"></div>
+</div>
+
+<button id="btt" aria-label="Kembali ke atas" onclick="scrollTop()">
+  <i class="fas fa-arrow-up"></i>
+</button>
+
+<div class="mobile-overlay" id="mob-overlay" onclick="closeMobileMenu()"></div>
+
+<nav class="mobile-menu" id="mob-menu">
+  <a href="index.html" onclick="closeMobileMenu()"><i class="fas fa-home"></i> Home</a>
+  <a href="about.html" onclick="closeMobileMenu()"><i class="fas fa-seedling"></i> About</a>
+  <a href="info.html" onclick="closeMobileMenu()"><i class="fas fa-info-circle"></i> Info</a>
+  <a href="content.html" onclick="closeMobileMenu()"><i class="fas fa-cube"></i> Fitur</a>
+  <a href="pricing.html" onclick="closeMobileMenu()"><i class="fas fa-tag"></i> Harga</a>
+  <a href="payment.html" onclick="closeMobileMenu()"><i class="fas fa-credit-card"></i> Bayar</a>
+  <a href="download.html" class="mob-dl" onclick="closeMobileMenu()"><i class="fas fa-download"></i> Download APK</a>
+</nav>
+
+<header class="navbar" id="navbar">
+  <div class="nav-inner">
+    <a href="index.html" class="nav-logo">
+      <img src="assets/images/logobaru1.jpeg" alt="TimeBalance logo"/>
+      <span><span class="time">Time</span><span class="bal">Balance</span></span>
+    </a>
+
+    <nav class="nav-links">
+      <a href="index.html">Home</a>
+      <a href="about.html">About</a>
+      <a href="info.html">Info</a>
+      <a href="content.html">Fitur</a>
+      <a href="pricing.html">Harga</a>
+      <a href="payment.html">Bayar</a>
+    </nav>
+
+    <div class="nav-actions">
+      <button class="dark-toggle" onclick="toggleDark()"><i class="fas fa-moon dark-icon"></i></button>
+      <a href="download.html" class="btn-nav-dl"><i class="fas fa-download"></i> Download APK</a>
+      <button class="hamburger" onclick="openMobileMenu()"><span></span><span></span><span></span></button>
+    </div>
+  </div>
+</header>
+
+
+<!-- PAGE HERO -->
+<div class="page-hero">
+  <div class="container">
+    <div class="section-badge"><i class="fas fa-credit-card"></i> Pembayaran</div>
+    <h1>Selesaikan <span>Pembayaran</span></h1>
+    <p>Pilih paket, masuk ke akun Anda, lalu bayar via QRIS. Premium aktif otomatis di aplikasi.</p>
+  </div>
+</div>
+
+
+<!-- PAYMENT MAIN -->
+<section aria-labelledby="h-payment">
+  <div class="container">
+
+    <div data-aos="fade-up">
+      <p style="font-size:.85rem;font-weight:600;margin-bottom:12px;color:var(--text-muted)">Pilih Paket:</p>
+      <div class="plan-selector">
+        <button class="plan-btn active" data-plan="monthly" onclick="selectPlan('monthly')">
+          <span class="plan-name">Premium Bulanan</span>
+          <span class="plan-price">Rp 19.000</span>
+        </button>
+        <button class="plan-btn" data-plan="annual" onclick="selectPlan('annual')">
+          <span class="plan-name">Premium Tahunan</span>
+          <span class="plan-price">Rp 50.000</span>
+        </button>
+      </div>
+    </div>
+
+    <div class="payment-grid">
+
+      <!-- LEFT -->
+      <div data-aos="fade-right">
+        <div class="order-card">
+          <h3><i class="fas fa-receipt" style="color:var(--primary)"></i> Ringkasan Pesanan</h3>
+          <div class="order-row"><span class="label">Produk</span><span class="val">TimeBalance</span></div>
+          <div class="order-row"><span class="label">Paket</span><span class="val" id="pay-plan-name">Premium Bulanan</span></div>
+          <div class="order-row"><span class="label">Periode</span><span class="val" id="pay-plan-period">31 hari</span></div>
+          <div class="order-row"><span class="label">Metode Bayar</span><span class="val">QRIS</span></div>
+          <div class="order-total">
+            <span class="label">Total</span>
+            <span class="val" id="pay-plan-price">Rp 19.000</span>
+          </div>
+        </div>
+
+        <div class="order-card" style="margin-top:24px">
+          <h3><i class="fas fa-list-check" style="color:var(--primary)"></i> Cara Kerjanya</h3>
+          <div class="pay-steps" style="margin:0">
+            <div class="pay-step"><div class="pay-step-num">1</div><p><strong>Masuk atau daftar</strong> akun TimeBalance di sebelah kanan. Gunakan email yang sama saat login di aplikasi.</p></div>
+            <div class="pay-step"><div class="pay-step-num">2</div><p>Klik <strong>Bayar Sekarang</strong>. Anda diarahkan ke halaman pembayaran aman Midtrans.</p></div>
+            <div class="pay-step"><div class="pay-step-num">3</div><p>Scan <strong>QRIS</strong> dengan aplikasi mobile banking atau e-wallet (GoPay, OVO, Dana, ShopeePay, dll) dan selesaikan pembayaran.</p></div>
+            <div class="pay-step"><div class="pay-step-num">4</div><p>Buka aplikasi TimeBalance dan <strong>masuk dengan akun yang sama</strong>. Premium aktif otomatis, tanpa kode atau token.</p></div>
+          </div>
+          <p class="qris-note" style="text-align:left;margin-top:14px">🔒 Pembayaran diproses oleh Midtrans. Kami tidak menyimpan data kartu atau rekening Anda.</p>
+        </div>
+      </div>
+
+      <!-- RIGHT -->
+      <div data-aos="fade-left" data-aos-delay="100">
+        <div class="form-card">
+
+          <div id="cfg-warn" class="pay-msg error" style="display:none;margin:0 0 16px">Sistem pembayaran belum dikonfigurasi. Hubungi admin.</div>
+
+          <!-- BELUM LOGIN -->
+          <div id="state-out">
+            <h3><i class="fas fa-user" style="color:var(--primary)"></i> <span id="auth-title">Masuk ke Akun</span></h3>
+            <p id="auth-sub" style="font-size:.83rem;color:var(--text-muted);margin-bottom:18px;line-height:1.6">
+              Premium disimpan di akun Anda, sehingga bisa dipulihkan di HP baru.
+            </p>
+
+            <div class="auth-tabs" id="auth-tabs">
+              <button type="button" id="tab-in" class="on">Masuk</button>
+              <button type="button" id="tab-up">Daftar</button>
+            </div>
+
+            <form id="auth-form" novalidate>
+              <div class="form-group">
+                <label for="a-email">Email</label>
+                <input type="email" id="a-email" autocomplete="email" placeholder="email@anda.com"/>
+              </div>
+              <div class="form-group" id="pw-group">
+                <label for="a-pass">Kata sandi <span id="pw-hint" style="color:var(--text-muted);font-weight:400"></span></label>
+                <input type="password" id="a-pass" autocomplete="current-password"/>
+              </div>
+              <button type="submit" id="a-submit" class="btn btn-green" style="width:100%;justify-content:center;margin-top:8px">Masuk</button>
+            </form>
+            <p style="font-size:.8rem;margin-top:14px;text-align:center"><a href="#" id="a-reset" style="color:var(--primary);font-weight:600">Lupa kata sandi?</a></p>
+            <div id="auth-msg" class="pay-msg"></div>
+          </div>
+
+          <!-- SUDAH LOGIN -->
+          <div id="state-in" style="display:none">
+            <h3><i class="fas fa-circle-check" style="color:var(--primary)"></i> Siap Membayar</h3>
+            <div class="acct-box"><i class="fas fa-user-check"></i><span id="acct-email"></span><button type="button" class="link-btn" id="a-logout">Keluar</button></div>
+            <p style="font-size:.83rem;color:var(--text-muted);margin-bottom:18px;line-height:1.6">
+              Premium akan aktif di akun ini. Setelah membayar, buka aplikasi TimeBalance dan masuk dengan email di atas.
+            </p>
+            <button id="btn-pay" class="btn btn-green" style="width:100%;justify-content:center"><i class="fas fa-lock"></i> <span id="btn-pay-text">Bayar Sekarang</span></button>
+            <div id="pay-msg" class="pay-msg"></div>
+          </div>
+
+          <div class="help-strip">
+            <i class="fas fa-headset"></i>
+            <p>
+              Butuh bantuan? Hubungi kami di
+              <a href="mailto:nafalaziz016@gmail.com">nafalaziz016@gmail.com</a>
+              atau DM
+              <a href="https://www.instagram.com/timebalance_?igsh=ZGgwaGxwZGZveGdx&utm_source=qr" target="_blank" rel="noopener">@timebalance_</a>
+              di Instagram.
+            </p>
+          </div>
+
+        </div>
+      </div>
+
+    </div>
+  </div>
+</section>
+
+
+<!-- FOOTER -->
+<footer>
+  <div class="container">
+
+    <div class="footer-inner">
+
+      <div class="footer-brand">
+        <div class="logo-txt"><span class="time">Time</span><span class="bal">Balance</span></div>
+        <p>Aplikasi manajemen waktu dan produktivitas dengan Work–Reward Mechanism.</p>
+
+        <div class="footer-social">
+          <a href="https://www.facebook.com/share/1AvatuDTF9/?mibextid=wwXIfr" aria-label="Facebook" target="_blank" rel="noopener"><i class="fab fa-facebook-f"></i></a>
+          <a href="https://www.instagram.com/timebalance_?igsh=ZGgwaGxwZGZveGdx&utm_source=qr" aria-label="Instagram" target="_blank" rel="noopener"><i class="fab fa-instagram"></i></a>
+          <a href="https://www.tiktok.com/@timebalance1?_r=1&_t=ZS-97Hd7sNsI6M" aria-label="TikTok" target="_blank" rel="noopener"><i class="fab fa-tiktok"></i></a>
+        </div>
+      </div>
+
+      <div class="footer-col">
+        <h4>Navigasi</h4>
+        <ul>
+          <li><a href="index.html">Home</a></li>
+          <li><a href="pricing.html">Harga</a></li>
+          <li><a href="content.html">Fitur</a></li>
+          <li><a href="info.html">Info &amp; FAQ</a></li>
+          <li><a href="download.html">Download APK</a></li>
+        </ul>
+      </div>
+
+      <div class="footer-col">
+        <h4>Kontak</h4>
+        <ul>
+          <li><a href="mailto:nafalaziz016@gmail.com">nafalaziz016@gmail.com</a></li>
+        </ul>
+      </div>
+
+    </div>
+
+    <div class="footer-bottom">
+      <p>© 2026 TimeBalance. All Rights Reserved. Made with 💚 in Indonesia</p>
+      <div class="footer-bottom-links">
+        <a href="#">Privasi</a>
+        <a href="#">Ketentuan</a>
+      </div>
+    </div>
+
+  </div>
+</footer>
+
+
+<script src="https://cdnjs.cloudflare.com/ajax/libs/aos/2.3.4/aos.js"></script>
+<script src="assets/js/main.js"></script>
+<script src="assets/js/navigation.js"></script>
+
+<script src="assets/js/tb-config.js"></script>
+<script src="assets/js/tb-auth.js"></script>
+<script>
+(function () {
+  var PLANS = {
+    monthly: { name: "Premium Bulanan", price: "Rp 19.000", period: "31 hari" },
+    annual:  { name: "Premium Tahunan", price: "Rp 50.000", period: "366 hari" }
+  };
+  var plan = "monthly", mode = "in", busy = false;
+  var $ = function (id) { return document.getElementById(id); };
+
+  window.selectPlan = function (p) {
+    if (!PLANS[p]) p = "monthly";
+    plan = p;
+    document.querySelectorAll(".plan-btn").forEach(function (b) { b.classList.toggle("active", b.dataset.plan === p); });
+    $("pay-plan-name").textContent = PLANS[p].name;
+    $("pay-plan-period").textContent = PLANS[p].period;
+    $("pay-plan-price").textContent = PLANS[p].price;
+    $("btn-pay-text").textContent = "Bayar Sekarang — " + PLANS[p].price;
+  };
+
+  function msg(el, text, type) { el.textContent = text || ""; el.className = "pay-msg" + (text ? " " + type : ""); }
+
+  function setMode(m) {
+    mode = m;
+    $("tab-in").classList.toggle("on", m === "in");
+    $("tab-up").classList.toggle("on", m === "up");
+    $("auth-tabs").style.display = m === "reset" ? "none" : "flex";
+    $("pw-group").style.display = m === "reset" ? "none" : "block";
+    $("a-pass").autocomplete = m === "up" ? "new-password" : "current-password";
+    $("pw-hint").textContent = m === "up" ? "(minimal 8 karakter)" : "";
+    $("auth-title").textContent = m === "reset" ? "Lupa Kata Sandi" : m === "up" ? "Buat Akun" : "Masuk ke Akun";
+    $("auth-sub").textContent = m === "reset" ? "Masukkan email akun Anda. Kami kirim tautan untuk membuat kata sandi baru." : "Premium disimpan di akun Anda, sehingga bisa dipulihkan di HP baru.";
+    $("a-submit").textContent = m === "reset" ? "Kirim Tautan Reset" : m === "up" ? "Daftar" : "Masuk";
+    $("a-reset").textContent = m === "reset" ? "Kembali ke Masuk" : "Lupa kata sandi?";
+    msg($("auth-msg"), "");
+  }
+
+  function render() {
+    var u = window.TBAuth && TBAuth.user();
+    $("state-out").style.display = u ? "none" : "block";
+    $("state-in").style.display = u ? "block" : "none";
+    if (u) $("acct-email").textContent = u.email;
+    $("cfg-warn").style.display = (window.TBAuth && TBAuth.configured()) ? "none" : "block";
+  }
+
+  $("tab-in").onclick = function () { setMode("in"); };
+  $("tab-up").onclick = function () { setMode("up"); };
+  $("a-reset").onclick = function (e) { e.preventDefault(); setMode(mode === "reset" ? "in" : "reset"); };
+
+  $("auth-form").onsubmit = async function (e) {
+    e.preventDefault();
+    if (busy) return; busy = true;
+    var btn = $("a-submit"); btn.disabled = true;
+    try {
+      var email = $("a-email").value, pass = $("a-pass").value;
+      if (mode === "reset") { await TBAuth.resetPassword(email); setMode("in"); msg($("auth-msg"), "Tautan reset dikirim. Cek email Anda (termasuk folder spam).", "success"); }
+      else if (mode === "up") { await TBAuth.signUp(email, pass); msg($("auth-msg"), ""); }
+      else { await TBAuth.signIn(email, pass); msg($("auth-msg"), ""); }
+      $("a-pass").value = "";
+    } catch (err) { msg($("auth-msg"), err.message, "error"); }
+    finally { busy = false; btn.disabled = false; }
+  };
+
+  $("a-logout").onclick = function () { TBAuth.signOut(); msg($("pay-msg"), ""); };
+
+  $("btn-pay").onclick = async function () {
+    if (busy) return; busy = true;
+    var btn = $("btn-pay"); btn.disabled = true; msg($("pay-msg"), "");
+    try {
+      var o = await TBAuth.createOrder(plan);
+      $("btn-pay-text").textContent = "Mengalihkan ke pembayaran…";
+      location.href = o.redirectUrl;
+    } catch (err) {
+      msg($("pay-msg"), err.message, "error");
+      btn.disabled = false; $("btn-pay-text").textContent = "Bayar Sekarang — " + PLANS[plan].price;
+    } finally { busy = false; }
+  };
+
+  if (window.TBAuth) TBAuth.onChange(render);
+  var q = new URLSearchParams(location.search).get("plan");
+  selectPlan(PLANS[q] ? q : "monthly");
+  setMode("in"); render();
+})();
+</script>
+
+</body>
+</html>

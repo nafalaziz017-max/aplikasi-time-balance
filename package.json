@@ -2,10 +2,11 @@
   "name": "timebalance-app",
   "version": "2.0.0",
   "private": true,
-  "description": "TimeBalance — aplikasi Android (Capacitor)",
+  "description": "TimeBalance \u2014 aplikasi Android (Capacitor)",
   "dependencies": {
     "@capacitor/android": "^6.2.0",
     "@capacitor/app": "^6.0.1",
+    "@capacitor/browser": "^6.0.0",
     "@capacitor/core": "^6.2.0",
     "@capacitor/filesystem": "^6.0.2",
     "@capacitor/local-notifications": "^6.1.0",

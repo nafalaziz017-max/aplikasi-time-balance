@@ -1,0 +1,23 @@
+name = "timebalance-api"
+main = "src/index.js"
+compatibility_date = "2024-11-01"
+
+[vars]
+# ID proyek Firebase (Firebase Console → Project settings → Project ID)
+FIREBASE_PROJECT_ID = "GANTI-ID-PROYEK-FIREBASE"
+# "sandbox" untuk uji coba, ganti "production" saat go-live
+MIDTRANS_ENV = "sandbox"
+# Alamat website Anda tanpa garis miring di akhir
+SITE_URL = "https://GANTI-DOMAIN-WEBSITE"
+# Daftar asal yang boleh memanggil server (website + aplikasi Android)
+ALLOWED_ORIGINS = "https://GANTI-DOMAIN-WEBSITE,https://localhost,capacitor://localhost"
+# Kosongkan agar metode bayar mengikuti pengaturan dashboard Midtrans (disarankan)
+ENABLED_PAYMENTS = ""
+
+[[kv_namespaces]]
+binding = "PREMIUM"
+# Isi dengan id dari: npx wrangler kv namespace create PREMIUM
+id = "GANTI-ID-KV"
+
+# Rahasia (jangan ditulis di sini), simpan dengan:
+#   npx wrangler secret put MIDTRANS_SERVER_KEY

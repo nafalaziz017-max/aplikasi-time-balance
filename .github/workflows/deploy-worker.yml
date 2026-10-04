@@ -1,0 +1,31 @@
+name: Deploy Server Pembayaran
+
+on:
+  workflow_dispatch:
+  push:
+    branches: [main]
+    paths: ["worker/**"]
+
+jobs:
+  deploy:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+
+      - uses: actions/setup-node@v4
+        with:
+          node-version: 20
+
+      - name: Uji server (harus lolos semua)
+        run: node worker/test/worker.test.mjs
+
+      - name: Deploy ke Cloudflare
+        uses: cloudflare/wrangler-action@v3
+        with:
+          apiToken: ${{ secrets.CLOUDFLARE_API_TOKEN }}
+          accountId: ${{ secrets.CLOUDFLARE_ACCOUNT_ID }}
+          workingDirectory: worker
+          secrets: |
+            MIDTRANS_SERVER_KEY
+        env:
+          MIDTRANS_SERVER_KEY: ${{ secrets.MIDTRANS_SERVER_KEY }}
