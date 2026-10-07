@@ -19,9 +19,9 @@ async function verifyToken(raw) {
     const ok = await crypto.subtle.verify({ name: "ECDSA", hash: "SHA-256" }, key, b64d(m[2]), new TextEncoder().encode("TB1." + m[1]));
     if (!ok) return { err: "Token tidak valid" };
     const t = JSON.parse(new TextDecoder().decode(b64d(m[1])));
-    if (t.v !== 1 || typeof t.i !== "string" || !PLANS[t.p] || !Number.isInteger(t.d) || t.d < 1 || t.d > 400) return { err: "Token tidak valid" };
+    if (t.v !== 1 || typeof t.i !== "string" || !PLANS[t.p] || !Number.isInteger(t.d) || t.d < 1 || t.d > 400 || typeof t.n !== "string" || !t.n.trim()) return { err: "Token tidak valid" };
     if (t.x && Date.now() > t.x) return { err: "Token kedaluwarsa, hubungi admin" };
-    return { id: t.i, plan: t.p, days: t.d };
+    return { id: t.i, plan: t.p, days: t.d, email: t.n.trim().toLowerCase() };
   } catch (e) { return { err: "Token tidak valid" }; }
 }
 /* ======================================================= */
@@ -318,7 +318,7 @@ function paywall() {
   <p class="mu center" style="margin-bottom:12px">${an ? "+ Early Access, Premium Badge & prioritas support" : "Batalkan kapan saja"} · Garansi 7 hari</p>
   <button class="b gold full" data-act="buy">Bayar di Website</button>
   <p class="mu center" style="margin-top:8px">QRIS hanya ditampilkan di website. Setelah pembayaran diverifikasi oleh admin, token Premium dikirim ke email pembeli.</p>
-  ${PUBLIC_KEY ? `<div class="card" style="margin-top:16px"><h3>Sudah bayar? Masukkan token aktivasi</h3><form data-form="code"><input name="code" placeholder="Tempel token di sini (TB1.… )" autocapitalize="off" autocomplete="off" autocorrect="off" spellcheck="false" required/><button class="b full">Aktifkan Premium</button></form><p class="mu">Token aktivasi dipakai langsung di aplikasi ini. QRIS tidak disimpan di aplikasi.</p></div>` : ""}`, "full");
+  ${PUBLIC_KEY ? `<div class="card" style="margin-top:16px"><h3>Sudah bayar? Masukkan token aktivasi</h3><form data-form="code"><p class="mu" style="margin:4px 0 10px">Token terhubung ke email akun yang digunakan saat pembayaran. Masuk ke akun TimeBalance dengan email yang sama.</p><input name="code" placeholder="Tempel token di sini (TB1.… )" autocapitalize="off" autocomplete="off" autocorrect="off" spellcheck="false" required/><button class="b full">Aktifkan Premium</button></form><p class="mu">Token aktivasi dipakai langsung di aplikasi ini. QRIS tidak disimpan di aplikasi.</p></div>` : ""}`, "full");
 }
 
 /* ---------- onboarding ---------- */
@@ -408,10 +408,13 @@ document.addEventListener("input", e => { if (e.target.id === "q") { q = e.targe
 async function redeem(raw) {
   const r = await verifyToken(raw);
   if (r.err) return toast(r.err);
+  const account = window.TBAuth && TBAuth.user ? TBAuth.user() : null;
+  if (!account || !account.email) return toast("Masuk ke akun TimeBalance terlebih dahulu");
+  if (String(account.email).trim().toLowerCase() !== r.email) return toast("Token ini terdaftar untuk email akun yang berbeda");
   S.used = S.used || [];
   if (S.used.includes(r.id)) return toast("Token ini sudah dipakai di perangkat ini");
   const base = S.premium && S.premium.until > Date.now() ? S.premium.until : Date.now();
-  S.premium = { plan: PLANS[r.plan], until: base + r.days * DAY, src: "token" };
+  S.premium = { plan: PLANS[r.plan], until: base + r.days * DAY, src: "token", tokenId: r.id, email: r.email };
   S.used.push(r.id); save(); closeSheet(); render(); toast("Premium aktif 🎉");
 }
 document.addEventListener("submit", e => {

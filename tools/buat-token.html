@@ -64,8 +64,8 @@
         <input type="number" id="redeemDays" value="30" min="1" max="365"/>
       </div>
     </div>
-    <label>Nama / email pembeli (catatan untuk Anda, ikut tersimpan di token)</label>
-    <input id="buyer" maxlength="40" placeholder="Contoh: budi@email.com"/>
+    <label>Email akun TimeBalance pembeli (wajib sama dengan email login di aplikasi)</label>
+    <input id="buyer" maxlength="40" placeholder="budi@email.com"/>
 
     <button id="btnIssue">Buat token</button>
     <div id="issueOut" hidden>
@@ -85,9 +85,9 @@
       <li>Pembeli bayar QRIS dan mengisi form konfirmasi di website. Anda menerima emailnya beserta bukti bayar.</li>
       <li>Cek bukti bayar di mutasi rekening/e-wallet Anda.</li>
       <li>Buka halaman ini, pilih paket, isi nama/email pembeli, klik <b>Buat token</b>, lalu kirim pesannya.</li>
-      <li>Pembeli menempel token di aplikasi: <b>Profil → Premium → Sudah bayar? Masukkan token</b>.</li>
+      <li>Pembeli login dengan email yang sama, lalu menempel token di aplikasi: <b>Profil → Premium → Sudah bayar? Masukkan token</b>.</li>
     </ol>
-    <small>Setiap token punya nomor unik, dan satu token hanya bisa dipakai sekali di satu perangkat. Aplikasi memeriksa tanda tangan tanpa internet.</small>
+    <small>Setiap token punya nomor unik, terikat ke email akun pembeli, dan dicatat sebagai sudah dipakai pada perangkat setelah berhasil diaktifkan.</small>
   </div>
 </main>
 
@@ -105,7 +105,9 @@ async function genKeys() {
 function randId() { const a = new Uint8Array(6); crypto.getRandomValues(a); return Array.from(a, b => b.toString(36).padStart(2, "0")).join("").slice(0, 8); }
 async function issueToken(privJwk, { plan, days, buyer, redeemDays }) {
   const key = await crypto.subtle.importKey("jwk", { ...privJwk, key_ops: ["sign"], ext: true }, { name: "ECDSA", namedCurve: "P-256" }, false, ["sign"]);
-  const payload = { v: 1, i: randId(), p: plan, d: days, n: String(buyer || "").slice(0, 40), x: Date.now() + redeemDays * 864e5 };
+  const email = String(buyer || "").trim().toLowerCase();
+  if (!/^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(email)) throw new Error("Email pembeli tidak valid");
+  const payload = { v: 1, i: randId(), p: plan, d: days, n: email.slice(0, 120), x: Date.now() + redeemDays * 864e5 };
   const body = b64e(enc.encode(JSON.stringify(payload)));
   const sig = await crypto.subtle.sign({ name: "ECDSA", hash: "SHA-256" }, key, enc.encode("TB1." + body));
   return "TB1." + body + "." + b64e(sig);

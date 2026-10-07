@@ -110,3 +110,21 @@ Server dan alur sudah saya uji dengan Firebase dan QRIS + Token Aktivasi **tirua
 - **QRIS dari HP yang sama** merepotkan: QR harus discan aplikasi lain. Di halaman QRIS + Token Aktivasi, pengguna bisa memilih e-wallet (mis. GoPay/ShopeePay) jika Anda aktifkan, yang membuka aplikasi e-wallet langsung. Aktifkan lewat dashboard QRIS + Token Aktivasi.
 - Cloudflare KV bersifat *eventually consistent*: setelah bayar, Premium kadang baru terbaca sampai ±1 menit. Tombol **Sinkronkan** di Profil menyegarkannya.
 - Satu akun = satu Premium yang bisa dipakai di banyak HP (login yang sama). Ini wajar untuk model akun, tapi berarti akun bisa dibagikan.
+
+
+## Aktivasi Premium dengan token
+
+1. Pembeli membayar melalui QRIS di website.
+2. Admin memverifikasi pembayaran.
+3. Admin membuka `tools/buat-token.html`.
+4. Isi **email akun TimeBalance pembeli** yang sama persis dengan email login di aplikasi.
+5. Pilih paket bulanan (31 hari) atau tahunan (366 hari), lalu buat token.
+6. Kirim token kepada pembeli.
+7. Pembeli login di aplikasi menggunakan email tersebut.
+8. Buka **Profil → Premium → Sudah bayar? Masukkan token**.
+9. Aplikasi memeriksa tanda tangan token dan kecocokan email akun. Jika cocok, Premium aktif.
+
+QRIS tidak disimpan di APK. Kunci rahasia pembuat token juga tidak boleh diunggah ke GitHub.
+
+## Admin Panel QRIS + Token
+Gunakan `admin/index.html` untuk mencatat pembayaran QRIS yang sudah diverifikasi dan menerbitkan token Premium dengan digital signature. Panel menyimpan data pembayaran secara lokal dan tidak menyimpan Private Key. Jangan unggah Private Key ke GitHub.

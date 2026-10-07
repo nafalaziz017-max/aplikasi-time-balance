@@ -1,0 +1,88 @@
+<!doctype html>
+<html lang="id">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width,initial-scale=1">
+<title>Admin Panel — TimeBalance</title>
+<style>
+:root{--p:#4f46e5;--p2:#6366f1;--bg:#f8fafc;--ink:#0f172a;--muted:#64748b;--line:#e2e8f0;--ok:#16a34a;--warn:#d97706;--danger:#dc2626}*{box-sizing:border-box}body{margin:0;background:var(--bg);color:var(--ink);font-family:Inter,system-ui,-apple-system,Segoe UI,Roboto,sans-serif}header{background:#0f172a;color:#fff;padding:18px 24px;position:sticky;top:0;z-index:5}header .in{max-width:1180px;margin:auto;display:flex;justify-content:space-between;align-items:center;gap:15px}.brand{font-weight:800;font-size:1.1rem}.brand span{color:#a5b4fc}.wrap{max-width:1180px;margin:26px auto;padding:0 18px}.grid{display:grid;grid-template-columns:repeat(4,1fr);gap:14px}.stat,.card{background:#fff;border:1px solid var(--line);border-radius:18px;box-shadow:0 8px 24px rgba(15,23,42,.05)}.stat{padding:18px}.stat b{font-size:1.5rem}.stat small{display:block;color:var(--muted);margin-top:4px}.tabs{display:flex;gap:8px;flex-wrap:wrap;margin:24px 0 14px}.tab{border:1px solid var(--line);background:#fff;border-radius:12px;padding:10px 14px;font-weight:700;cursor:pointer}.tab.active{background:#eef2ff;border-color:#c7d2fe;color:#4338ca}.card{padding:22px;margin-top:14px}.row{display:grid;grid-template-columns:1fr 1fr;gap:14px}.field{margin:12px 0}.field label{display:block;font-size:.84rem;font-weight:700;margin-bottom:6px}.field input,.field select,.field textarea{width:100%;border:1px solid #cbd5e1;border-radius:11px;padding:11px 12px;font:inherit;background:#fff}.field textarea{min-height:100px;font-family:ui-monospace,SFMono-Regular,Menlo,monospace;font-size:.8rem}.btn{border:0;border-radius:11px;padding:11px 15px;background:var(--p);color:#fff;font-weight:800;cursor:pointer}.btn.secondary{background:#fff;color:var(--p);border:1px solid #c7d2fe}.btn.ok{background:var(--ok)}.btn.danger{background:var(--danger)}.btn:disabled{opacity:.5;cursor:not-allowed}.actions{display:flex;gap:8px;flex-wrap:wrap;margin-top:12px}.notice{padding:13px 15px;border-radius:12px;background:#eef2ff;color:#3730a3;font-size:.86rem;line-height:1.55}.warn{background:#fff7ed;color:#9a3412}.success{background:#f0fdf4;color:#166534}.error{background:#fef2f2;color:#991b1b}.hidden{display:none!important}.mono{font-family:ui-monospace,SFMono-Regular,Menlo,monospace}.table{width:100%;border-collapse:collapse}.table th,.table td{text-align:left;padding:11px 8px;border-bottom:1px solid var(--line);font-size:.86rem;vertical-align:top}.badge{display:inline-block;border-radius:999px;padding:4px 9px;font-size:.72rem;font-weight:800}.badge.pending{background:#fff7ed;color:#9a3412}.badge.paid{background:#f0fdf4;color:#166534}.badge.rejected{background:#fef2f2;color:#991b1b}.badge.issued{background:#eef2ff;color:#3730a3}.result{margin-top:15px}.token{min-height:120px}.footer{color:var(--muted);font-size:.78rem;padding:25px 0 40px}@media(max-width:850px){.grid{grid-template-columns:1fr 1fr}.row{grid-template-columns:1fr}}@media(max-width:520px){.grid{grid-template-columns:1fr}header .in{align-items:flex-start;flex-direction:column}}
+</style>
+</head>
+<body>
+<header><div class="in"><div class="brand"><span>Time</span>Balance · Admin Panel</div><div style="font-size:.8rem;opacity:.75">Gunakan hanya sebagai admin</div></div></header>
+<div class="wrap">
+  <div class="notice warn"><b>Keamanan:</b> panel ini sengaja tidak menyimpan Private Key di server, localStorage, atau URL. Untuk produksi, buka panel ini di komputer admin dan gunakan HTTPS bila dipasang di hosting. Jangan unggah file Private Key ke GitHub.</div>
+  <div class="grid" id="stats"></div>
+  <div class="tabs">
+    <button class="tab active" data-tab="payments">Pembayaran</button>
+    <button class="tab" data-tab="issue">Terbitkan Token</button>
+    <button class="tab" data-tab="keys">Kunci</button>
+    <button class="tab" data-tab="settings">Pengaturan</button>
+  </div>
+
+  <section id="payments" class="pane">
+    <div class="card"><h2>Catat & verifikasi pembayaran</h2><p style="color:var(--muted);font-size:.86rem">Website saat ini mengirim konfirmasi melalui email. Setelah kamu mengecek mutasi QRIS, masukkan data pembeli di sini lalu ubah status menjadi terverifikasi. Data panel disimpan lokal di browser admin ini.</p>
+      <div class="row">
+        <div class="field"><label>Nama pembeli</label><input id="pName" placeholder="Nama pembeli"></div>
+        <div class="field"><label>Email akun TimeBalance</label><input id="pEmail" type="email" placeholder="email@contoh.com"></div>
+      </div>
+      <div class="row">
+        <div class="field"><label>Paket</label><select id="pPlan"><option value="monthly">Premium Bulanan — Rp19.000</option><option value="annual">Premium Tahunan — Rp50.000</option></select></div>
+        <div class="field"><label>Referensi pembayaran (opsional)</label><input id="pRef" placeholder="Contoh: QRIS 071026-1930"></div>
+      </div>
+      <div class="actions"><button class="btn ok" id="addPayment">Simpan pembayaran terverifikasi</button><button class="btn secondary" id="clearPayment">Bersihkan</button></div>
+      <div id="paymentMsg" class="result"></div>
+    </div>
+    <div class="card"><h2>Riwayat pembayaran</h2><div style="overflow:auto"><table class="table"><thead><tr><th>Waktu</th><th>Pembeli</th><th>Paket</th><th>Status</th><th>Aksi</th></tr></thead><tbody id="paymentRows"></tbody></table></div></div>
+  </section>
+
+  <section id="issue" class="pane hidden">
+    <div class="card"><h2>Terbitkan token Premium</h2><div class="notice">Token ditandatangani dengan ECDSA P-256. APK hanya menyimpan Public Key untuk memverifikasi tanda tangan. Email token harus sama dengan email akun yang dipakai login di aplikasi.</div>
+      <div class="row"><div class="field"><label>Pilih pembayaran terverifikasi</label><select id="issuePayment"></select></div><div class="field"><label>Masa aktivasi token (hari)</label><input id="redeemDays" type="number" value="30" min="1" max="365"></div></div>
+      <div class="actions"><button class="btn" id="issueBtn">Buat Token</button></div>
+      <div id="issueResult" class="result"></div>
+    </div>
+  </section>
+
+  <section id="keys" class="pane hidden">
+    <div class="card"><h2>Manajemen kunci</h2><div class="notice warn"><b>Jangan membuat pasangan kunci baru sembarangan.</b> Jika Public Key aplikasi diganti, token yang dibuat dengan Private Key lama tidak akan lolos verifikasi pada APK yang memakai Public Key baru. Simpan Private Key di komputer admin dan backup offline.</div>
+      <p style="font-size:.86rem;color:var(--muted)">Jika kamu belum punya Private Key yang cocok dengan Public Key di APK saat ini, buat pasangan baru di sini, simpan Private Key, lalu ganti Public Key di <code>www/app.js</code> dan build APK baru.</p>
+      <button class="btn" id="genKeys">Buat pasangan kunci baru</button>
+      <div id="keyResult" class="result"></div>
+    </div>
+  </section>
+
+  <section id="settings" class="pane hidden">
+    <div class="card"><h2>Pengaturan panel</h2><p style="color:var(--muted);font-size:.86rem">Data pembayaran di panel ini bersifat lokal pada browser. Export JSON untuk backup, dan import kembali jika pindah komputer.</p><div class="actions"><button class="btn secondary" id="exportData">Export Data</button><label class="btn secondary" style="display:inline-block">Import Data <input type="file" id="importData" accept="application/json" hidden></label><button class="btn danger" id="wipeData">Hapus Data Lokal</button></div></div>
+  </section>
+  <div class="footer">TimeBalance Admin Panel · QRIS diverifikasi manual · Private Key tetap di perangkat admin.</div>
+</div>
+<script>
+const KEY='tb-admin-v1', PLAN={monthly:{name:'Premium Bulanan',days:31,price:19000},annual:{name:'Premium Tahunan',days:366,price:50000}};
+const PUBLIC_KEY_CURRENT={"kty":"EC","crv":"P-256","x":"hqPldvjg-nW-4DLSDrFvwysHQcebZo4EuyKRg4SdSB4","y":"7l8IS7VwFixDLFaz45GHZovVjDjUSmevYYf1lzuQPRE"};
+const enc=new TextEncoder(); const $=id=>document.getElementById(id);
+const b64e=b=>btoa(String.fromCharCode(...new Uint8Array(b))).replace(/\+/g,'-').replace(/\//g,'_').replace(/=+$/,'');
+const b64d=s=>Uint8Array.from(atob(s.replace(/-/g,'+').replace(/_/g,'/').padEnd(Math.ceil(s.length/4)*4,'=')),c=>c.charCodeAt(0));
+function load(){try{return JSON.parse(localStorage.getItem(KEY)||'{"payments":[]}')}catch{return {payments:[]}}} function save(d){localStorage.setItem(KEY,JSON.stringify(d));render()}
+function uid(){const a=new Uint8Array(6);crypto.getRandomValues(a);return Array.from(a,b=>b.toString(16).padStart(2,'0')).join('')}
+function emailOk(e){return /^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(String(e).trim())}
+async function issueToken(priv,{plan,buyer,redeemDays}){const p=PLAN[plan];const email=buyer.trim().toLowerCase();if(!emailOk(email))throw Error('Email tidak valid');const key=await crypto.subtle.importKey('jwk',{...priv,key_ops:['sign'],ext:true},{name:'ECDSA',namedCurve:'P-256'},false,['sign']);const payload={v:1,i:uid(),p:plan,d:p.days,n:email,x:Date.now()+redeemDays*864e5};const body=b64e(enc.encode(JSON.stringify(payload)));const sig=await crypto.subtle.sign({name:'ECDSA',hash:'SHA-256'},key,enc.encode('TB1.'+body));return {token:'TB1.'+body+'.'+b64e(sig),payload};}
+async function genPair(){const kp=await crypto.subtle.generateKey({name:'ECDSA',namedCurve:'P-256'},true,['sign','verify']);return {priv:await crypto.subtle.exportKey('jwk',kp.privateKey),pub:await crypto.subtle.exportKey('jwk',kp.publicKey)}}
+function msg(cls,text){return `<div class="notice ${cls||''}">${text}</div>`}
+function render(){const d=load();$('stats').innerHTML=[['#',''+d.payments.length,'Total pembayaran'],['✓',''+d.payments.filter(x=>x.status==='verified').length,'Terverifikasi'],['🎟',''+d.payments.filter(x=>x.token).length,'Token terbit'],['★',''+d.payments.filter(x=>x.plan==='annual').length,'Paket tahunan']].map(x=>`<div class="stat"><div style="font-size:1.1rem">${x[0]}</div><b>${x[1]}</b><small>${x[2]}</small></div>`).join('');$('paymentRows').innerHTML=d.payments.length?d.payments.slice().reverse().map(x=>`<tr><td>${new Date(x.created).toLocaleString('id-ID')}</td><td><b>${esc(x.name)}</b><br><span class="mono">${esc(x.email)}</span></td><td>${PLAN[x.plan].name}<br>Rp${PLAN[x.plan].price.toLocaleString('id-ID')}</td><td><span class="badge ${x.token?'issued':x.status==='verified'?'paid':'pending'}">${x.token?'TOKEN TERBIT':x.status==='verified'?'TERVERIFIKASI':'TERTUNDA'}</span></td><td>${x.token?'—':`<button class="btn" style="padding:7px 10px;font-size:.75rem" onclick="openIssue('${x.id}')">Terbitkan</button>`}</td></tr>`).join(''):'<tr><td colspan="5" style="color:var(--muted)">Belum ada pembayaran.</td></tr>';
+$('issuePayment').innerHTML=d.payments.filter(x=>x.status==='verified'&&!x.token).map(x=>`<option value="${x.id}">${esc(x.name)} — ${esc(x.email)} — ${PLAN[x.plan].name}</option>`).join('')||'<option value="">Tidak ada pembayaran siap diterbitkan</option>';}
+function esc(s){return String(s||'').replace(/[&<>"']/g,m=>({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;',"'":'&#39;'}[m]))}
+window.openIssue=id=>{document.querySelector('[data-tab="issue"]').click();$('issuePayment').value=id};
+$('addPayment').onclick=()=>{const name=$('pName').value.trim(),email=$('pEmail').value.trim().toLowerCase(),plan=$('pPlan').value;if(!name||!emailOk(email)){$('paymentMsg').innerHTML=msg('error','Isi nama dan email yang valid.');return}const d=load();d.payments.push({id:'PAY-'+Date.now().toString(36)+'-'+uid(),name,email,plan,ref:$('pRef').value.trim(),created:Date.now(),status:'verified'});save(d);$('paymentMsg').innerHTML=msg('success','Pembayaran tersimpan sebagai terverifikasi. Sekarang buka tab Terbitkan Token.');$('pName').value=$('pEmail').value=$('pRef').value='';};
+$('clearPayment').onclick=()=>{$('pName').value=$('pEmail').value=$('pRef').value='';};
+$('issueBtn').onclick=async()=>{const id=$('issuePayment').value;if(!id){$('issueResult').innerHTML=msg('error','Belum ada pembayaran terverifikasi.');return}const d=load(),p=d.payments.find(x=>x.id===id);if(!p)return;const raw=prompt('Tempel Private Key JSON. Private Key tidak disimpan oleh panel:');if(!raw)return;let priv;try{priv=JSON.parse(raw);if(!priv.d)throw Error()}catch{$('issueResult').innerHTML=msg('error','Private Key tidak valid.');return}try{const out=await issueToken(priv,{plan:p.plan,buyer:p.email,redeemDays:Math.min(365,Math.max(1,+$('redeemDays').value||30))});p.token=out.token;p.issuedAt=Date.now();save(d);$('issueResult').innerHTML=`${msg('success','Token berhasil dibuat.')}<div class="field"><label>Token untuk pembeli</label><textarea class="token" readonly>${esc(out.token)}</textarea></div><div class="actions"><button class="btn secondary" onclick="copyText(${JSON.stringify(out.token)})">Salin Token</button></div><p style="color:var(--muted);font-size:.82rem">Kirim token kepada <b>${esc(p.email)}</b>. Jangan kirim Private Key.</p>`}catch(e){$('issueResult').innerHTML=msg('error','Gagal membuat token: '+esc(e.message))}};
+window.copyText=async t=>{try{await navigator.clipboard.writeText(t);alert('Token disalin.')}catch{prompt('Salin token ini:',t)}};
+$('genKeys').onclick=async()=>{if(!confirm('Buat pasangan kunci baru? Token yang dibuat dengan kunci lama tidak cocok dengan APK yang memakai kunci baru.'))return;const k=await genPair();const priv=JSON.stringify(k.priv),pub='const PUBLIC_KEY = '+JSON.stringify(k.pub)+';';$('keyResult').innerHTML=msg('success','Pasangan kunci dibuat di memori browser.')+`<div class="field"><label>Private Key — SIMPAN RAHASIA</label><textarea readonly>${esc(priv)}</textarea></div><div class="field"><label>Public Key untuk www/app.js</label><textarea readonly>${esc(pub)}</textarea></div><div class="actions"><button class="btn secondary" onclick="copyText(${JSON.stringify(priv)})">Salin Private Key</button><button class="btn secondary" onclick="copyText(${JSON.stringify(pub)})">Salin Public Key</button></div>`};
+$('exportData').onclick=()=>{const blob=new Blob([JSON.stringify(load(),null,2)],{type:'application/json'}),a=document.createElement('a');a.href=URL.createObjectURL(blob);a.download='timebalance-admin-backup.json';a.click();};
+$('importData').onchange=async e=>{const f=e.target.files[0];if(!f)return;try{const d=JSON.parse(await f.text());if(!Array.isArray(d.payments))throw Error();localStorage.setItem(KEY,JSON.stringify(d));render();alert('Data berhasil diimpor.')}catch{alert('File backup tidak valid.')}};
+$('wipeData').onclick=()=>{if(confirm('Hapus seluruh data pembayaran lokal di panel ini?')){localStorage.removeItem(KEY);render();}};
+document.querySelectorAll('.tab').forEach(b=>b.onclick=()=>{document.querySelectorAll('.tab').forEach(x=>x.classList.toggle('active',x===b));document.querySelectorAll('.pane').forEach(x=>x.classList.toggle('hidden',x.id!==b.dataset.tab));});
+render();
+</script>
+</body>
+</html>
