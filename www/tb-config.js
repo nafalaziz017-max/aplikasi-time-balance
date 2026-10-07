@@ -6,7 +6,7 @@ window.TB_CONFIG = {
   // Alamat server pembayaran (Cloudflare Worker), tanpa garis miring di akhir
   API_BASE: "https://timebalance-api.GANTI-SUBDOMAIN.workers.dev",
   // Alamat website Anda (untuk tombol "Website" di aplikasi), contoh "https://timebalance.com/"
-  SITE_URL: "https://GANTI-DOMAIN-WEBSITE/",
+  SITE_URL: "https://timebalanceruang-rasamyid.biz.id/",
   // Khusus aplikasi: true = wajib login sebelum memakai aplikasi, false = login hanya untuk membeli/memulihkan Premium
   REQUIRE_LOGIN: false
 };

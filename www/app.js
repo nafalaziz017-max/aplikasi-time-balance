@@ -3,7 +3,7 @@
 /* ===================== KONFIGURASI ===================== */
 const SITE = (window.TB_CONFIG && window.TB_CONFIG.SITE_URL && !/GANTI/.test(window.TB_CONFIG.SITE_URL)) ? window.TB_CONFIG.SITE_URL : "";
 const EMAIL = "nafalaziz016@gmail.com";
-const DEMO_TOGGLE = true;   // true = tampilkan sakelar "Mode Demo Premium" di Profil. Ubah ke false saat rilis.
+const DEMO_TOGGLE = false;   // true = tampilkan sakelar "Mode Demo Premium" di Profil. Ubah ke false saat rilis.
 /* Token Premium: dibuat pemilik lewat tools/buat-token.html, diverifikasi di sini dengan KUNCI PUBLIK (aman dibaca siapa pun).
    Isi PUBLIC_KEY dengan baris yang muncul di alat pembuat token. Selama masih null, aplikasi menolak semua token. */
 const PUBLIC_KEY = null;
@@ -134,7 +134,7 @@ function accountCard() {
 if (window.TBAuth) TBAuth.onChange(u => { if (!u) { if (S.premium && S.premium.src === "acct") { S.premium = null; save(); } render(); gate(); } });
 
 const DEF = { name: "", onb: 0, tasks: [], sched: [], log: [], wallet: 0, xp: 0, cyc: 0, streak: { last: "", n: 0 }, badges: {}, run: null, leisure: null, fired: {},
-  premium: null, pendingOrder: "", demo: false, theme: "auto", snd: true, vib: true, notif: false, goal: 120, tab: "home", seg: "todo", flt: "all", sseg: "an", range: 7, plan: "annual",
+  premium: null, pendingOrder: "", demo: false, theme: "auto", snd: true, vib: true, notif: false, goal: 120, tab: "home", seg: "todo", flt: "all", sseg: "an", range: 7, plan: "monthly",
   rules: { focus: 25, brk: 5, long: 15, ratio: 25, strict: false, lock: false } };
 let S, q = "", dp = null, ovOpen = false;
 try { S = Object.assign({}, DEF, JSON.parse(localStorage.getItem(K) || "{}")); S.rules = Object.assign({}, DEF.rules, S.rules); } catch (e) { S = JSON.parse(JSON.stringify(DEF)); }
