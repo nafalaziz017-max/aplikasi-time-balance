@@ -1,717 +1,1668 @@
- <!DOCTYPE html>                                                                                                                                                                                                                       
- <html lang="id">                                                                                                                                                                                                                      
- <head>                                                                                                                                                                                                                                
-   <meta charset="UTF-8"/>                                                                                                                                                                                                             
-   <meta name="viewport" content="width=device-width,initial-scale=1.0"/>                                                                                                                                                              
-   <meta name="description" content="TimeBalance: Pomodoro Timer & aplikasi manajemen waktu gratis untuk Android. Lawan prokrastinasi dengan sistem Work–Reward Mechanism."/>                                                          
-   <meta name="robots" content="index, follow"/>                                                                                                                                                                                       
-   <link rel="canonical" href="https://timebalanceruang-rasamyid.biz.id/"/>                                                                                                               
-   <title>TimeBalance — Pomodoro Timer & Manajemen Waktu Gratis</title>                                                                                                                                                               
-   <link rel="icon" type="image/jpeg" href="https://www.timebalanceruang-rasamyid.biz.id/logobaru1.jpeg"/>                                                                                                           
-   <meta property="og:title" content="TimeBalance – Santai Kini, Aman Nanti"/>                                                                                                                                                        
-   <meta property="og:description" content="Aplikasi produktivitas dengan sistem Work–Reward Mechanism."/>                                                                                                                            
-   <meta property="og:image" content="https://timebalanceruang-rasamyid.biz.id/assets/images/logo.jpeg"/>                                                                                                                            
-   <meta property="og:type" content="website"/>                                                                                                                                                                                       
-   <meta property="og:url" content="https://timebalanceruang-rasamyid.biz.id/"/>                                                                                                                                                     
-   <link rel="preconnect" href="https://fonts.googleapis.com/"/>                                                                                                                                       
-   <link rel="preconnect" href="https://fonts.gstatic.com/" crossorigin/>                                                                                                                                 
-   <link href="https://fonts.googleapis.com/css2?family=Poppins:wght@300;400;500;600;700;800;900&display=swap" rel="stylesheet"/> 
-   <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.0/css/all.min.css"/>                                              
-   <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/aos/2.3.4/aos.css"/>                                                                                
-   <link rel="stylesheet" href="https://www.timebalanceruang-rasamyid.biz.id/assets/css/style.css"/>                                                                                                           
-   <link rel="stylesheet" href="https://www.timebalanceruang-rasamyid.biz.id/assets/css/components.css"/>                                                                                                 
-   <link rel="stylesheet" href="https://www.timebalanceruang-rasamyid.biz.id/assets/css/responsive.css"/>                                                                                                 
-   <style>                                                                                                                                                                                                                             
-     /* ===== HERO ===== */                                                                                                                                                                                                           
-     #hero {                                                                                                                                                                                                                            
-       min-height: 100vh;                                                                                                                                                                                                               
-       background: var(--hero-gradient);                                                                                                                                                                                                
-       display: flex;                                                                                                                                                                                                                   
-       align-items: center;                                                                                                                                                                                                             
-       padding: 120px 0 80px;                                                                                                                                                                                                           
-       position: relative;                                                                                                                                                                                                              
-       overflow: hidden;                                                                                                                                                                                                                
-     }                                                                                                                                                                                                                                  
-     #hero::before {                                                                                                                                                                                                                    
-       content: '';                                                                                                                                                                                                                     
-       position: absolute;                                                                                                                                                                                                              
-       width: 600px;                                                                                                                                                                                                                    
-       height: 600px;                                                                                                                                                                                                                   
-       background: radial-gradient(circle, rgba(255,255,255,.05), transparent 70%);                                                                                                                                                     
-       top: -100px;                                                                                                                                                                                                                     
-       right: -100px;                                                                                                                                                                                                                   
-       border-radius: 50%;                                                                                                                                                                                                              
-     }                                                                                                                                                                                                                                  
-     .hero-inner {                                                                                                                                                                                                                      
-       display: grid;                                                                                                                                                                                                                   
-       grid-template-columns: 1fr 1fr;                                                                                                                                                                                                  
-       gap: 60px;                                                                                                                                                                                                                       
-       align-items: center;                                                                                                                                                                                                             
-       position: relative;                                                                                                                                                                                                              
-       z-index: 1;                                                                                                                                                                                                                      
-     }                                                                                                                                                                                                                                  
-     .hero-badge {                                                                                                                                                                                                                      
-       display: inline-flex;                                                                                                                                                                                                            
-       align-items: center;                                                                                                                                                                                                             
-       gap: 8px;                                                                                                                                                                                                                        
-       background: rgba(255,255,255,.15);                                                                                                                                                                                               
-       color: #fff;                                                                                                                                                                                                                     
-       padding: 7px 18px;                                                                                                                                                                                                               
-       border-radius: var(--radius-pill);                                                                                                                                                                                               
-       font-size: .8rem;                                                                                                                                                                                                                
-       font-weight: 600;                                                                                                                                                                                                                
-       border: 1px solid rgba(255,255,255,.2);                                                                                                                                                                                          
-       margin-bottom: 22px;                                                                                                                                                                                                             
-       backdrop-filter: blur(10px);                                                                                                                                                                                                     
-     }                                                                                                                                                                                                                                  
-     .hero-title {                                                                                                                                                                                                                      
-       font-size: clamp(2rem, 4.2vw, 3.2rem);                                                                                                                                                                                           
-       font-weight: 900;                                                                                                                                                                                                                
-       color: #fff;                                                                                                                                                                                                                     
-       line-height: 1.15;                                                                                                                                                                                                               
-       letter-spacing: -1px;                                                                                                                                                                                                            
-       margin-bottom: 18px;                                                                                                                                                                                                             
-     }                                                                                                                                                                                                                                  
-     .hero-title .hl {                                                                                                                                                                                                                  
-       color: var(--gold-light);                                                                                                                                                                                                        
-     }                                                                                                                                                                                                                                  
-     .hero-desc {                                                                                                                                                                                                                       
-       color: rgba(255,255,255,.8);                                                                                                                                                                                                     
-       font-size: 1.02rem;                                                                                                                                                                                                              
-       line-height: 1.72;                                                                                                                                                                                                               
-       margin-bottom: 30px;                                                                                                                                                                                                             
-       max-width: 460px;                                                                                                                                                                                                                
-     }                                                                                                                                                                                                                                  
-     .hero-cta {                                                                                                                                                                                                                        
-       display: flex;                                                                                                                                                                                                                   
-       gap: 14px;                                                                                                                                                                                                                       
-       flex-wrap: wrap;                                                                                                                                                                                                                 
-       margin-bottom: 10px;                                                                                                                                                                                                             
-     }                                                                                                                                                                                                                                  
-     /* ===== DASHBOARD MOCKUP ===== */                                                                                                                                                                                               
-     .hero-visual {                                                                                                                                                                                                                     
-       display: flex;                                                                                                                                                                                                                   
-       justify-content: center;                                                                                                                                                                                                         
-       align-items: center;                                                                                                                                                                                                             
-       position: relative;                                                                                                                                                                                                              
-     }                                                                                                                                                                                                                                  
-     .dash-card {                                                                                                                                                                                                                       
-       background: rgba(255,255,255,.12);                                                                                                                                                                                               
-       backdrop-filter: blur(20px);                                                                                                                                                                                                     
-       border: 1px solid rgba(255,255,255,.2);                                                                                                                                                                                          
-       border-radius: 26px;                                                                                                                                                                                                             
-       padding: 26px;                                                                                                                                                                                                                   
-       width: 320px;                                                                                                                                                                                                                    
-       box-shadow: 0 30px 80px rgba(0,0,0,.2);                                                                                                                                                                                          
-       animation: floatCard 4s ease-in-out infinite;                                                                                                                                                                                    
-     }                                                                                                                                                                                                                                  
-     @keyframes floatCard {                                                                                                                                                                                                             
-       0%,100% {                                                                                                                                                                                                                        
-         transform: translateY(0);                                                                                                                                                                                                      
-       }                                                                                                                                                                                                                                
-       50% {                                                                                                                                                                                                                            
-         transform: translateY(-12px);                                                                                                                                                                                                  
-       }                                                                                                                                                                                                                                
-     }                                                                                                                                                                                                                                  
-     .dash-head {                                                                                                                                                                                                                       
-       display: flex;                                                                                                                                                                                                                   
-       justify-content: space-between;                                                                                                                                                                                                  
-       margin-bottom: 18px;                                                                                                                                                                                                             
-     }                                                                                                                                                                                                                                  
-     .dash-title-txt {                                                                                                                                                                                                                  
-       color: #fff;                                                                                                                                                                                                                     
-       font-weight: 700;                                                                                                                                                                                                                
-       font-size: .9rem;                                                                                                                                                                                                                
-     }                                                                                                                                                                                                                                  
-     .dash-date-txt {                                                                                                                                                                                                                   
-       color: rgba(255,255,255,.6);                                                                                                                                                                                                     
-       font-size: .72rem;                                                                                                                                                                                                               
-     }                                                                                                                                                                                                                                  
-     .dash-prog-lbl {                                                                                                                                                                                                                   
-       color: rgba(255,255,255,.7);                                                                                                                                                                                                     
-       font-size: .76rem;                                                                                                                                                                                                               
-       margin-bottom: 7px;                                                                                                                                                                                                              
-       font-weight: 500;                                                                                                                                                                                                                
-     }                                                                                                                                                                                                                                  
-     .prog-bar {                                                                                                                                                                                                                        
-       background: rgba(255,255,255,.15);                                                                                                                                                                                               
-       border-radius: 8px;                                                                                                                                                                                                              
-       height: 7px;                                                                                                                                                                                                                     
-       margin-bottom: 18px;                                                                                                                                                                                                             
-     }                                                                                                                                                                                                                                  
-     .prog-fill {                                                                                                                                                                                                                       
-       height: 7px;                                                                                                                                                                                                                     
-       border-radius: 8px;                                                                                                                                                                                                              
-       background: var(--btn-gradient);                                                                                                                                                                                                 
-       width: 72%;                                                                                                                                                                                                                      
-     }                                                                                                                                                                                                                                  
-     .dash-tasks {                                                                                                                                                                                                                      
-       display: flex;                                                                                                                                                                                                                   
-       flex-direction: column;                                                                                                                                                                                                          
-       gap: 9px;                                                                                                                                                                                                                        
-     }                                                                                                                                                                                                                                  
-     .task-row {                                                                                                                                                                                                                        
-       background: rgba(255,255,255,.08);                                                                                                                                                                                               
-       border-radius: 13px;                                                                                                                                                                                                             
-       padding: 11px 14px;                                                                                                                                                                                                              
-       display: flex;                                                                                                                                                                                                                   
-       align-items: center;                                                                                                                                                                                                             
-       gap: 10px;                                                                                                                                                                                                                       
-     }                                                                                                                                                                                                                                  
-     .t-check {                                                                                                                                                                                                                         
-       width: 20px;                                                                                                                                                                                                                     
-       height: 20px;                                                                                                                                                                                                                    
-       border-radius: 50%;                                                                                                                                                                                                              
-       background: rgba(125,163,107,.3);                                                                                                                                                                                                
-       border: 2px solid var(--success);                                                                                                                                                                                                
-       display: flex;                                                                                                                                                                                                                   
-       align-items: center;                                                                                                                                                                                                             
-       justify-content: center;                                                                                                                                                                                                         
-       flex-shrink: 0;                                                                                                                                                                                                                  
-     }                                                                                                                                                                                                                                  
-     .t-check.done {                                                                                                                                                                                                                    
-       background: var(--success);                                                                                                                                                                                                      
-       border-color: var(--success);                                                                                                                                                                                                    
-     }                                                                                                                                                                                                                                  
-     .t-check i {                                                                                                                                                                                                                       
-       color: #fff;                                                                                                                                                                                                                     
-       font-size: .6rem;                                                                                                                                                                                                                
-     }                                                                                                                                                                                                                                  
-     .t-text {                                                                                                                                                                                                                          
-       font-size: .78rem;                                                                                                                                                                                                               
-       color: rgba(255,255,255,.85);                                                                                                                                                                                                    
-       font-weight: 500;                                                                                                                                                                                                                
-     }                                                                                                                                                                                                                                  
-     .t-text.done {                                                                                                                                                                                                                     
-       text-decoration: line-through;                                                                                                                                                                                                   
-       opacity: .5;                                                                                                                                                                                                                     
-     }                                                                                                                                                                                                                                  
-     .reward-row {                                                                                                                                                                                                                      
-       margin-top: 14px;                                                                                                                                                                                                                
-       background: rgba(212,169,55,.2);                                                                                                                                                                                                 
-       border: 1px solid rgba(212,169,55,.3);                                                                                                                                                                                           
-       border-radius: 13px;                                                                                                                                                                                                             
-       padding: 11px 14px;                                                                                                                                                                                                              
-       display: flex;                                                                                                                                                                                                                   
-       align-items: center;                                                                                                                                                                                                             
-       gap: 9px;                                                                                                                                                                                                                        
-     }                                                                                                                                                                                                                                  
-     .reward-row span {                                                                                                                                                                                                                 
-       font-size: .76rem;                                                                                                                                                                                                               
-       color: var(--gold-light);                                                                                                                                                                                                        
-       font-weight: 600;                                                                                                                                                                                                                
-     }                                                                                                                                                                                                                                  
-     /* ===== WAVE DIVIDER ===== */                                                                                                                                                                                                   
-     .wave {                                                                                                                                                                                                                            
-       display: block;                                                                                                                                                                                                                  
-       width: 100%;                                                                                                                                                                                                                     
-       height: 70px;                                                                                                                                                                                                                    
-       overflow: hidden;                                                                                                                                                                                                                
-       line-height: 0;                                                                                                                                                                                                                  
-     }                                                                                                                                                                                                                                  
-     .wave svg {                                                                                                                                                                                                                        
-       display: block;                                                                                                                                                                                                                  
-     }                                                                                                                                                                                                                                  
-     /* ===== BRIEF ABOUT STRIP ===== */                                                                                                                                                                                              
-     #about-strip {                                                                                                                                                                                                                     
-       background: var(--card-bg);                                                                                                                                                                                                      
-       padding: 64px 0;                                                                                                                                                                                                                 
-     }                                                                                                                                                                                                                                  
-     .about-grid {                                                                                                                                                                                                                      
-       display: grid;                                                                                                                                                                                                                   
-       grid-template-columns: 1fr 1fr;                                                                                                                                                                                                  
-       gap: 56px;                                                                                                                                                                                                                       
-       align-items: center;                                                                                                                                                                                                             
-     }                                                                                                                                                                                                                                  
-     .about-mini-cards {                                                                                                                                                                                                                
-       display: grid;                                                                                                                                                                                                                   
-       grid-template-columns: 1fr 1fr;                                                                                                                                                                                                  
-       gap: 14px;                                                                                                                                                                                                                       
-     }                                                                                                                                                                                                                                  
-     .a-card {                                                                                                                                                                                                                          
-       background: var(--bg);                                                                                                                                                                                                           
-       border-radius: var(--radius);                                                                                                                                                                                                    
-       padding: 22px;                                                                                                                                                                                                                   
-       border: 1px solid var(--border);                                                                                                                                                                                                 
-       box-shadow: var(--shadow-sm);                                                                                                                                                                                                    
-       transition: all var(--transition);                                                                                                                                                                                               
-     }                                                                                                                                                                                                                                  
-     .a-card:hover {                                                                                                                                                                                                                   
-       transform: translateY(-3px);                                                                                                                                                                                                     
-       box-shadow: var(--shadow-md);                                                                                                                                                                                                    
-     }                                                                                                                                                                                                                                  
-     .a-card h4 {                                                                                                                                                                                                                       
-       font-size: .9rem;                                                                                                                                                                                                                
-       font-weight: 700;                                                                                                                                                                                                                
-       margin: 10px 0 6px;                                                                                                                                                                                                              
-     }                                                                                                                                                                                                                                  
-     .a-card p {                                                                                                                                                                                                                        
-       font-size: .8rem;                                                                                                                                                                                                                
-       color: var(--text-muted);                                                                                                                                                                                                        
-       line-height: 1.55;                                                                                                                                                                                                               
-     }                                                                                                                                                                                                                                  
-     /* ===== FEATURES STRIP ===== */                                                                                                                                                                                                 
-     #feat-strip {                                                                                                                                                                                                                      
-       padding: 80px 0;                                                                                                                                                                                                                 
-     }                                                                                                                                                                                                                                  
-     .features-grid {                                                                                                                                                                                                                   
-       display: grid;                                                                                                                                                                                                                   
-       grid-template-columns: repeat(3, 1fr);                                                                                                                                                                                           
-       gap: 20px;                                                                                                                                                                                                                       
-       margin-top: 48px;                                                                                                                                                                                                                
-     }                                                                                                                                                                                                                                  
-     /* ===== CTA BANNER ===== */                                                                                                                                                                                                     
-     #cta-banner {                                                                                                                                                                                                                      
-       background: var(--hero-gradient);                                                                                                                                                                                                
-       padding: 72px 0;                                                                                                                                                                                                                 
-       text-align: center;                                                                                                                                                                                                              
-       position: relative;                                                                                                                                                                                                              
-       overflow: hidden;                                                                                                                                                                                                                
-     }                                                                                                                                                                                                                                  
-     #cta-banner::before {                                                                                                                                                                                                              
-       content: '';                                                                                                                                                                                                                     
-       position: absolute;                                                                                                                                                                                                              
-       top: -80px;                                                                                                                                                                                                                      
-       right: -80px;                                                                                                                                                                                                                    
-       width: 280px;                                                                                                                                                                                                                    
-       height: 280px;                                                                                                                                                                                                                   
-       border-radius: 50%;                                                                                                                                                                                                              
-       background: rgba(255,255,255,.05);                                                                                                                                                                                               
-     }                                                                                                                                                                                                                                  
-     .cta-inner {                                                                                                                                                                                                                       
-       position: relative;                                                                                                                                                                                                              
-       z-index: 1;                                                                                                                                                                                                                      
-     }                                                                                                                                                                                                                                  
-     .cta-inner h2 {                                                                                                                                                                                                                    
-       font-size: clamp(1.8rem, 3vw, 2.4rem);                                                                                                                                                                                           
-       font-weight: 800;                                                                                                                                                                                                                
-       color: #fff;                                                                                                                                                                                                                     
-       margin-bottom: 12px;                                                                                                                                                                                                             
-     }                                                                                                                                                                                                                                  
-     .cta-inner p {                                                                                                                                                                                                                     
-       color: rgba(255,255,255,.75);                                                                                                                                                                                                    
-       margin-bottom: 30px;                                                                                                                                                                                                             
-       max-width: 500px;                                                                                                                                                                                                                
-       margin-left: auto;                                                                                                                                                                                                               
-       margin-right: auto;                                                                                                                                                                                                              
-       line-height: 1.65;                                                                                                                                                                                                               
-     }                                                                                                                                                                                                                                  
-     .cta-btns {                                                                                                                                                                                                                        
-       display: flex;                                                                                                                                                                                                                   
-       gap: 14px;                                                                                                                                                                                                                       
-       justify-content: center;                                                                                                                                                                                                         
-       flex-wrap: wrap;                                                                                                                                                                                                                 
-     }                                                                                                                                                                                                                                  
-     @media(max-width:900px) {                                                                                                                                                                                                          
-       .hero-inner {                                                                                                                                                                                                                    
-         grid-template-columns: 1fr;                                                                                                                                                                                                    
-       }                                                                                                                                                                                                                                
-       .hero-visual {                                                                                                                                                                                                                   
-         display: none;                                                                                                                                                                                                                 
-       }                                                                                                                                                                                                                                
-       .about-grid {                                                                                                                                                                                                                    
-         grid-template-columns: 1fr;                                                                                                                                                                                                    
-       }                                                                                                                                                                                                                                
-       .features-grid {                                                                                                                                                                                                                 
-         grid-template-columns: 1fr 1fr;                                                                                                                                                                                                
-       }                                                                                                                                                                                                                                
-     }                                                                                                                                                                                                                                  
-     @media(max-width:600px) {                                                                                                                                                                                                          
-       .features-grid {                                                                                                                                                                                                                 
-         grid-template-columns: 1fr;                                                                                                                                                                                                    
-       }                                                                                                                                                                                                                                
-       .about-mini-cards {                                                                                                                                                                                                              
-         grid-template-columns: 1fr;                                                                                                                                                                                                    
-       }                                                                                                                                                                                                                                
-     }                                                                                                                                                                                                                                  
-   </style>                                                                                                                                                                                                                            
- </head>                                                                                                                                                                                                                               
- <body>                                                                                                                                                                                                                                
- <!-- LOADING -->                                                                                                                                                                                                                      
- <div id="loading">                                                                                                                                                                                                                    
-   <div class="loading-logo">                                                                                                                                                                                                          
-     <span>Time</span>Balance                                                                                                                                                                                                         
-   </div>                                                                                                                                                                                                                              
-   <div class="spinner"></div>                                                                                                                                                                                                        
- </div>                                                                                                                                                                                                                                
- <!-- BACK TO TOP -->                                                                                                                                                                                                                  
- <button id="btt" aria-label="Kembali ke atas" onclick="scrollTop()">                                                                                                                                                                  
-   <i class="fas fa-arrow-up"></i>                                                                                                                                                                                                    
- </button>                                                                                                                                                                                                                             
- <!-- MOBILE OVERLAY + MENU -->                                                                                                                                                                                                        
- <div class="mobile-overlay" id="mob-overlay" onclick="closeMobileMenu()"></div>                                                                                                                                                      
- <nav class="mobile-menu" id="mob-menu" aria-label="Menu mobile">                                                                                                                                                                      
-   <a href="index.html" onclick="closeMobileMenu()">                                                                                                                        
-     <i class="fas fa-home"></i> Home                                                                                                                                                                                                 
-   </a>                                                                                                                                                                                                                                
-   <a href="about.html" onclick="closeMobileMenu()">                                                                                                                        
-     <i class="fas fa-seedling"></i> About                                                                                                                                                                                            
-   </a>                                                                                                                                                                                                                                
-   <a href="info.html" onclick="closeMobileMenu()">                                                                                                                          
-     <i class="fas fa-info-circle"></i> Info                                                                                                                                                                                          
-   </a>                                                                                                                                                                                                                                
-   <a href="content.html" onclick="closeMobileMenu()">                                                                                                                    
-     <i class="fas fa-cube"></i> Fitur                                                                                                                                                                                                
-   </a>                                                                                                                                                                                                                                
-   <a href="pricing.html" onclick="closeMobileMenu()">                                                                                                                    
-     <i class="fas fa-tag"></i> Harga                                                                                                                                                                                                 
-   </a>                                                                                                                                                                                                                                
-   <a href="payment.html" onclick="closeMobileMenu()">                                                                                                                    
-     <i class="fas fa-credit-card"></i> Bayar                                                                                                                                                                                         
-   </a>                                                                                                                                                                                                                                
-   <a href="download.html" class="mob-dl" onclick="closeMobileMenu()">                                                                                                   
-     <i class="fas fa-download"></i> Download APK                                                                                                                                                                                     
-   </a>                                                                                                                                                                                                                                
- </nav>                                                                                                                                                                                                                                
- <!-- NAVBAR -->                                                                                                                                                                                                                       
- <header class="navbar" id="navbar">                                                                                                                                                                                                   
-   <div class="nav-inner">                                                                                                                                                                                                             
-     <a href="index.html" class="nav-logo" aria-label="TimeBalance Home">                                                                                                   
-       <img src="https://www.timebalanceruang-rasamyid.biz.id/logobaru1.jpeg" alt="TimeBalance logo"/>                                                                                                               
-       <span>                                                                                                                                                                                                                          
-         <span class="time">Time</span><span class="bal">Balance</span>                                                                                                                                                             
-       </span>                                                                                                                                                                                                                         
-     </a>                                                                                                                                                                                                                              
-     <nav class="nav-links" aria-label="Navigasi utama">                                                                                                                                                                               
-       <a href="index.html">Home</a>                                                                                                                                       
-       <a href="about.html">About</a>                                                                                                                                      
-       <a href="info.html">Info</a>                                                                                                                                         
-       <a href="content.html">Fitur</a>                                                                                                                                  
-       <a href="pricing.html">Harga</a>                                                                                                                                  
-       <a href="payment.html">Bayar</a>                                                                                                                                  
-     </nav>                                                                                                                                                                                                                            
-     <div class="nav-actions">                                                                                                                                                                                                         
-       <button class="dark-toggle" aria-label="Toggle dark mode" onclick="toggleDark()">                                                                                                                                               
-         <i class="fas fa-moon dark-icon"></i>                                                                                                                                                                                        
-       </button>                                                                                                                                                                                                                       
-       <a href="download.html" class="btn-nav-dl">                                                                                                                       
-         <i class="fas fa-download"></i> Download APK                                                                                                                                                                                 
-       </a>                                                                                                                                                                                                                            
-       <button class="hamburger" aria-label="Buka menu" onclick="openMobileMenu()">                                                                                                                                                    
-         <span></span>                                                                                                                                                                                                                
-         <span></span>                                                                                                                                                                                                                
-         <span></span>                                                                                                                                                                                                                
-       </button>                                                                                                                                                                                                                       
-     </div>                                                                                                                                                                                                                            
-   </div>                                                                                                                                                                                                                              
- </header>                                                                                                                                                                                                                             
- <!-- ===================== HERO ===================== -->                                                                                                                                                                             
- <section id="hero" aria-label="Hero">                                                                                                                                                                                                 
-   <div class="container">                                                                                                                                                                                                             
-     <div class="hero-inner">                                                                                                                                                                                                          
-       <div data-aos="fade-right">                                                                                                                                                                                                     
-         <div class="hero-badge">                                                                                                                                                                                                      
-           🏆 Aplikasi Produktivitas untuk Pelajar & Pekerja                                                                                                                                                                            
-         </div>                                                                                                                                                                                                                        
-         <h1 class="hero-title">                                                                                                                                                                                                       
-           Kelola Waktu Lebih                                                                                                                                                                                                           
-           <span class="hl">Seimbang</span>                                                                                                                                                                                           
-           dan Produktif                                                                                                                                                                                                                
-         </h1>                                                                                                                                                                                                                         
-         <p class="hero-desc">                                                                                                                                                                                                         
-           TimeBalance membantu Anda menyelesaikan pekerjaan dahulu lalu mendapat waktu hiburan sebagai reward melalui sistem                                                                                                           
-           <strong style="color:var(--gold-light)">                                                                                                                                                                                   
-             Work–Reward Mechanism                                                                                                                                                                                                      
-           </strong>.                                                                                                                                                                                                                  
-         </p>                                                                                                                                                                                                                          
-         <div class="hero-cta">                                                                                                                                                                                                        
-           <a href="download.html" class="btn btn-primary" data-apk-link>                                                                                                
-             <i class="fas fa-download"></i>                                                                                                                                                                                          
-             Download APK Gratis                                                                                                                                                                                                        
-           </a>                                                                                                                                                                                                                        
-           <a href="pricing.html" class="btn btn-outline">                                                                                                                
-             <i class="fas fa-tag"></i>                                                                                                                                                                                               
-             Lihat Paket                                                                                                                                                                                                                
-           </a>                                                                                                                                                                                                                        
-         </div>                                                                                                                                                                                                                        
-       </div>                                                                                                                                                                                                                          
-       <!-- DASHBOARD -->                                                                                                                                                                                                              
-       <div class="hero-visual"                                                                                                                                                                                                        
-            data-aos="fade-left"                                                                                                                                                                                                        
-            data-aos-delay="150"                                                                                                                                                                                                        
-            aria-hidden="true">                                                                                                                                                                                                         
-         <div class="dash-card">                                                                                                                                                                                                       
-           <div class="dash-head">                                                                                                                                                                                                     
-             <div class="dash-title-txt">                                                                                                                                                                                              
-               📊 Dashboard Hari Ini                                                                                                                                                                                                    
-             </div>                                                                                                                                                                                                                    
-             <div class="dash-date-txt">                                                                                                                                                                                               
-               Hari Ini                                                                                                                                                                                                                 
-             </div>                                                                                                                                                                                                                    
-           </div>                                                                                                                                                                                                                      
-           <div class="dash-prog-lbl">                                                                                                                                                                                                 
-             Progres Tugas                                                                                                                                                                                                              
-           </div>                                                                                                                                                                                                                      
-           <div class="prog-bar">                                                                                                                                                                                                      
-             <div class="prog-fill"></div>                                                                                                                                                                                            
-           </div>                                                                                                                                                                                                                      
-           <div class="dash-tasks">                                                                                                                                                                                                    
-             <div class="task-row">                                                                                                                                                                                                    
-               <div class="t-check done">                                                                                                                                                                                              
-                 <i class="fas fa-check"></i>                                                                                                                                                                                         
-               </div>                                                                                                                                                                                                                  
-               <div class="t-text done">                                                                                                                                                                                               
-                 Baca materi kuliah                                                                                                                                                                                                     
-               </div>                                                                                                                                                                                                                  
-             </div>                                                                                                                                                                                                                    
-             <div class="task-row">                                                                                                                                                                                                    
-               <div class="t-check done">                                                                                                                                                                                              
-                 <i class="fas fa-check"></i>                                                                                                                                                                                         
-               </div>                                                                                                                                                                                                                  
-               <div class="t-text done">                                                                                                                                                                                               
-                 Kerjakan laporan                                                                                                                                                                                                       
-               </div>                                                                                                                                                                                                                  
-             </div>                                                                                                                                                                                                                    
-             <div class="task-row">                                                                                                                                                                                                    
-               <div class="t-check"></div>                                                                                                                                                                                            
-               <div class="t-text">                                                                                                                                                                                                    
-                 Review slide presentasi                                                                                                                                                                                                
-               </div>                                                                                                                                                                                                                  
-             </div>                                                                                                                                                                                                                    
-           </div>                                                                                                                                                                                                                      
-           <div class="reward-row">                                                                                                                                                                                                    
-             <span>🎁</span>                                                                                                                                                                                                          
-             <span>                                                                                                                                                                                                                    
-               Waktu santai terbuka!                                                                                                                                                                                                    
-             </span>                                                                                                                                                                                                                   
-           </div>                                                                                                                                                                                                                      
-         </div>                                                                                                                                                                                                                        
-       </div>                                                                                                                                                                                                                          
-     </div>                                                                                                                                                                                                                            
-   </div>                                                                                                                                                                                                                              
- </section>                                                                                                                                                                                                                            
- <!-- WAVE -->                                                                                                                                                                                                                         
- <div class="wave">                                                                                                                                                                                                                    
-   <svg                                                                                                                                                                                                                                
-     viewBox="0 0 1440 70"                                                                                                                                                                                                              
-     xmlns="http://www.w3.org/2000/svg"                                                                                                                                                                                               
-     preserveAspectRatio="none">                                                                                                                                                                                                        
-     <path                                                                                                                                                                                                                             
-       d="M0,35 C360,70 1080,0 1440,35 L1440,70 L0,70 Z"                                                                                                                                                                                
-       fill="var(--card-bg)">                                                                                                                                                                                                           
-     </path>                                                                                                                                                                                                                           
-   </svg>                                                                                                                                                                                                                              
- </div>                                                                                                                                                                                                                                
- <!-- ===================== ABOUT STRIP ===================== -->                                                                                                                                                                      
- <section id="about-strip" aria-labelledby="h-about">                                                                                                                                                                                  
-   <div class="container">                                                                                                                                                                                                             
-     <div class="about-grid">                                                                                                                                                                                                          
-       <div data-aos="fade-right">                                                                                                                                                                                                     
-         <div class="section-badge">                                                                                                                                                                                                   
-           <i class="fas fa-seedling"></i>                                                                                                                                                                                            
-           Tentang TimeBalance                                                                                                                                                                                                          
-         </div>                                                                                                                                                                                                                        
-         <h2 class="section-title" id="h-about">                                                                                                                                                                                       
-           Apa Itu                                                                                                                                                                                                                      
-           <span>TimeBalance?</span>                                                                                                                                                                                                  
-         </h2>                                                                                                                                                                                                                         
-         <p class="section-desc" style="margin:0 0 20px">                                                                                                                                                                              
-           Aplikasi produktivitas dan manajemen waktu yang membantu Anda mengurangi prokrastinasi, meningkatkan fokus, dan menyeimbangkan pekerjaan dengan hiburan melalui sistem                                                       
-           <strong>Work–Reward Mechanism</strong>.                                                                                                                                                                                    
-         </p>                                                                                                                                                                                                                          
-         <a href="about.html" class="btn btn-green">                                                                                                                        
-           <i class="fas fa-arrow-right"></i>                                                                                                                                                                                         
-           Pelajari Lebih Lanjut                                                                                                                                                                                                        
-         </a>                                                                                                                                                                                                                          
-       </div>                                                                                                                                                                                                                          
-       <div data-aos="fade-left" data-aos-delay="100">                                                                                                                                                                                 
-         <div class="about-mini-cards">                                                                                                                                                                                                
-           <div class="a-card">                                                                                                                                                                                                        
-             <div class="icon-box icon-green">                                                                                                                                                                                         
-               <i class="fas fa-bullseye"></i>                                                                                                                                                                                        
-             </div>                                                                                                                                                                                                                    
-             <h4>Misi Kami</h4>                                                                                                                                                                                                       
-             <p>                                                                                                                                                                                                                       
-               Membantu pengguna membangun kebiasaan produktif dan sehat jangka panjang.                                                                                                                                                
-             </p>                                                                                                                                                                                                                      
-           </div>                                                                                                                                                                                                                      
-           <div class="a-card">                                                                                                                                                                                                        
-             <div class="icon-box icon-gold">                                                                                                                                                                                          
-               <i class="fas fa-eye"></i>                                                                                                                                                                                             
-             </div>                                                                                                                                                                                                                    
-             <h4>Visi Kami</h4>                                                                                                                                                                                                       
-             <p>                                                                                                                                                                                                                       
-               Menjadi aplikasi produktivitas pilihan jutaan orang di Indonesia.                                                                                                                                                        
-             </p>                                                                                                                                                                                                                      
-           </div>                                                                                                                                                                                                                      
-           <div class="a-card" style="grid-column:1/-1">                                                                                                                                                                               
-             <div class="icon-box icon-sage">                                                                                                                                                                                          
-               <i class="fas fa-star"></i>                                                                                                                                                                                            
-             </div>                                                                                                                                                                                                                    
-             <h4>Keunggulan Kami</h4>                                                                                                                                                                                                 
-             <p>                                                                                                                                                                                                                       
-               Menggabungkan sistem produktivitas dan reward dalam satu aplikasi — kerja dulu, santai belakangan, tanpa rasa bersalah.                                                                                                  
-             </p>                                                                                                                                                                                                                      
-           </div>                                                                                                                                                                                                                      
-         </div>                                                                                                                                                                                                                        
-       </div>                                                                                                                                                                                                                          
-     </div>                                                                                                                                                                                                                            
-   </div>                                                                                                                                                                                                                              
- </section>                                                                                                                                                                                                                            
- <!-- ===================== FEATURES STRIP ===================== -->
- <section id="feat-strip" aria-labelledby="h-feat">
-   <div class="container">
-     <div class="section-header" data-aos="fade-up">
-       <div class="section-badge"><i class="fas fa-cube"></i> Fitur Unggulan</div>
-       <h2 class="section-title" id="h-feat">Semua yang Anda Butuhkan untuk <span>Produktif</span></h2>
-       <p class="section-desc">Empat fitur utama TimeBalance untuk membantu mengatur tugas, fokus, waktu santai, dan perkembangan produktivitas.</p>
-     </div>
-     <div class="features-grid">
-       <div class="feature-card" data-aos="fade-up">
-         <div class="feature-icon"><i class="fas fa-list-check"></i></div>
-         <h3>Smart To-Do List</h3>
-         <p>Atur tugas berdasarkan prioritas dan tenggat waktu agar pekerjaan lebih terarah.</p>
-         <div class="feature-tag"><i class="fas fa-check"></i> Gratis</div>
-       </div>
-       <div class="feature-card" data-aos="fade-up" data-aos-delay="80">
-         <div class="feature-icon"><i class="fas fa-hourglass-half"></i></div>
-         <h3>Pomodoro Timer</h3>
-         <p>Gunakan sesi fokus dan istirahat teratur untuk membantu menjaga konsentrasi.</p>
-         <div class="feature-tag"><i class="fas fa-check"></i> Gratis</div>
-       </div>
-       <div class="feature-card" data-aos="fade-up" data-aos-delay="160">
-         <div class="feature-icon"><i class="fas fa-wallet"></i></div>
-         <h3>Leisure Time Wallet</h3>
-         <p>Kumpulkan waktu santai sebagai reward setelah menyelesaikan pekerjaan dan target.</p>
-         <div class="feature-tag"><i class="fas fa-check"></i> Gratis</div>
-       </div>
-       <div class="feature-card" data-aos="fade-up" data-aos-delay="240">
-         <div class="feature-icon"><i class="fas fa-chart-line"></i></div>
-         <h3>Productivity Analytics</h3>
-         <p>Lihat perkembangan produktivitas dan evaluasi kebiasaan kerja secara lebih terukur.</p>
-         <div class="feature-tag premium"><i class="fas fa-crown"></i> Premium</div>
-       </div>
-     </div>
-     <div style="text-align:center;margin-top:36px">
-       <a href="content.html" class="btn btn-ghost"><i class="fas fa-th-large"></i> Lihat Detail Fitur</a>
-     </div>
-   </div>
- </section>
- <!-- ===================== CTA BANNER ===================== -->                                                                                                                                                                       
- <section id="cta-banner" aria-label="Call to action">                                                                                                                                                                                 
-   <div class="container">                                                                                                                                                                                                             
-     <div class="cta-inner" data-aos="fade-up">                                                                                                                                                                                        
-       <h2>                                                                                                                                                                                                                            
-         Siap Mulai Lebih                                                                                                                                                                                                               
-         <span style="color:var(--gold-light)">                                                                                                                                                                                       
-           Produktif?                                                                                                                                                                                                                   
-         </span>                                                                                                                                                                                                                       
-       </h2>                                                                                                                                                                                                                           
-       <p>                                                                                                                                                                                                                             
-         Download TimeBalance sekarang — gratis, tanpa kartu kredit. Mulai kuasai waktu Anda hari ini.                                                                                                                                  
-       </p>                                                                                                                                                                                                                            
-       <div class="cta-btns">                                                                                                                                                                                                          
-         <a href="download.html" class="btn btn-primary" data-apk-link>                                                                                                  
-           <i class="fas fa-download"></i>                                                                                                                                                                                            
-           Download APK Gratis                                                                                                                                                                                                          
-         </a>                                                                                                                                                                                                                          
-         <a href="pricing.html" class="btn btn-outline">                                                                                                                  
-           <i class="fas fa-tag"></i>                                                                                                                                                                                                 
-           Lihat Paket Premium                                                                                                                                                                                                          
-         </a>                                                                                                                                                                                                                          
-       </div>                                                                                                                                                                                                                          
-     </div>                                                                                                                                                                                                                            
-   </div>                                                                                                                                                                                                                              
- </section>                                                                                                                                                                                                                            
- <!-- ===================== FOOTER ===================== -->                                                                                                                                                                           
- <footer>                                                                                                                                                                                                                              
-   <div class="container">                                                                                                                                                                                                             
-     <div class="footer-inner">                                                                                                                                                                                                        
-       <div class="footer-brand">                                                                                                                                                                                                      
-         <div class="logo-txt">                                                                                                                                                                                                        
-           <span class="time">Time</span><span class="bal">Balance</span>                                                                                                                                                           
-         </div>                                                                                                                                                                                                                        
-         <p>                                                                                                                                                                                                                           
-           Aplikasi manajemen waktu dan produktivitas dengan Work–Reward Mechanism. Nikmati hidup tanpa mengorbankan masa depan.                                                                                                        
-         </p>                                                                                                                                                                                                                          
-         <div class="footer-social">                                                                                                                                                                                                   
-           <a                                                                                                                                                                                                                          
-             href="https://www.facebook.com/share/1AvatuDTF9/?mibextid=wwXIfr"                                                                                            
-             aria-label="Facebook"                                                                                                                                                                                                      
-             target="_blank"                                                                                                                                                                                                           
-             rel="noopener noreferrer">                                                                                                                                                                                                 
-             <i class="fab fa-facebook-f"></i>                                                                                                                                                                                        
-           </a>                                                                                                                                                                                                                        
-           <a                                                                                                                                                                                                                          
-             href="https://www.instagram.com/timebalance_?igsh=ZGgwaGxwZGZveGdx&utm_source=qr"                                                          
-             aria-label="Instagram"                                                                                                                                                                                                     
-             target="_blank"                                                                                                                                                                                                           
-             rel="noopener noreferrer">                                                                                                                                                                                                 
-             <i class="fab fa-instagram"></i>                                                                                                                                                                                         
-           </a>                                                                                                                                                                                                                        
-           <a                                                                                                                                                                                                                          
-             href="https://www.tiktok.com/@timebalance1?_r=1&_t=ZS-97Hd7sNsI6M"                                                                                        
-             aria-label="TikTok"                                                                                                                                                                                                        
-             target="_blank"                                                                                                                                                                                                           
-             rel="noopener noreferrer">                                                                                                                                                                                                 
-             <i class="fab fa-tiktok"></i>                                                                                                                                                                                            
-           </a>                                                                                                                                                                                                                        
-         </div>                                                                                                                                                                                                                        
-       </div>                                                                                                                                                                                                                          
-       <div class="footer-col">                                                                                                                                                                                                        
-         <h4>Navigasi</h4>                                                                                                                                                                                                            
-         <ul>                                                                                                                                                                                                                          
-           <li>                                                                                                                                                                                                                        
-             <a href="index.html">Home</a>                                                                                                                                 
-           </li>                                                                                                                                                                                                                       
-           <li>                                                                                                                                                                                                                        
-             <a href="about.html">About</a>                                                                                                                                
-           </li>                                                                                                                                                                                                                       
-           <li>                                                                                                                                                                                                                        
-             <a href="info.html">Info & FAQ</a>                                                                                                                             
-           </li>                                                                                                                                                                                                                       
-           <li>                                                                                                                                                                                                                        
-             <a href="content.html">Fitur</a>                                                                                                                            
-           </li>                                                                                                                                                                                                                       
-           <li>                                                                                                                                                                                                                        
-             <a href="pricing.html">Harga</a>                                                                                                                            
-           </li>                                                                                                                                                                                                                       
-           <li>                                                                                                                                                                                                                        
-             <a href="payment.html">Pembayaran</a>                                                                                                                       
-           </li>                                                                                                                                                                                                                       
-           <li>                                                                                                                                                                                                                        
-             <a href="download.html">Download APK</a>                                                                                                                   
-           </li>                                                                                                                                                                                                                       
-         </ul>                                                                                                                                                                                                                         
-       </div>                                                                                                                                                                                                                          
-       <div class="footer-col">                                                                                                                                                                                                        
-         <h4>Kontak</h4>                                                                                                                                                                                                              
-         <ul>                                                                                                                                                                                                                          
-           <li>                                                                                                                                                                                                                        
-             <a href="mailto:YOUR_ACTIVE_EMAIL">                                                                                                                                                         
-               YOUR_ACTIVE_EMAIL                                                                                                                                                                                                        
-             </a>                                                                                                                                                                                                                      
-           </li>                                                                                                                                                                                                                       
-           <li>                                                                                                                                                                                                                        
-             <a                                                                                                                                                                                                                        
-               href="https://www.instagram.com/timebalance_?igsh=ZGgwaGxwZGZveGdx&utm_source=qr"                                                        
-               target="_blank"                                                                                                                                                                                                         
-               rel="noopener">                                                                                                                                                                                                          
-               @timebalance_                                                                                                                                                                                                           
-             </a>                                                                                                                                                                                                                      
-           </li>                                                                                                                                                                                                                       
-           <li>                                                                                                                                                                                                                        
-             <a href="download.html">                                                                                                                                    
-               <i class="fas fa-download"></i>                                                                                                                                                                                        
-               Download APK                                                                                                                                                                                                             
-             </a>                                                                                                                                                                                                                      
-           </li>                                                                                                                                                                                                                       
-         </ul>                                                                                                                                                                                                                         
-       </div>                                                                                                                                                                                                                          
-     </div>                                                                                                                                                                                                                            
-     <div class="footer-bottom">                                                                                                                                                                                                       
-       <p>                                                                                                                                                                                                                             
-         © 2026 TimeBalance. All Rights Reserved. Made with 💚 in Indonesia                                                                                                                                                             
-       </p>                                                                                                                                                                                                                            
-       <div class="footer-bottom-links">                                                                                                                                                                                               
-         <a href="https://www.timebalanceruang-rasamyid.biz.id/#">Privasi</a>                                                                                                                                                    
-         <a href="https://www.timebalanceruang-rasamyid.biz.id/#">Ketentuan</a>                                                                                                                                                  
-       </div>                                                                                                                                                                                                                          
-     </div>                                                                                                                                                                                                                            
-   </div>                                                                                                                                                                                                                              
- </footer>                                                                                                                                                                                                                             
- <script src="https://cdnjs.cloudflare.com/ajax/libs/aos/2.3.4/aos.js"></script>                                                                                           
- <script src="https://www.timebalanceruang-rasamyid.biz.id/assets/js/main.js"></script>                                                                                                                          
- <script src="https://www.timebalanceruang-rasamyid.biz.id/assets/js/navigation.js"></script>                                                                                                              
- </body>                                                                                                                                                                                                                               
- </html>                                                                                                                                                                                                                               
+<!DOCTYPE html>
+<html lang="id">
+<head>
+  <meta charset="UTF-8"/>
+  <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
+
+  <meta name="description" content="TimeBalance adalah aplikasi manajemen waktu dan produktivitas dengan sistem Work–Reward Mechanism. Atur tugas, fokus, dan waktu santai dengan lebih seimbang."/>
+  <meta name="keywords" content="TimeBalance, manajemen waktu, produktivitas, Pomodoro, to-do list, focus lock"/>
+  <meta name="author" content="TimeBalance"/>
+
+  <title>TimeBalance — Pomodoro Timer & Manajemen Waktu</title>
+
+  <!-- FAVICON -->
+  <link rel="icon" type="image/jpeg" href="logobaru1.jpeg"/>
+
+  <!-- GOOGLE FONT -->
+  <link rel="preconnect" href="https://fonts.googleapis.com"/>
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin/>
+  <link href="https://fonts.googleapis.com/css2?family=Poppins:wght@300;400;500;600;700;800;900&display=swap" rel="stylesheet"/>
+
+  <!-- FONT AWESOME -->
+  <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.0/css/all.min.css"/>
+
+  <!-- AOS -->
+  <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/aos/2.3.4/aos.css"/>
+
+  <!-- LOCAL CSS -->
+  <link rel="stylesheet" href="assets/css/style.css"/>
+  <link rel="stylesheet" href="assets/css/components.css"/>
+  <link rel="stylesheet" href="assets/css/responsive.css"/>
+
+  <style>
+    /* =====================================================
+       HOMEPAGE
+    ===================================================== */
+
+    .hero {
+      min-height: 78vh;
+      display: flex;
+      align-items: center;
+      padding: 100px 0 80px;
+      position: relative;
+      overflow: hidden;
+    }
+
+    .hero-grid {
+      display: grid;
+      grid-template-columns: 1.05fr .95fr;
+      gap: 55px;
+      align-items: center;
+    }
+
+    .hero-content {
+      position: relative;
+      z-index: 2;
+    }
+
+    .hero-badge {
+      display: inline-flex;
+      align-items: center;
+      gap: 8px;
+      padding: 8px 14px;
+      border-radius: 999px;
+      background: rgba(46,94,78,.08);
+      border: 1px solid rgba(46,94,78,.14);
+      color: var(--primary);
+      font-size: .78rem;
+      font-weight: 700;
+      margin-bottom: 20px;
+    }
+
+    .hero h1 {
+      font-size: clamp(2.3rem,5vw,4.5rem);
+      line-height: 1.08;
+      font-weight: 900;
+      letter-spacing: -.04em;
+      margin: 0 0 22px;
+    }
+
+    .hero h1 span {
+      color: var(--primary);
+    }
+
+    .hero-desc {
+      max-width: 650px;
+      color: var(--text-muted);
+      font-size: 1rem;
+      line-height: 1.8;
+      margin-bottom: 30px;
+    }
+
+    .hero-actions {
+      display: flex;
+      flex-wrap: wrap;
+      gap: 12px;
+      margin-bottom: 30px;
+    }
+
+    .hero-note {
+      display: flex;
+      flex-wrap: wrap;
+      gap: 18px;
+      color: var(--text-muted);
+      font-size: .78rem;
+    }
+
+    .hero-note span {
+      display: inline-flex;
+      align-items: center;
+      gap: 7px;
+    }
+
+    .hero-note i {
+      color: var(--success);
+    }
+
+    .hero-visual {
+      position: relative;
+    }
+
+    .hero-card {
+      background: var(--card-bg);
+      border: 1px solid var(--border);
+      border-radius: 28px;
+      padding: 28px;
+      box-shadow: var(--shadow);
+      position: relative;
+      overflow: hidden;
+    }
+
+    .hero-card::before {
+      content: "";
+      position: absolute;
+      width: 220px;
+      height: 220px;
+      border-radius: 50%;
+      background: rgba(46,94,78,.08);
+      top: -100px;
+      right: -80px;
+    }
+
+    .dashboard-top {
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      gap: 15px;
+      margin-bottom: 24px;
+      position: relative;
+      z-index: 1;
+    }
+
+    .dashboard-title {
+      font-size: 1rem;
+      font-weight: 800;
+    }
+
+    .dashboard-date {
+      color: var(--text-muted);
+      font-size: .72rem;
+    }
+
+    .focus-card {
+      background: var(--hero-gradient);
+      color: #fff;
+      border-radius: 20px;
+      padding: 24px;
+      margin-bottom: 18px;
+      position: relative;
+      overflow: hidden;
+    }
+
+    .focus-card small {
+      opacity: .8;
+      font-size: .72rem;
+    }
+
+    .focus-time {
+      font-size: 2.8rem;
+      font-weight: 900;
+      letter-spacing: -.03em;
+      margin: 8px 0;
+    }
+
+    .focus-label {
+      font-size: .78rem;
+      opacity: .85;
+    }
+
+    .dashboard-row {
+      display: grid;
+      grid-template-columns: 1fr 1fr;
+      gap: 14px;
+    }
+
+    .mini-card {
+      background: var(--bg);
+      border: 1px solid var(--border);
+      border-radius: 17px;
+      padding: 17px;
+    }
+
+    .mini-card i {
+      color: var(--primary);
+      font-size: 1.1rem;
+      margin-bottom: 10px;
+    }
+
+    .mini-card strong {
+      display: block;
+      font-size: 1rem;
+    }
+
+    .mini-card span {
+      color: var(--text-muted);
+      font-size: .7rem;
+    }
+
+    /* FEATURE */
+    .feature-grid {
+      display: grid;
+      grid-template-columns: repeat(4,1fr);
+      gap: 18px;
+      margin-top: 40px;
+    }
+
+    .feature-card {
+      padding: 26px;
+      border-radius: var(--radius);
+      background: var(--card-bg);
+      border: 1px solid var(--border);
+      transition: transform .25s ease, box-shadow .25s ease;
+    }
+
+    .feature-card:hover {
+      transform: translateY(-5px);
+      box-shadow: var(--shadow);
+    }
+
+    .feature-icon {
+      width: 48px;
+      height: 48px;
+      border-radius: 14px;
+      background: rgba(46,94,78,.08);
+      color: var(--primary);
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      font-size: 1.2rem;
+      margin-bottom: 18px;
+    }
+
+    .feature-card h3 {
+      font-size: .98rem;
+      margin-bottom: 8px;
+    }
+
+    .feature-card p {
+      font-size: .8rem;
+      line-height: 1.65;
+      color: var(--text-muted);
+    }
+
+    /* WORK REWARD */
+    .work-grid {
+      display: grid;
+      grid-template-columns: 1fr 1fr;
+      gap: 35px;
+      align-items: center;
+    }
+
+    .work-list {
+      display: flex;
+      flex-direction: column;
+      gap: 15px;
+      margin-top: 28px;
+    }
+
+    .work-item {
+      display: flex;
+      gap: 14px;
+      align-items: flex-start;
+    }
+
+    .work-number {
+      width: 34px;
+      height: 34px;
+      border-radius: 50%;
+      background: var(--hero-gradient);
+      color: #fff;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      font-size: .75rem;
+      font-weight: 800;
+      flex-shrink: 0;
+    }
+
+    .work-item strong {
+      display: block;
+      font-size: .88rem;
+      margin-bottom: 3px;
+    }
+
+    .work-item p {
+      font-size: .78rem;
+      color: var(--text-muted);
+      line-height: 1.55;
+    }
+
+    .reward-card {
+      background: var(--card-bg);
+      border: 1px solid var(--border);
+      border-radius: 26px;
+      padding: 30px;
+      box-shadow: var(--shadow-sm);
+    }
+
+    .reward-head {
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      margin-bottom: 22px;
+    }
+
+    .reward-head strong {
+      font-size: .95rem;
+    }
+
+    .reward-head span {
+      color: var(--primary);
+      font-size: .78rem;
+      font-weight: 700;
+    }
+
+    .wallet {
+      padding: 22px;
+      border-radius: 20px;
+      background: var(--hero-gradient);
+      color: #fff;
+      margin-bottom: 18px;
+    }
+
+    .wallet-label {
+      font-size: .75rem;
+      opacity: .8;
+    }
+
+    .wallet-value {
+      font-size: 2.1rem;
+      font-weight: 900;
+      margin: 4px 0;
+    }
+
+    .wallet-note {
+      font-size: .72rem;
+      opacity: .8;
+    }
+
+    .progress {
+      height: 9px;
+      background: var(--border);
+      border-radius: 999px;
+      overflow: hidden;
+      margin-top: 10px;
+    }
+
+    .progress-bar {
+      height: 100%;
+      width: 72%;
+      background: var(--success);
+      border-radius: inherit;
+    }
+
+    /* CTA */
+    .cta-box {
+      text-align: center;
+      padding: 55px 25px;
+      border-radius: 28px;
+      background: var(--hero-gradient);
+      color: #fff;
+      overflow: hidden;
+      position: relative;
+    }
+
+    .cta-box h2 {
+      color: #fff;
+      font-size: clamp(1.7rem,3vw,2.4rem);
+      margin-bottom: 12px;
+    }
+
+    .cta-box p {
+      max-width: 600px;
+      margin: 0 auto 25px;
+      opacity: .85;
+      line-height: 1.7;
+      font-size: .88rem;
+    }
+
+    .btn-white {
+      display: inline-flex;
+      align-items: center;
+      justify-content: center;
+      gap: 9px;
+      padding: 13px 22px;
+      border-radius: 12px;
+      background: #fff;
+      color: var(--primary);
+      font-weight: 700;
+      text-decoration: none;
+    }
+
+    /* MOBILE */
+    @media(max-width:1000px) {
+      .hero-grid,
+      .work-grid {
+        grid-template-columns: 1fr;
+      }
+
+      .hero-content {
+        text-align: center;
+      }
+
+      .hero-desc {
+        margin-left: auto;
+        margin-right: auto;
+      }
+
+      .hero-actions,
+      .hero-note {
+        justify-content: center;
+      }
+
+      .feature-grid {
+        grid-template-columns: repeat(2,1fr);
+      }
+
+      .hero-visual {
+        max-width: 600px;
+        width: 100%;
+        margin: auto;
+      }
+    }
+
+    @media(max-width:600px) {
+      .hero {
+        padding-top: 75px;
+      }
+
+      .feature-grid {
+        grid-template-columns: 1fr;
+      }
+
+      .dashboard-row {
+        grid-template-columns: 1fr;
+      }
+
+      .hero-card {
+        padding: 20px;
+      }
+    }
+  </style>
+</head>
+
+<body>
+
+<!-- =====================================================
+     LOADING
+===================================================== -->
+
+<div id="loading">
+  <div class="loading-logo">
+    <span>Time</span>Balance
+  </div>
+  <div class="spinner"></div>
+</div>
+
+
+<!-- =====================================================
+     BACK TO TOP
+===================================================== -->
+
+<button id="btt" aria-label="Kembali ke atas" onclick="scrollTop()">
+  <i class="fas fa-arrow-up"></i>
+</button>
+
+
+<!-- =====================================================
+     MOBILE MENU
+===================================================== -->
+
+<div
+  class="mobile-overlay"
+  id="mob-overlay"
+  onclick="closeMobileMenu()">
+</div>
+
+<nav class="mobile-menu" id="mob-menu">
+
+  <a href="index.html" onclick="closeMobileMenu()">
+    <i class="fas fa-home"></i> Home
+  </a>
+
+  <a href="about.html" onclick="closeMobileMenu()">
+    <i class="fas fa-seedling"></i> About
+  </a>
+
+  <a href="info.html" onclick="closeMobileMenu()">
+    <i class="fas fa-info-circle"></i> Info
+  </a>
+
+  <a href="content.html" onclick="closeMobileMenu()">
+    <i class="fas fa-cube"></i> Fitur
+  </a>
+
+  <a href="pricing.html" onclick="closeMobileMenu()">
+    <i class="fas fa-tag"></i> Harga
+  </a>
+
+  <a href="payment.html" onclick="closeMobileMenu()">
+    <i class="fas fa-credit-card"></i> Bayar
+  </a>
+
+  <a href="download.html" class="mob-dl" onclick="closeMobileMenu()">
+    <i class="fas fa-download"></i> Download APK
+  </a>
+
+</nav>
+
+
+<!-- =====================================================
+     NAVBAR
+===================================================== -->
+
+<header class="navbar" id="navbar">
+
+  <div class="nav-inner">
+
+    <a href="index.html" class="nav-logo">
+
+      <img
+        src="logobaru1.jpeg"
+        alt="TimeBalance logo"
+      />
+
+      <span>
+        <span class="time">Time</span>
+        <span class="bal">Balance</span>
+      </span>
+
+    </a>
+
+
+    <nav class="nav-links">
+
+      <a href="index.html">Home</a>
+
+      <a href="about.html">About</a>
+
+      <a href="info.html">Info</a>
+
+      <a href="content.html">Fitur</a>
+
+      <a href="pricing.html">Harga</a>
+
+      <a href="payment.html">Bayar</a>
+
+    </nav>
+
+
+    <div class="nav-actions">
+
+      <button
+        class="dark-toggle"
+        onclick="toggleDark()"
+        aria-label="Mode gelap"
+      >
+        <i class="fas fa-moon dark-icon"></i>
+      </button>
+
+
+      <a
+        href="download.html"
+        class="btn-nav-dl"
+      >
+        <i class="fas fa-download"></i>
+        Download APK
+      </a>
+
+
+      <button
+        class="hamburger"
+        onclick="openMobileMenu()"
+        aria-label="Buka menu"
+      >
+        <span></span>
+        <span></span>
+        <span></span>
+      </button>
+
+    </div>
+
+  </div>
+
+</header>
+
+
+<!-- =====================================================
+     HERO
+===================================================== -->
+
+<section class="hero">
+
+  <div class="container">
+
+    <div class="hero-grid">
+
+      <div
+        class="hero-content"
+        data-aos="fade-right"
+      >
+
+        <div class="hero-badge">
+
+          <i class="fas fa-bolt"></i>
+
+          Work–Reward Mechanism
+
+        </div>
+
+
+        <h1>
+
+          Kerja Dulu,
+
+          <span>Santai Kemudian.</span>
+
+        </h1>
+
+
+        <p class="hero-desc">
+
+          TimeBalance membantu Anda mengatur tugas,
+          meningkatkan fokus, dan mendapatkan waktu santai
+          sebagai reward setelah menyelesaikan pekerjaan.
+
+        </p>
+
+
+        <div class="hero-actions">
+
+          <a
+            href="download.html"
+            class="btn btn-primary"
+          >
+
+            <i class="fas fa-download"></i>
+
+            Mulai Gratis
+
+          </a>
+
+
+          <a
+            href="content.html"
+            class="btn btn-ghost"
+          >
+
+            <i class="fas fa-cube"></i>
+
+            Lihat Fitur
+
+          </a>
+
+        </div>
+
+
+        <div class="hero-note">
+
+          <span>
+            <i class="fas fa-check-circle"></i>
+            Gratis selamanya
+          </span>
+
+          <span>
+            <i class="fas fa-check-circle"></i>
+            Tanpa kartu kredit
+          </span>
+
+          <span>
+            <i class="fas fa-check-circle"></i>
+            Android
+          </span>
+
+        </div>
+
+      </div>
+
+
+      <!-- HERO VISUAL -->
+
+      <div
+        class="hero-visual"
+        data-aos="fade-left"
+      >
+
+        <div class="hero-card">
+
+          <div class="dashboard-top">
+
+            <div>
+
+              <div class="dashboard-title">
+                Dashboard TimeBalance
+              </div>
+
+              <div class="dashboard-date">
+                Produktif hari ini
+              </div>
+
+            </div>
+
+            <i
+              class="fas fa-chart-line"
+              style="color:var(--primary)"
+            ></i>
+
+          </div>
+
+
+          <div class="focus-card">
+
+            <small>
+              <i class="fas fa-bullseye"></i>
+              Sesi Fokus
+            </small>
+
+            <div class="focus-time">
+              25:00
+            </div>
+
+            <div class="focus-label">
+              Tetap fokus pada tugas Anda
+            </div>
+
+          </div>
+
+
+          <div class="dashboard-row">
+
+            <div class="mini-card">
+
+              <i class="fas fa-list-check"></i>
+
+              <strong>8/10</strong>
+
+              <span>
+                Tugas selesai
+              </span>
+
+            </div>
+
+
+            <div class="mini-card">
+
+              <i class="fas fa-gift"></i>
+
+              <strong>45 menit</strong>
+
+              <span>
+                Waktu santai
+              </span>
+
+            </div>
+
+          </div>
+
+        </div>
+
+      </div>
+
+    </div>
+
+  </div>
+
+</section>
+
+
+<!-- =====================================================
+     ABOUT / INTRO
+===================================================== -->
+
+<section>
+
+  <div class="container">
+
+    <div
+      class="section-header"
+      data-aos="fade-up"
+    >
+
+      <div class="section-badge">
+
+        <i class="fas fa-seedling"></i>
+
+        Tentang TimeBalance
+
+      </div>
+
+
+      <h2 class="section-title">
+
+        Produktif Tanpa Harus
+
+        <span>Kehilangan Waktu Santai</span>
+
+      </h2>
+
+
+      <p class="section-desc">
+
+        TimeBalance menggabungkan manajemen tugas,
+        fokus, dan sistem reward agar bekerja dan
+        beristirahat terasa lebih seimbang.
+
+      </p>
+
+    </div>
+
+
+    <div
+      class="feature-grid"
+      data-aos="fade-up"
+      data-aos-delay="80"
+    >
+
+      <div class="feature-card">
+
+        <div class="feature-icon">
+
+          <i class="fas fa-list-check"></i>
+
+        </div>
+
+        <h3>
+          Smart To-Do List
+        </h3>
+
+        <p>
+          Susun tugas, tentukan prioritas,
+          dan pantau pekerjaan yang sudah selesai.
+        </p>
+
+      </div>
+
+
+      <div class="feature-card">
+
+        <div class="feature-icon">
+
+          <i class="fas fa-clock"></i>
+
+        </div>
+
+        <h3>
+          Pomodoro Timer
+        </h3>
+
+        <p>
+          Gunakan sesi fokus terstruktur agar
+          pekerjaan lebih terarah dan tidak mudah terdistraksi.
+        </p>
+
+      </div>
+
+
+      <div class="feature-card">
+
+        <div class="feature-icon">
+
+          <i class="fas fa-gift"></i>
+
+        </div>
+
+        <h3>
+          Leisure Time Wallet
+        </h3>
+
+        <p>
+          Dapatkan waktu santai sebagai reward
+          setelah berhasil menyelesaikan tugas.
+        </p>
+
+      </div>
+
+
+      <div class="feature-card">
+
+        <div class="feature-icon">
+
+          <i class="fas fa-chart-line"></i>
+
+        </div>
+
+        <h3>
+          Productivity Analytics
+        </h3>
+
+        <p>
+          Lihat perkembangan produktivitas Anda
+          dan pahami kebiasaan kerja dengan lebih baik.
+        </p>
+
+      </div>
+
+    </div>
+
+  </div>
+
+</section>
+
+
+<!-- =====================================================
+     WORK REWARD
+===================================================== -->
+
+<section
+  style="background:var(--card-bg)"
+>
+
+  <div class="container">
+
+    <div class="work-grid">
+
+      <div data-aos="fade-right">
+
+        <div class="section-badge">
+
+          <i class="fas fa-arrows-rotate"></i>
+
+          Cara Kerja
+
+        </div>
+
+
+        <h2 class="section-title">
+
+          Selesaikan Tugas,
+
+          <span>Dapatkan Reward</span>
+
+        </h2>
+
+
+        <p class="section-desc">
+
+          TimeBalance menggunakan konsep
+          Work–Reward Mechanism untuk membantu
+          Anda membangun kebiasaan produktif.
+
+        </p>
+
+
+        <div class="work-list">
+
+          <div class="work-item">
+
+            <div class="work-number">
+              1
+            </div>
+
+            <div>
+
+              <strong>
+                Buat tugas
+              </strong>
+
+              <p>
+                Masukkan pekerjaan yang ingin diselesaikan.
+              </p>
+
+            </div>
+
+          </div>
+
+
+          <div class="work-item">
+
+            <div class="work-number">
+              2
+            </div>
+
+            <div>
+
+              <strong>
+                Fokus bekerja
+              </strong>
+
+              <p>
+                Gunakan Pomodoro untuk menjaga fokus.
+              </p>
+
+            </div>
+
+          </div>
+
+
+          <div class="work-item">
+
+            <div class="work-number">
+              3
+            </div>
+
+            <div>
+
+              <strong>
+                Selesaikan tugas
+              </strong>
+
+              <p>
+                Tandai pekerjaan yang telah selesai.
+              </p>
+
+            </div>
+
+          </div>
+
+
+          <div class="work-item">
+
+            <div class="work-number">
+              4
+            </div>
+
+            <div>
+
+              <strong>
+                Dapatkan waktu santai
+              </strong>
+
+              <p>
+                Waktu santai menjadi reward atas produktivitas Anda.
+              </p>
+
+            </div>
+
+          </div>
+
+        </div>
+
+      </div>
+
+
+      <div
+        class="reward-card"
+        data-aos="fade-left"
+      >
+
+        <div class="reward-head">
+
+          <strong>
+            Leisure Time Wallet
+          </strong>
+
+          <span>
+            <i class="fas fa-gift"></i>
+            Reward
+          </span>
+
+        </div>
+
+
+        <div class="wallet">
+
+          <div class="wallet-label">
+            Waktu santai tersedia
+          </div>
+
+          <div class="wallet-value">
+            45 menit
+          </div>
+
+          <div class="wallet-note">
+            Hasil dari tugas yang berhasil diselesaikan
+          </div>
+
+        </div>
+
+
+        <div>
+
+          <div
+            style="
+              display:flex;
+              justify-content:space-between;
+              font-size:.78rem;
+            "
+          >
+
+            <span>
+              Produktivitas hari ini
+            </span>
+
+            <strong>
+              72%
+            </strong>
+
+          </div>
+
+
+          <div class="progress">
+
+            <div class="progress-bar"></div>
+
+          </div>
+
+        </div>
+
+      </div>
+
+    </div>
+
+  </div>
+
+</section>
+
+
+<!-- =====================================================
+     QUICK NAVIGATION
+===================================================== -->
+
+<section>
+
+  <div class="container">
+
+    <div
+      class="section-header"
+      data-aos="fade-up"
+    >
+
+      <div class="section-badge">
+
+        <i class="fas fa-compass"></i>
+
+        Jelajahi TimeBalance
+
+      </div>
+
+
+      <h2 class="section-title">
+
+        Semua yang Anda
+
+        <span>Butuhkan</span>
+
+      </h2>
+
+    </div>
+
+
+    <div
+      class="feature-grid"
+      data-aos="fade-up"
+    >
+
+      <a
+        href="about.html"
+        class="feature-card"
+        style="text-decoration:none;color:inherit"
+      >
+
+        <div class="feature-icon">
+          <i class="fas fa-seedling"></i>
+        </div>
+
+        <h3>
+          Tentang Kami
+        </h3>
+
+        <p>
+          Kenali konsep dan tujuan TimeBalance.
+        </p>
+
+      </a>
+
+
+      <a
+        href="info.html"
+        class="feature-card"
+        style="text-decoration:none;color:inherit"
+      >
+
+        <div class="feature-icon">
+          <i class="fas fa-circle-info"></i>
+        </div>
+
+        <h3>
+          Info & FAQ
+        </h3>
+
+        <p>
+          Pelajari cara kerja dan jawaban pertanyaan umum.
+        </p>
+
+      </a>
+
+
+      <a
+        href="pricing.html"
+        class="feature-card"
+        style="text-decoration:none;color:inherit"
+      >
+
+        <div class="feature-icon">
+          <i class="fas fa-tags"></i>
+        </div>
+
+        <h3>
+          Harga
+        </h3>
+
+        <p>
+          Mulai dari Free hingga Premium Rp50.000/tahun.
+        </p>
+
+      </a>
+
+
+      <a
+        href="payment.html"
+        class="feature-card"
+        style="text-decoration:none;color:inherit"
+      >
+
+        <div class="feature-icon">
+          <i class="fas fa-qrcode"></i>
+        </div>
+
+        <h3>
+          Pembayaran
+        </h3>
+
+        <p>
+          Pilih paket Premium dan lakukan pembayaran via QRIS.
+        </p>
+
+      </a>
+
+    </div>
+
+  </div>
+
+</section>
+
+
+<!-- =====================================================
+     PRICING MINI
+===================================================== -->
+
+<section
+  style="background:var(--card-bg)"
+>
+
+  <div class="container">
+
+    <div
+      class="section-header"
+      data-aos="fade-up"
+    >
+
+      <div class="section-badge">
+
+        <i class="fas fa-crown"></i>
+
+        Pilihan Paket
+
+      </div>
+
+
+      <h2 class="section-title">
+
+        Mulai dari
+
+        <span>Gratis</span>
+
+      </h2>
+
+
+      <p class="section-desc">
+
+        Gunakan versi Free selamanya atau upgrade
+        ke Premium sesuai kebutuhan Anda.
+
+      </p>
+
+    </div>
+
+
+    <div
+      class="feature-grid"
+      data-aos="fade-up"
+    >
+
+      <div class="feature-card">
+
+        <div class="feature-icon">
+          <i class="fas fa-gift"></i>
+        </div>
+
+        <h3>
+          Free
+        </h3>
+
+        <p>
+          Rp 0 — gunakan fitur dasar TimeBalance
+          tanpa batas waktu.
+        </p>
+
+        <a
+          href="download.html"
+          class="btn btn-primary"
+          style="margin-top:18px"
+        >
+          Download Gratis
+        </a>
+
+      </div>
+
+
+      <div class="feature-card">
+
+        <div class="feature-icon">
+          <i class="fas fa-fire"></i>
+        </div>
+
+        <h3>
+          Premium Bulanan
+        </h3>
+
+        <p>
+          Rp 19.000/bulan dengan fitur Premium
+          dan bebas iklan.
+        </p>
+
+        <a
+          href="payment.html?plan=monthly"
+          class="btn btn-primary"
+          style="margin-top:18px"
+        >
+          Pilih Bulanan
+        </a>
+
+      </div>
+
+
+      <div class="feature-card">
+
+        <div class="feature-icon">
+          <i class="fas fa-calendar-check"></i>
+        </div>
+
+        <h3>
+          Premium Tahunan
+        </h3>
+
+        <p>
+          Rp 50.000/tahun untuk pengalaman Premium
+          yang lebih hemat.
+        </p>
+
+        <a
+          href="payment.html?plan=annual"
+          class="btn btn-primary"
+          style="margin-top:18px"
+        >
+          Pilih Tahunan
+        </a>
+
+      </div>
+
+
+      <div class="feature-card">
+
+        <div class="feature-icon">
+          <i class="fas fa-download"></i>
+        </div>
+
+        <h3>
+          Download APK
+        </h3>
+
+        <p>
+          Akses halaman download untuk mendapatkan
+          aplikasi TimeBalance.
+        </p>
+
+        <a
+          href="download.html"
+          class="btn btn-primary"
+          style="margin-top:18px"
+        >
+          Download
+        </a>
+
+      </div>
+
+    </div>
+
+  </div>
+
+</section>
+
+
+<!-- =====================================================
+     CTA
+===================================================== -->
+
+<section>
+
+  <div class="container">
+
+    <div
+      class="cta-box"
+      data-aos="zoom-in"
+    >
+
+      <h2>
+        Saatnya Mengatur Waktu Anda
+      </h2>
+
+
+      <p>
+
+        Jangan biarkan waktu berlalu tanpa arah.
+        Selesaikan pekerjaan, dapatkan reward,
+        dan nikmati waktu santai tanpa rasa bersalah.
+
+      </p>
+
+
+      <a
+        href="download.html"
+        class="btn-white"
+      >
+
+        <i class="fas fa-download"></i>
+
+        Mulai dengan TimeBalance
+
+      </a>
+
+    </div>
+
+  </div>
+
+</section>
+
+
+<!-- =====================================================
+     FOOTER
+===================================================== -->
+
+<footer>
+
+  <div class="container">
+
+    <div class="footer-inner">
+
+
+      <div class="footer-brand">
+
+        <div class="logo-txt">
+
+          <span class="time">
+            Time
+          </span>
+
+          <span class="bal">
+            Balance
+          </span>
+
+        </div>
+
+
+        <p>
+
+          Aplikasi manajemen waktu dan produktivitas
+          dengan Work–Reward Mechanism.
+
+        </p>
+
+
+        <div class="footer-social">
+
+          <a
+            href="https://www.facebook.com/share/1AvatuDTF9/?mibextid=wwXIfr"
+            aria-label="Facebook"
+            target="_blank"
+            rel="noopener"
+          >
+            <i class="fab fa-facebook-f"></i>
+          </a>
+
+
+          <a
+            href="https://www.instagram.com/timebalance_"
+            aria-label="Instagram"
+            target="_blank"
+            rel="noopener"
+          >
+            <i class="fab fa-instagram"></i>
+          </a>
+
+
+          <a
+            href="https://www.tiktok.com/@timebalance1"
+            aria-label="TikTok"
+            target="_blank"
+            rel="noopener"
+          >
+            <i class="fab fa-tiktok"></i>
+          </a>
+
+        </div>
+
+      </div>
+
+
+      <div class="footer-col">
+
+        <h4>
+          Navigasi
+        </h4>
+
+        <ul>
+
+          <li>
+            <a href="index.html">
+              Home
+            </a>
+          </li>
+
+          <li>
+            <a href="about.html">
+              About
+            </a>
+          </li>
+
+          <li>
+            <a href="info.html">
+              Info &amp; FAQ
+            </a>
+          </li>
+
+          <li>
+            <a href="content.html">
+              Fitur
+            </a>
+          </li>
+
+          <li>
+            <a href="pricing.html">
+              Harga
+            </a>
+          </li>
+
+          <li>
+            <a href="payment.html">
+              Bayar
+            </a>
+          </li>
+
+          <li>
+            <a href="download.html">
+              Download APK
+            </a>
+          </li>
+
+        </ul>
+
+      </div>
+
+
+      <div class="footer-col">
+
+        <h4>
+          Kontak
+        </h4>
+
+        <ul>
+
+          <li>
+            <a href="mailto:nafalaziz016@gmail.com">
+              nafalaziz016@gmail.com
+            </a>
+          </li>
+
+          <li>
+            <a
+              href="https://www.instagram.com/timebalance_"
+              target="_blank"
+              rel="noopener"
+            >
+              @timebalance_
+            </a>
+          </li>
+
+        </ul>
+
+      </div>
+
+    </div>
+
+
+    <div class="footer-bottom">
+
+      <p>
+        © 2026 TimeBalance. All Rights Reserved.
+        Made with 💚 in Indonesia
+      </p>
+
+
+      <div class="footer-bottom-links">
+
+        <a href="#">
+          Privasi
+        </a>
+
+        <a href="#">
+          Ketentuan
+        </a>
+
+      </div>
+
+    </div>
+
+  </div>
+
+</footer>
+
+
+<!-- =====================================================
+     JAVASCRIPT
+===================================================== -->
+
+<script src="https://cdnjs.cloudflare.com/ajax/libs/aos/2.3.4/aos.js"></script>
+
+<script src="assets/js/main.js"></script>
+
+<script src="assets/js/navigation.js"></script>
+
+
+<script>
+  /* Pastikan AOS aktif meskipun konfigurasi main.js berbeda */
+  document.addEventListener("DOMContentLoaded", function () {
+
+    if (typeof AOS !== "undefined") {
+      AOS.init({
+        duration: 700,
+        once: true,
+        offset: 60
+      });
+    }
+
+  });
+</script>
+
+</body>
+</html>

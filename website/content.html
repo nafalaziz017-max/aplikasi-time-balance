@@ -1,351 +1,678 @@
-<!DOCTYPE html>                                                                                                                                                                                                                      
---------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------
-<html lang="id">                                                                                                                                                                                                                     
-<head>                                                                                                                                                                                                                               
-  <meta charset="UTF-8"/>                                                                                                                                                                                                            
-  <meta name="viewport" content="width=device-width,initial-scale=1.0"/>                                                                                                                                                             
-  <meta name="description" content="Fitur utama TimeBalance: Smart To-Do List, Pomodoro Timer, Leisure Time Wallet, dan Productivity Analytics."/>                                                                                   
-  <title>Fitur — TimeBalance</title>                                                                                                                                                                                                
-  <link rel="icon" type="image/jpeg" href="https://www.timebalanceruang-rasamyid.biz.id/logobaru1.jpeg"/>                                                                                                          
-  <link rel="preconnect" href="https://fonts.googleapis.com/"/>                                                                                                                                      
-  <link rel="preconnect" href="https://fonts.gstatic.com/" crossorigin/>                                                                                                                                
+<!DOCTYPE html>
+<html lang="id">
+<head>
+  <meta charset="UTF-8"/>
+  <meta name="viewport" content="width=device-width,initial-scale=1.0"/>
+  <meta name="description" content="Fitur utama TimeBalance: Smart To-Do List, Pomodoro Timer, Leisure Time Wallet, dan Productivity Analytics."/>
+  <title>Fitur — TimeBalance</title>
+
+  <link rel="icon" type="image/jpeg" href="logobaru1.jpeg"/>
+
+  <link rel="preconnect" href="https://fonts.googleapis.com"/>
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin/>
   <link href="https://fonts.googleapis.com/css2?family=Poppins:wght@300;400;500;600;700;800;900&display=swap" rel="stylesheet"/>
-  <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.0/css/all.min.css"/>                                             
-  <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/aos/2.3.4/aos.css"/>                                                                               
-  <link rel="stylesheet" href="https://www.timebalanceruang-rasamyid.biz.id/assets/css/style.css"/>                                                                                                          
-  <link rel="stylesheet" href="https://www.timebalanceruang-rasamyid.biz.id/assets/css/components.css"/>                                                                                                
-  <link rel="stylesheet" href="https://www.timebalanceruang-rasamyid.biz.id/assets/css/responsive.css"/>                                                                                                
-  <style>                                                                                                                                                                                                                            
-    .features-grid-4 {                                                                                                                                                                                                                
-      display: grid;                                                                                                                                                                                                                  
-      grid-template-columns: repeat(2, 1fr);                                                                                                                                                                                          
-      gap: 22px;                                                                                                                                                                                                                      
-      margin-top: 48px;                                                                                                                                                                                                               
-      max-width: 900px;                                                                                                                                                                                                               
-      margin-left: auto;                                                                                                                                                                                                              
-      margin-right: auto;                                                                                                                                                                                                             
-    }                                                                                                                                                                                                                                 
-    .compare-table {                                                                                                                                                                                                                  
-      width: 100%;                                                                                                                                                                                                                    
-      border-collapse: collapse;                                                                                                                                                                                                      
-      margin-top: 40px;                                                                                                                                                                                                               
-      border-radius: var(--radius);                                                                                                                                                                                                   
-      overflow: hidden;                                                                                                                                                                                                               
-      box-shadow: var(--shadow-sm);                                                                                                                                                                                                   
-    }                                                                                                                                                                                                                                 
-    .compare-table th {                                                                                                                                                                                                               
-      background: var(--hero-gradient);                                                                                                                                                                                               
-      color: #fff;                                                                                                                                                                                                                    
-      padding: 14px 18px;                                                                                                                                                                                                             
-      text-align: left;                                                                                                                                                                                                               
-      font-size: .85rem;                                                                                                                                                                                                              
-    }                                                                                                                                                                                                                                 
-    .compare-table td {                                                                                                                                                                                                               
-      padding: 13px 18px;                                                                                                                                                                                                             
-      font-size: .84rem;                                                                                                                                                                                                              
-      border-bottom: 1px solid var(--border);                                                                                                                                                                                         
-      background: var(--card-bg);                                                                                                                                                                                                     
-    }                                                                                                                                                                                                                                 
-    .compare-table tr:last-child td {                                                                                                                                                                                                
-      border-bottom: none;                                                                                                                                                                                                            
-    }                                                                                                                                                                                                                                 
-    .compare-table tr:nth-child(even) td {                                                                                                                                                                                           
-      background: var(--bg);                                                                                                                                                                                                          
-    }                                                                                                                                                                                                                                 
-    .tick {                                                                                                                                                                                                                           
-      color: var(--success);                                                                                                                                                                                                          
-      font-size: .9rem;                                                                                                                                                                                                               
-    }                                                                                                                                                                                                                                 
-    .cross {                                                                                                                                                                                                                          
-      color: #ccc;                                                                                                                                                                                                                    
-      font-size: .9rem;                                                                                                                                                                                                               
-    }                                                                                                                                                                                                                                 
-    @media(max-width:900px) {                                                                                                                                                                                                         
-      .features-grid-4 {                                                                                                                                                                                                              
-        grid-template-columns: 1fr 1fr;                                                                                                                                                                                               
-      }                                                                                                                                                                                                                               
-    }                                                                                                                                                                                                                                 
-    @media(max-width:600px) {                                                                                                                                                                                                         
-      .features-grid-4 {                                                                                                                                                                                                              
-        grid-template-columns: 1fr;                                                                                                                                                                                                   
-      }                                                                                                                                                                                                                               
-    }                                                                                                                                                                                                                                 
-  </style>                                                                                                                                                                                                                           
-</head>                                                                                                                                                                                                                              
-<body>                                                                                                                                                                                                                               
-<!-- LOADING -->                                                                                                                                                                                                                     
-<div id="loading">                                                                                                                                                                                                                   
-  <div class="loading-logo">                                                                                                                                                                                                         
-    <span>Time</span>Balance                                                                                                                                                                                                        
-  </div>                                                                                                                                                                                                                             
-  <div class="spinner"></div>                                                                                                                                                                                                       
-</div>                                                                                                                                                                                                                               
-<!-- BACK TO TOP -->                                                                                                                                                                                                                 
-<button id="btt" aria-label="Kembali ke atas" onclick="scrollTop()">                                                                                                                                                                 
-  <i class="fas fa-arrow-up"></i>                                                                                                                                                                                                   
-</button>                                                                                                                                                                                                                            
-<!-- MOBILE OVERLAY -->                                                                                                                                                                                                              
-<div class="mobile-overlay" id="mob-overlay" onclick="closeMobileMenu()"></div>                                                                                                                                                     
-<!-- MOBILE MENU -->                                                                                                                                                                                                                 
-<nav class="mobile-menu" id="mob-menu">                                                                                                                                                                                              
-  <a href="https://www.timebalanceruang-rasamyid.biz.id/index.html" onclick="closeMobileMenu()">                                                                                                                       
-    <i class="fas fa-home"></i> Home                                                                                                                                                                                                
-  </a>                                                                                                                                                                                                                               
-  <a href="https://www.timebalanceruang-rasamyid.biz.id/about.html" onclick="closeMobileMenu()">                                                                                                                       
-    <i class="fas fa-seedling"></i> About                                                                                                                                                                                           
-  </a>                                                                                                                                                                                                                               
-  <a href="https://www.timebalanceruang-rasamyid.biz.id/info.html" onclick="closeMobileMenu()">                                                                                                                         
-    <i class="fas fa-info-circle"></i> Info                                                                                                                                                                                         
-  </a>                                                                                                                                                                                                                               
-  <a href="https://www.timebalanceruang-rasamyid.biz.id/content.html" onclick="closeMobileMenu()">                                                                                                                   
-    <i class="fas fa-cube"></i> Fitur                                                                                                                                                                                               
-  </a>                                                                                                                                                                                                                               
-  <a href="https://www.timebalanceruang-rasamyid.biz.id/pricing.html" onclick="closeMobileMenu()">                                                                                                                   
-    <i class="fas fa-tag"></i> Harga                                                                                                                                                                                                
-  </a>                                                                                                                                                                                                                               
-  <a href="https://www.timebalanceruang-rasamyid.biz.id/payment.html" onclick="closeMobileMenu()">                                                                                                                   
-    <i class="fas fa-credit-card"></i> Bayar                                                                                                                                                                                        
-  </a>                                                                                                                                                                                                                               
-  <a href="https://www.timebalanceruang-rasamyid.biz.id/download.html" class="mob-dl" onclick="closeMobileMenu()">                                                                                                  
-    <i class="fas fa-download"></i> Download APK                                                                                                                                                                                    
-  </a>                                                                                                                                                                                                                               
-</nav>                                                                                                                                                                                                                               
-<!-- NAVBAR -->                                                                                                                                                                                                                      
-<header class="navbar" id="navbar">                                                                                                                                                                                                  
-  <div class="nav-inner">                                                                                                                                                                                                            
-    <a href="https://www.timebalanceruang-rasamyid.biz.id/index.html" class="nav-logo">                                                                                                                                
-      <img src="https://www.timebalanceruang-rasamyid.biz.id/logobaru1.jpeg" alt="TimeBalance logo"/>                                                                                                              
-      <span>                                                                                                                                                                                                                         
-        <span class="time">Time</span>                                                                                                                                                                                              
-        <span class="bal">Balance</span>                                                                                                                                                                                            
-      </span>                                                                                                                                                                                                                        
-    </a>                                                                                                                                                                                                                             
-    <nav class="nav-links">                                                                                                                                                                                                          
-      <a href="https://www.timebalanceruang-rasamyid.biz.id/index.html">Home</a>                                                                                                                                      
-      <a href="https://www.timebalanceruang-rasamyid.biz.id/about.html">About</a>                                                                                                                                     
-      <a href="https://www.timebalanceruang-rasamyid.biz.id/info.html">Info</a>                                                                                                                                        
-      <a href="https://www.timebalanceruang-rasamyid.biz.id/content.html">Fitur</a>                                                                                                                                 
-      <a href="https://www.timebalanceruang-rasamyid.biz.id/pricing.html">Harga</a>                                                                                                                                 
-      <a href="https://www.timebalanceruang-rasamyid.biz.id/payment.html">Bayar</a>                                                                                                                                 
-    </nav>                                                                                                                                                                                                                           
-    <div class="nav-actions">                                                                                                                                                                                                        
-      <button class="dark-toggle" onclick="toggleDark()">                                                                                                                                                                            
-        <i class="fas fa-moon dark-icon"></i>                                                                                                                                                                                       
-      </button>                                                                                                                                                                                                                      
-      <a href="https://www.timebalanceruang-rasamyid.biz.id/download.html" class="btn-nav-dl">                                                                                                                      
-        <i class="fas fa-download"></i>                                                                                                                                                                                             
-        Download APK                                                                                                                                                                                                                  
-      </a>                                                                                                                                                                                                                           
-      <button class="hamburger" onclick="openMobileMenu()">                                                                                                                                                                          
-        <span></span>                                                                                                                                                                                                               
-        <span></span>                                                                                                                                                                                                               
-        <span></span>                                                                                                                                                                                                               
-      </button>                                                                                                                                                                                                                      
-    </div>                                                                                                                                                                                                                           
-  </div>                                                                                                                                                                                                                             
-</header>                                                                                                                                                                                                                            
-<!-- PAGE HERO -->                                                                                                                                                                                                                   
-<div class="page-hero">                                                                                                                                                                                                              
-  <div class="container">                                                                                                                                                                                                            
-    <div class="section-badge">                                                                                                                                                                                                      
-      <i class="fas fa-cube"></i>                                                                                                                                                                                                   
-      Fitur Unggulan                                                                                                                                                                                                                  
-    </div>                                                                                                                                                                                                                           
-    <h1>Fitur <span>TimeBalance</span></h1>                                                                                                                                                                                       
-    <p>                                                                                                                                                                                                                              
-      Fitur sederhana yang membantu Anda mengatur tugas,                                                                                                                                                                              
-      menjaga fokus, dan menikmati waktu luang tanpa rasa bersalah.                                                                                                                                                                   
-    </p>                                                                                                                                                                                                                             
-  </div>                                                                                                                                                                                                                             
-</div>                                                                                                                                                                                                                               
-<!-- ALL FEATURES -->                                                                                                                                                                                                                
-<section aria-labelledby="h-features">                                                                                                                                                                                               
-  <div class="container">                                                                                                                                                                                                            
-    <div class="section-header" data-aos="fade-up">                                                                                                                                                                                  
-      <div class="section-badge">                                                                                                                                                                                                    
-        <i class="fas fa-th-large"></i>                                                                                                                                                                                             
-        Fitur Utama                                                                                                                                                                                                                   
-      </div>                                                                                                                                                                                                                         
-      <h2 class="section-title" id="h-features">                                                                                                                                                                                     
-        Fokus pada <span>Hal yang Penting</span>                                                                                                                                                                                    
-      </h2>                                                                                                                                                                                                                          
-      <p class="section-desc">                                                                                                                                                                                                       
-        TimeBalance menghadirkan empat fitur utama yang dirancang                                                                                                                                                                     
-        untuk membantu Anda bekerja lebih teratur, fokus, dan tetap                                                                                                                                                                   
-        memiliki waktu untuk menikmati hasilnya.                                                                                                                                                                                      
-      </p>                                                                                                                                                                                                                           
-    </div>                                                                                                                                                                                                                           
-    <div class="features-grid-4">                                                                                                                                                                                                    
-      <!-- FEATURE 1 -->                                                                                                                                                                                                             
-      <div class="feature-card" data-aos="fade-up" data-aos-delay="0">                                                                                                                                                               
-        <div class="feature-icon">                                                                                                                                                                                                   
-          <i class="fas fa-list-check"></i>                                                                                                                                                                                         
-        </div>                                                                                                                                                                                                                       
-        <h3>Smart To-Do List</h3>                                                                                                                                                                                                   
-        <p>                                                                                                                                                                                                                          
-          Catat dan kelola tugas dengan mudah berdasarkan prioritas                                                                                                                                                                   
-          dan waktu pengerjaan. Selesaikan tugas satu per satu                                                                                                                                                                        
-          agar pekerjaan terasa lebih teratur.                                                                                                                                                                                        
-        </p>                                                                                                                                                                                                                         
-        <div class="feature-tag">                                                                                                                                                                                                    
-          <i class="fas fa-check"></i> Gratis                                                                                                                                                                                       
-        </div>                                                                                                                                                                                                                       
-      </div>                                                                                                                                                                                                                         
-      <!-- FEATURE 2 -->                                                                                                                                                                                                             
-      <div class="feature-card" data-aos="fade-up" data-aos-delay="80">                                                                                                                                                              
-        <div class="feature-icon">                                                                                                                                                                                                   
-          <i class="fas fa-hourglass-half"></i>                                                                                                                                                                                     
-        </div>                                                                                                                                                                                                                       
-        <h3>Pomodoro Timer</h3>                                                                                                                                                                                                     
-        <p>                                                                                                                                                                                                                          
-          Gunakan sesi fokus dengan metode Pomodoro untuk membantu                                                                                                                                                                    
-          Anda berkonsentrasi pada satu tugas, kemudian beristirahat                                                                                                                                                                  
-          sejenak sebelum kembali bekerja.                                                                                                                                                                                            
-        </p>                                                                                                                                                                                                                         
-        <div class="feature-tag">                                                                                                                                                                                                    
-          <i class="fas fa-check"></i> Gratis                                                                                                                                                                                       
-        </div>                                                                                                                                                                                                                       
-      </div>                                                                                                                                                                                                                         
-      <!-- FEATURE 3 -->                                                                                                                                                                                                             
-      <div class="feature-card" data-aos="fade-up" data-aos-delay="160">                                                                                                                                                             
-        <div class="feature-icon">                                                                                                                                                                                                   
-          <i class="fas fa-wallet"></i>                                                                                                                                                                                             
-        </div>                                                                                                                                                                                                                       
-        <h3>Leisure Time Wallet</h3>                                                                                                                                                                                                
-        <p>                                                                                                                                                                                                                          
-          Dapatkan waktu hiburan setelah menyelesaikan tugas.                                                                                                                                                                         
-          Semakin produktif Anda, semakin banyak waktu yang bisa                                                                                                                                                                      
-          digunakan untuk bersantai dan menikmati hiburan.                                                                                                                                                                            
-        </p>                                                                                                                                                                                                                         
-        <div class="feature-tag">                                                                                                                                                                                                    
-          <i class="fas fa-check"></i> Gratis                                                                                                                                                                                       
-        </div>                                                                                                                                                                                                                       
-      </div>                                                                                                                                                                                                                         
-      <!-- FEATURE 4 -->                                                                                                                                                                                                             
-      <div class="feature-card" data-aos="fade-up" data-aos-delay="240">                                                                                                                                                             
-        <div class="feature-icon">                                                                                                                                                                                                   
-          <i class="fas fa-chart-line"></i>                                                                                                                                                                                         
-        </div>                                                                                                                                                                                                                       
-        <h3>Productivity Analytics</h3>                                                                                                                                                                                             
-        <p>                                                                                                                                                                                                                          
-          Lihat perkembangan produktivitas melalui ringkasan tugas                                                                                                                                                                    
-          yang selesai dan waktu fokus. Gunakan data sederhana ini                                                                                                                                                                    
-          untuk mengetahui kebiasaan dan meningkatkan produktivitas.                                                                                                                                                                  
-        </p>                                                                                                                                                                                                                         
-        <div class="feature-tag premium">                                                                                                                                                                                            
-          <i class="fas fa-crown"></i> Premium                                                                                                                                                                                      
-        </div>                                                                                                                                                                                                                       
-      </div>                                                                                                                                                                                                                         
-    </div>                                                                                                                                                                                                                           
-  </div>                                                                                                                                                                                                                             
-</section>                                                                                                                                                                                                                           
-<!-- CTA -->
-<section style="background:var(--hero-gradient);padding:72px 0;text-align:center">
-  <div class="container">
-    <div data-aos="fade-up">
-      <h2 style="font-size:clamp(1.8rem,3vw,2.4rem);font-weight:800;color:#fff;margin-bottom:12px">
-        Mulai Produktif, <span style="color:var(--gold-light)">Nikmati Reward</span>
-      </h2>
-      <p style="color:rgba(255,255,255,.75);margin-bottom:28px;max-width:480px;margin-left:auto;margin-right:auto">
-        Selesaikan tugas, bangun kebiasaan produktif, lalu nikmati waktu luang Anda dengan TimeBalance.
-      </p>
-      <div style="display:flex;gap:14px;justify-content:center;flex-wrap:wrap">
-        <a href="download.html" class="btn btn-primary"><i class="fas fa-download"></i> Download APK Gratis</a>
-        <a href="pricing.html" class="btn btn-outline"><i class="fas fa-crown"></i> Lihat Paket Premium</a>
-      </div>
+
+  <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.0/css/all.min.css"/>
+  <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/aos/2.3.4/aos.css"/>
+
+  <link rel="stylesheet" href="assets/css/style.css"/>
+  <link rel="stylesheet" href="assets/css/components.css"/>
+  <link rel="stylesheet" href="assets/css/responsive.css"/>
+
+  <style>
+    .features-grid-4 {
+      display: grid;
+      grid-template-columns: repeat(2, 1fr);
+      gap: 22px;
+      margin-top: 48px;
+      max-width: 900px;
+      margin-left: auto;
+      margin-right: auto;
+    }
+
+    .compare-table {
+      width: 100%;
+      border-collapse: collapse;
+      margin-top: 40px;
+      border-radius: var(--radius);
+      overflow: hidden;
+      box-shadow: var(--shadow-sm);
+    }
+
+    .compare-table th {
+      background: var(--hero-gradient);
+      color: #fff;
+      padding: 14px 18px;
+      text-align: left;
+      font-size: .85rem;
+    }
+
+    .compare-table td {
+      padding: 13px 18px;
+      font-size: .84rem;
+      border-bottom: 1px solid var(--border);
+      background: var(--card-bg);
+    }
+
+    .compare-table tr:last-child td {
+      border-bottom: none;
+    }
+
+    .compare-table tr:nth-child(even) td {
+      background: var(--bg);
+    }
+
+    .tick {
+      color: var(--success);
+      font-size: .9rem;
+    }
+
+    .cross {
+      color: #ccc;
+      font-size: .9rem;
+    }
+
+    @media(max-width:900px) {
+      .features-grid-4 {
+        grid-template-columns: 1fr 1fr;
+      }
+    }
+
+    @media(max-width:600px) {
+      .features-grid-4 {
+        grid-template-columns: 1fr;
+      }
+    }
+  </style>
+</head>
+
+<body>
+
+<!-- LOADING -->
+<div id="loading">
+  <div class="loading-logo">
+    <span>Time</span>Balance
+  </div>
+  <div class="spinner"></div>
+</div>
+
+<!-- BACK TO TOP -->
+<button id="btt" aria-label="Kembali ke atas" onclick="scrollTop()">
+  <i class="fas fa-arrow-up"></i>
+</button>
+
+<!-- MOBILE OVERLAY -->
+<div class="mobile-overlay" id="mob-overlay" onclick="closeMobileMenu()"></div>
+
+<!-- MOBILE MENU -->
+<nav class="mobile-menu" id="mob-menu">
+
+  <a href="index.html" onclick="closeMobileMenu()">
+    <i class="fas fa-home"></i> Home
+  </a>
+
+  <a href="about.html" onclick="closeMobileMenu()">
+    <i class="fas fa-seedling"></i> About
+  </a>
+
+  <a href="info.html" onclick="closeMobileMenu()">
+    <i class="fas fa-info-circle"></i> Info
+  </a>
+
+  <a href="content.html" onclick="closeMobileMenu()">
+    <i class="fas fa-cube"></i> Fitur
+  </a>
+
+  <a href="pricing.html" onclick="closeMobileMenu()">
+    <i class="fas fa-tag"></i> Harga
+  </a>
+
+  <a href="payment.html" onclick="closeMobileMenu()">
+    <i class="fas fa-credit-card"></i> Bayar
+  </a>
+
+  <a href="download.html" class="mob-dl" onclick="closeMobileMenu()">
+    <i class="fas fa-download"></i> Download APK
+  </a>
+
+</nav>
+
+<!-- NAVBAR -->
+<header class="navbar" id="navbar">
+  <div class="nav-inner">
+
+    <a href="index.html" class="nav-logo">
+      <img src="logobaru1.jpeg" alt="TimeBalance logo"/>
+
+      <span>
+        <span class="time">Time</span>
+        <span class="bal">Balance</span>
+      </span>
+    </a>
+
+    <nav class="nav-links">
+      <a href="index.html">Home</a>
+      <a href="about.html">About</a>
+      <a href="info.html">Info</a>
+      <a href="content.html">Fitur</a>
+      <a href="pricing.html">Harga</a>
+      <a href="payment.html">Bayar</a>
+    </nav>
+
+    <div class="nav-actions">
+
+      <button class="dark-toggle" onclick="toggleDark()">
+        <i class="fas fa-moon dark-icon"></i>
+      </button>
+
+      <a href="download.html" class="btn-nav-dl">
+        <i class="fas fa-download"></i>
+        Download APK
+      </a>
+
+      <button class="hamburger" onclick="openMobileMenu()">
+        <span></span>
+        <span></span>
+        <span></span>
+      </button>
+
     </div>
+
+  </div>
+</header>
+
+<!-- PAGE HERO -->
+<div class="page-hero">
+  <div class="container">
+
+    <div class="section-badge">
+      <i class="fas fa-cube"></i>
+      Fitur Unggulan
+    </div>
+
+    <h1>Fitur <span>TimeBalance</span></h1>
+
+    <p>
+      Fitur sederhana yang membantu Anda mengatur tugas,
+      menjaga fokus, dan menikmati waktu luang tanpa rasa bersalah.
+    </p>
+
+  </div>
+</div>
+
+<!-- ALL FEATURES -->
+<section aria-labelledby="h-features">
+  <div class="container">
+
+    <div class="section-header" data-aos="fade-up">
+
+      <div class="section-badge">
+        <i class="fas fa-th-large"></i>
+        Fitur Utama
+      </div>
+
+      <h2 class="section-title" id="h-features">
+        Fokus pada <span>Hal yang Penting</span>
+      </h2>
+
+      <p class="section-desc">
+        TimeBalance menghadirkan empat fitur utama yang dirancang
+        untuk membantu Anda bekerja lebih teratur, fokus, dan tetap
+        memiliki waktu untuk menikmati hasilnya.
+      </p>
+
+    </div>
+
+    <div class="features-grid-4">
+
+      <!-- FEATURE 1 -->
+      <div class="feature-card" data-aos="fade-up" data-aos-delay="0">
+
+        <div class="feature-icon">
+          <i class="fas fa-list-check"></i>
+        </div>
+
+        <h3>Smart To-Do List</h3>
+
+        <p>
+          Catat dan kelola tugas dengan mudah berdasarkan prioritas
+          dan waktu pengerjaan. Selesaikan tugas satu per satu
+          agar pekerjaan terasa lebih teratur.
+        </p>
+
+        <div class="feature-tag">
+          <i class="fas fa-check"></i> Gratis
+        </div>
+
+      </div>
+
+      <!-- FEATURE 2 -->
+      <div class="feature-card" data-aos="fade-up" data-aos-delay="80">
+
+        <div class="feature-icon">
+          <i class="fas fa-hourglass-half"></i>
+        </div>
+
+        <h3>Pomodoro Timer</h3>
+
+        <p>
+          Gunakan sesi fokus dengan metode Pomodoro untuk membantu
+          Anda berkonsentrasi pada satu tugas, kemudian beristirahat
+          sejenak sebelum kembali bekerja.
+        </p>
+
+        <div class="feature-tag">
+          <i class="fas fa-check"></i> Gratis
+        </div>
+
+      </div>
+
+      <!-- FEATURE 3 -->
+      <div class="feature-card" data-aos="fade-up" data-aos-delay="160">
+
+        <div class="feature-icon">
+          <i class="fas fa-wallet"></i>
+        </div>
+
+        <h3>Leisure Time Wallet</h3>
+
+        <p>
+          Dapatkan waktu hiburan setelah menyelesaikan tugas.
+          Semakin produktif Anda, semakin banyak waktu yang bisa
+          digunakan untuk bersantai dan menikmati hiburan.
+        </p>
+
+        <div class="feature-tag">
+          <i class="fas fa-check"></i> Gratis
+        </div>
+
+      </div>
+
+      <!-- FEATURE 4 -->
+      <div class="feature-card" data-aos="fade-up" data-aos-delay="240">
+
+        <div class="feature-icon">
+          <i class="fas fa-chart-line"></i>
+        </div>
+
+        <h3>Productivity Analytics</h3>
+
+        <p>
+          Lihat perkembangan produktivitas melalui ringkasan tugas
+          yang selesai dan waktu fokus. Gunakan data sederhana ini
+          untuk mengetahui kebiasaan dan meningkatkan produktivitas.
+        </p>
+
+        <div class="feature-tag premium">
+          <i class="fas fa-crown"></i> Premium
+        </div>
+
+      </div>
+
+    </div>
+
   </div>
 </section>
 
-<!-- FOOTER -->                                                                                                                                                                                                                      
-<footer>                                                                                                                                                                                                                             
-  <div class="container">                                                                                                                                                                                                            
-    <div class="footer-inner">                                                                                                                                                                                                       
-      <div class="footer-brand">                                                                                                                                                                                                     
-        <div class="logo-txt">                                                                                                                                                                                                       
-          <span class="time">Time</span>                                                                                                                                                                                            
-          <span class="bal">Balance</span>                                                                                                                                                                                          
-        </div>                                                                                                                                                                                                                       
-        <p>                                                                                                                                                                                                                          
-          Aplikasi manajemen waktu dan produktivitas                                                                                                                                                                                  
-          dengan Work–Reward Mechanism.                                                                                                                                                                                               
-        </p>                                                                                                                                                                                                                         
-        <div class="footer-social">                                                                                                                                                                                                  
-          <a                                                                                                                                                                                                                         
-            href="https://www.facebook.com/share/1AvatuDTF9/?mibextid=wwXIfr"                                                                                           
-            aria-label="Facebook"                                                                                                                                                                                                     
-            target="_blank"                                                                                                                                                                                                          
-            rel="noopener"                                                                                                                                                                                                            
-          >                                                                                                                                                                                                                           
-            <i class="fab fa-facebook-f"></i>                                                                                                                                                                                       
-          </a>                                                                                                                                                                                                                       
-          <a                                                                                                                                                                                                                         
-            href="https://www.instagram.com/timebalance_?igsh=ZGgwaGxwZGZveGdx&utm_source=qr"                                                         
-            aria-label="Instagram"                                                                                                                                                                                                    
-            target="_blank"                                                                                                                                                                                                          
-            rel="noopener"                                                                                                                                                                                                            
-          >                                                                                                                                                                                                                           
-            <i class="fab fa-instagram"></i>                                                                                                                                                                                        
-          </a>                                                                                                                                                                                                                       
-          <a                                                                                                                                                                                                                         
-            href="https://www.tiktok.com/@timebalance1?_r=1&_t=ZS-97Hd7sNsI6M"                                                                                       
-            aria-label="TikTok"                                                                                                                                                                                                       
-            target="_blank"                                                                                                                                                                                                          
-            rel="noopener"                                                                                                                                                                                                            
-          >                                                                                                                                                                                                                           
-            <i class="fab fa-tiktok"></i>                                                                                                                                                                                           
-          </a>                                                                                                                                                                                                                       
-        </div>                                                                                                                                                                                                                       
-      </div>                                                                                                                                                                                                                         
-      <div class="footer-col">                                                                                                                                                                                                       
-        <h4>Navigasi</h4>                                                                                                                                                                                                           
-        <ul>                                                                                                                                                                                                                         
-          <li>                                                                                                                                                                                                                       
-            <a href="https://www.timebalanceruang-rasamyid.biz.id/index.html">Home</a>                                                                                                                                
-          </li>                                                                                                                                                                                                                      
-          <li>                                                                                                                                                                                                                       
-            <a href="https://www.timebalanceruang-rasamyid.biz.id/about.html">About</a>                                                                                                                               
-          </li>                                                                                                                                                                                                                      
-          <li>                                                                                                                                                                                                                       
-            <a href="https://www.timebalanceruang-rasamyid.biz.id/info.html">Info &amp; FAQ</a>                                                                                                                        
-          </li>                                                                                                                                                                                                                      
-          <li>                                                                                                                                                                                                                       
-            <a href="https://www.timebalanceruang-rasamyid.biz.id/content.html">Fitur</a>                                                                                                                           
-          </li>                                                                                                                                                                                                                      
-          <li>                                                                                                                                                                                                                       
-            <a href="https://www.timebalanceruang-rasamyid.biz.id/pricing.html">Harga</a>                                                                                                                           
-          </li>                                                                                                                                                                                                                      
-          <li>                                                                                                                                                                                                                       
-            <a href="https://www.timebalanceruang-rasamyid.biz.id/download.html">Download APK</a>                                                                                                                  
-          </li>                                                                                                                                                                                                                      
-        </ul>                                                                                                                                                                                                                        
-      </div>                                                                                                                                                                                                                         
-      <div class="footer-col">                                                                                                                                                                                                       
-        <h4>Kontak</h4>                                                                                                                                                                                                             
-        <ul>                                                                                                                                                                                                                         
-          <li>                                                                                                                                                                                                                       
-            <a href="mailto:nafalaziz016@gmail.com">                                                                                                                                              
-              nafalaziz016@gmail.com                                                                                                                                                                                                 
-            </a>                                                                                                                                                                                                                     
-          </li>                                                                                                                                                                                                                      
-        </ul>                                                                                                                                                                                                                        
-      </div>                                                                                                                                                                                                                         
-    </div>                                                                                                                                                                                                                           
-    <div class="footer-bottom">                                                                                                                                                                                                      
-      <p>                                                                                                                                                                                                                            
-        © 2026 TimeBalance. All Rights Reserved.                                                                                                                                                                                      
-        Made with 💚 in Indonesia                                                                                                                                                                                                     
-      </p>                                                                                                                                                                                                                           
-      <div class="footer-bottom-links">                                                                                                                                                                                              
-        <a href="https://www.timebalanceruang-rasamyid.biz.id/content#">Privasi</a>                                                                                                                                            
-        <a href="https://www.timebalanceruang-rasamyid.biz.id/content#">Ketentuan</a>                                                                                                                                          
-      </div>                                                                                                                                                                                                                         
-    </div>                                                                                                                                                                                                                           
-  </div>                                                                                                                                                                                                                             
-</footer>                                                                                                                                                                                                                            
-<!-- SCRIPTS -->                                                                                                                                                                                                                     
-<script src="https://cdnjs.cloudflare.com/ajax/libs/aos/2.3.4/aos.js"></script>                                                                                          
-<script src="https://www.timebalanceruang-rasamyid.biz.id/assets/js/main.js"></script>                                                                                                                         
-<script src="https://www.timebalanceruang-rasamyid.biz.id/assets/js/navigation.js"></script>                                                                                                             
-</body>                                                                                                                                                                                                                              
-</html>                                                                                                                                                                                                                              
+<!-- WORK REWARD MECHANISM -->
+<section style="background:var(--card-bg)" aria-labelledby="h-work-reward">
+
+  <div class="container">
+
+    <div class="section-header" data-aos="fade-up">
+
+      <div class="section-badge">
+        <i class="fas fa-arrows-rotate"></i>
+        Cara Kerja
+      </div>
+
+      <h2 class="section-title" id="h-work-reward">
+        Work <span>→ Reward</span>
+      </h2>
+
+      <p class="section-desc">
+        TimeBalance menggunakan konsep sederhana:
+        selesaikan pekerjaan terlebih dahulu, kemudian nikmati waktu luang sebagai reward.
+      </p>
+
+    </div>
+
+    <div class="features-grid-4">
+
+      <div class="feature-card" data-aos="fade-up">
+
+        <div class="feature-icon">
+          <i class="fas fa-list-check"></i>
+        </div>
+
+        <h3>1. Tentukan Tugas</h3>
+
+        <p>
+          Masukkan tugas yang ingin diselesaikan dan tentukan
+          prioritasnya.
+        </p>
+
+      </div>
+
+      <div class="feature-card" data-aos="fade-up" data-aos-delay="80">
+
+        <div class="feature-icon">
+          <i class="fas fa-clock"></i>
+        </div>
+
+        <h3>2. Mulai Fokus</h3>
+
+        <p>
+          Gunakan Pomodoro Timer untuk membantu tetap fokus
+          sampai tugas selesai.
+        </p>
+
+      </div>
+
+      <div class="feature-card" data-aos="fade-up" data-aos-delay="160">
+
+        <div class="feature-icon">
+          <i class="fas fa-circle-check"></i>
+        </div>
+
+        <h3>3. Selesaikan</h3>
+
+        <p>
+          Setelah tugas selesai, TimeBalance mencatat
+          progres produktivitas Anda.
+        </p>
+
+      </div>
+
+      <div class="feature-card" data-aos="fade-up" data-aos-delay="240">
+
+        <div class="feature-icon">
+          <i class="fas fa-gift"></i>
+        </div>
+
+        <h3>4. Nikmati Reward</h3>
+
+        <p>
+          Waktu hiburan yang diperoleh dapat digunakan untuk
+          bersantai tanpa rasa bersalah.
+        </p>
+
+      </div>
+
+    </div>
+
+  </div>
+
+</section>
+
+<!-- COMPARISON TABLE -->
+<section aria-labelledby="h-compare">
+
+  <div class="container">
+
+    <div class="section-header" data-aos="fade-up">
+
+      <div class="section-badge">
+        <i class="fas fa-table"></i>
+        Perbandingan
+      </div>
+
+      <h2 class="section-title" id="h-compare">
+        Gratis vs <span>Premium</span>
+      </h2>
+
+      <p class="section-desc">
+        Pilih paket sesuai kebutuhan Anda.
+      </p>
+
+    </div>
+
+    <div
+      style="overflow-x:auto"
+      data-aos="fade-up"
+      data-aos-delay="80"
+    >
+
+      <table class="compare-table">
+
+        <thead>
+          <tr>
+            <th>Fitur</th>
+            <th>Gratis</th>
+            <th>Premium</th>
+          </tr>
+        </thead>
+
+        <tbody>
+
+          <tr>
+            <td>Smart To-Do List</td>
+            <td><i class="fas fa-check-circle tick"></i></td>
+            <td><i class="fas fa-check-circle tick"></i></td>
+          </tr>
+
+          <tr>
+            <td>Pomodoro Timer</td>
+            <td><i class="fas fa-check-circle tick"></i></td>
+            <td><i class="fas fa-check-circle tick"></i></td>
+          </tr>
+
+          <tr>
+            <td>Leisure Time Wallet</td>
+            <td><i class="fas fa-check-circle tick"></i></td>
+            <td><i class="fas fa-check-circle tick"></i></td>
+          </tr>
+
+          <tr>
+            <td>Productivity Analytics</td>
+            <td><i class="fas fa-times-circle cross"></i></td>
+            <td><i class="fas fa-check-circle tick"></i></td>
+          </tr>
+
+          <tr>
+            <td>Statistik Produktivitas</td>
+            <td><i class="fas fa-times-circle cross"></i></td>
+            <td><i class="fas fa-check-circle tick"></i></td>
+          </tr>
+
+          <tr>
+            <td>Bebas Iklan</td>
+            <td><i class="fas fa-times-circle cross"></i></td>
+            <td><i class="fas fa-check-circle tick"></i></td>
+          </tr>
+
+        </tbody>
+
+      </table>
+
+    </div>
+
+    <div style="text-align:center;margin-top:36px">
+
+      <a href="pricing.html" class="btn btn-primary">
+        <i class="fas fa-tag"></i>
+        Lihat Harga Paket
+      </a>
+
+    </div>
+
+  </div>
+
+</section>
+
+<!-- CTA -->
+<section
+  style="background:var(--hero-gradient);padding:72px 0;text-align:center"
+>
+
+  <div class="container">
+
+    <div data-aos="fade-up">
+
+      <h2
+        style="font-size:clamp(1.8rem,3vw,2.4rem);font-weight:800;color:#fff;margin-bottom:12px"
+      >
+        Mulai Produktif,
+        <span style="color:var(--gold-light)">
+          Nikmati Reward
+        </span>
+      </h2>
+
+      <p
+        style="color:rgba(255,255,255,.75);margin-bottom:28px;max-width:480px;margin-left:auto;margin-right:auto"
+      >
+        Selesaikan tugas, bangun kebiasaan produktif,
+        lalu nikmati waktu luang Anda dengan TimeBalance.
+      </p>
+
+      <div
+        style="display:flex;gap:14px;justify-content:center;flex-wrap:wrap"
+      >
+
+        <a href="download.html" class="btn btn-primary">
+          <i class="fas fa-download"></i>
+          Download APK Gratis
+        </a>
+
+        <a href="pricing.html" class="btn btn-outline">
+          <i class="fas fa-crown"></i>
+          Lihat Paket Premium
+        </a>
+
+      </div>
+
+    </div>
+
+  </div>
+
+</section>
+
+<!-- FOOTER -->
+<footer>
+
+  <div class="container">
+
+    <div class="footer-inner">
+
+      <div class="footer-brand">
+
+        <div class="logo-txt">
+          <span class="time">Time</span>
+          <span class="bal">Balance</span>
+        </div>
+
+        <p>
+          Aplikasi manajemen waktu dan produktivitas
+          dengan Work–Reward Mechanism.
+        </p>
+
+        <div class="footer-social">
+
+          <a
+            href="https://www.facebook.com/share/1AvatuDTF9/?mibextid=wwXIfr"
+            aria-label="Facebook"
+            target="_blank"
+            rel="noopener"
+          >
+            <i class="fab fa-facebook-f"></i>
+          </a>
+
+          <a
+            href="https://www.instagram.com/timebalance_?igsh=ZGgwaGxwZGZveGdx&utm_source=qr"
+            aria-label="Instagram"
+            target="_blank"
+            rel="noopener"
+          >
+            <i class="fab fa-instagram"></i>
+          </a>
+
+          <a
+            href="https://www.tiktok.com/@timebalance1?_r=1&_t=ZS-97Hd7sNsI6M"
+            aria-label="TikTok"
+            target="_blank"
+            rel="noopener"
+          >
+            <i class="fab fa-tiktok"></i>
+          </a>
+
+        </div>
+
+      </div>
+
+      <div class="footer-col">
+
+        <h4>Navigasi</h4>
+
+        <ul>
+
+          <li>
+            <a href="index.html">Home</a>
+          </li>
+
+          <li>
+            <a href="about.html">About</a>
+          </li>
+
+          <li>
+            <a href="info.html">Info &amp; FAQ</a>
+          </li>
+
+          <li>
+            <a href="content.html">Fitur</a>
+          </li>
+
+          <li>
+            <a href="pricing.html">Harga</a>
+          </li>
+
+          <li>
+            <a href="download.html">Download APK</a>
+          </li>
+
+        </ul>
+
+      </div>
+
+      <div class="footer-col">
+
+        <h4>Kontak</h4>
+
+        <ul>
+
+          <li>
+            <a href="mailto:nafalaziz016@gmail.com">
+              nafalaziz016@gmail.com
+            </a>
+          </li>
+
+        </ul>
+
+      </div>
+
+    </div>
+
+    <div class="footer-bottom">
+
+      <p>
+        © 2026 TimeBalance. All Rights Reserved.
+        Made with 💚 in Indonesia
+      </p>
+
+      <div class="footer-bottom-links">
+        <a href="#">Privasi</a>
+        <a href="#">Ketentuan</a>
+      </div>
+
+    </div>
+
+  </div>
+
+</footer>
+
+<!-- SCRIPTS -->
+<script src="https://cdnjs.cloudflare.com/ajax/libs/aos/2.3.4/aos.js"></script>
+<script src="assets/js/main.js"></script>
+<script src="assets/js/navigation.js"></script>
+
+</body>
+</html>

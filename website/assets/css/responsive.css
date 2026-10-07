@@ -1,0 +1,67 @@
+/* ========================================
+   TimeBalance — responsive.css
+   Breakpoints: 900px, 600px, 400px
+   ======================================== */
+
+@media (max-width: 900px) {
+  /* Nav */
+  .nav-links { display: none; }
+  .hamburger { display: flex; }
+
+  /* Grid resets */
+  .grid-2, .grid-3 { grid-template-columns: 1fr; }
+  .pricing-grid { grid-template-columns: 1fr; max-width: 400px; margin-left: auto; margin-right: auto; }
+  .pricing-card.featured { transform: none; }
+
+  /* Footer */
+  .footer-inner { grid-template-columns: 1fr 1fr; }
+
+  /* Page hero */
+  .page-hero { padding: 120px 0 60px; }
+
+  /* Sections */
+  section { padding: 64px 0; }
+
+  /* Steps */
+  .steps-grid { grid-template-columns: repeat(2, 1fr); }
+
+  /* Contact */
+  .contact-grid { grid-template-columns: 1fr; }
+
+  /* Payment */
+  .payment-grid { grid-template-columns: 1fr; }
+}
+
+@media (max-width: 600px) {
+  /* Base */
+  section { padding: 52px 0; }
+  .container { padding: 0 16px; }
+
+  /* Typography */
+  .section-title { font-size: 1.7rem; }
+
+  /* Grids */
+  .grid-2, .grid-3, .features-grid { grid-template-columns: 1fr; }
+  .footer-inner { grid-template-columns: 1fr; }
+  .steps-grid { grid-template-columns: 1fr; }
+
+  /* Hero (index) */
+  .hero-cta { flex-direction: column; align-items: flex-start; }
+  .hero-counters { gap: 10px; }
+  .counter-item { flex: 1; padding: 12px; }
+
+  /* Buttons */
+  .btn { padding: 12px 22px; font-size: .86rem; }
+
+  /* Footer */
+  .footer-bottom { flex-direction: column; text-align: center; }
+  .footer-bottom-links { justify-content: center; }
+
+  /* Mobile menu */
+  .mobile-menu { width: 100%; }
+}
+
+@media (max-width: 400px) {
+  .hero-cta .btn { width: 100%; justify-content: center; }
+  .qris-box { padding: 20px 16px; }
+}

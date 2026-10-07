@@ -6,7 +6,7 @@ const EMAIL = "nafalaziz016@gmail.com";
 const DEMO_TOGGLE = false;   // true = tampilkan sakelar "Mode Demo Premium" di Profil. Ubah ke false saat rilis.
 /* Token Premium: dibuat pemilik lewat tools/buat-token.html, diverifikasi di sini dengan KUNCI PUBLIK (aman dibaca siapa pun).
    Isi PUBLIC_KEY dengan baris yang muncul di alat pembuat token. Selama masih null, aplikasi menolak semua token. */
-const PUBLIC_KEY = {"kty":"EC","crv":"P-256","x":"hqPldvjg-nW-4DLSDrFvwysHQcebZo4EuyKRg4SdSB4","y":"7l8IS7VwFixDLFaz45GHZovVjDjUSmevYYf1lzuQPRE"};
+const PUBLIC_KEY = (window.TB_CONFIG && window.TB_CONFIG.TOKEN_PUBLIC_KEY) ? window.TB_CONFIG.TOKEN_PUBLIC_KEY : {"kty":"EC","crv":"P-256","x":"AT0Z8kHRr0VzlN6ijRZ_pvRj8gp3TJn71i3C9uTl3xs","y":"7IgJnqrQFa8W-WNoIcFZWdk_ndrrUhFWTWVyNFY9lLA"};
 const PLANS = { monthly: "Premium Bulanan", annual: "Premium Tahunan", demo: "Demo 3 Hari" };
 const b64d = s => Uint8Array.from(atob(s.replace(/-/g, "+").replace(/_/g, "/").padEnd(Math.ceil(s.length / 4) * 4, "=")), c => c.charCodeAt(0));
 async function verifyToken(raw) {
@@ -19,7 +19,9 @@ async function verifyToken(raw) {
     const ok = await crypto.subtle.verify({ name: "ECDSA", hash: "SHA-256" }, key, b64d(m[2]), new TextEncoder().encode("TB1." + m[1]));
     if (!ok) return { err: "Token tidak valid" };
     const t = JSON.parse(new TextDecoder().decode(b64d(m[1])));
-    if (t.v !== 1 || typeof t.i !== "string" || !PLANS[t.p] || !Number.isInteger(t.d) || t.d < 1 || t.d > 400 || typeof t.n !== "string" || !t.n.trim()) return { err: "Token tidak valid" };
+    if (t.v !== 1 || t.iss !== "TimeBalance" || typeof t.i !== "string" || !PLANS[t.p] || !Number.isInteger(t.d) || t.d < 1 || t.d > 400 || typeof t.n !== "string" || !t.n.trim()) return { err: "Token tidak valid" };
+     if (t.p === "monthly" && t.d !== 31) return { err: "Token bulanan tidak valid" };
+     if (t.p === "annual" && t.d !== 366) return { err: "Token tahunan tidak valid" };
     if (t.x && Date.now() > t.x) return { err: "Token kedaluwarsa, hubungi admin" };
     return { id: t.i, plan: t.p, days: t.d, email: t.n.trim().toLowerCase() };
   } catch (e) { return { err: "Token tidak valid" }; }

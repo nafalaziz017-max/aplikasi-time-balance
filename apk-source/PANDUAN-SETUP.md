@@ -125,6 +125,3 @@ Server dan alur sudah saya uji dengan Firebase dan QRIS + Token Aktivasi **tirua
 9. Aplikasi memeriksa tanda tangan token dan kecocokan email akun. Jika cocok, Premium aktif.
 
 QRIS tidak disimpan di APK. Kunci rahasia pembuat token juga tidak boleh diunggah ke GitHub.
-
-## Admin Panel QRIS + Token
-Gunakan `admin/index.html` untuk mencatat pembayaran QRIS yang sudah diverifikasi dan menerbitkan token Premium dengan digital signature. Panel menyimpan data pembayaran secara lokal dan tidak menyimpan Private Key. Jangan unggah Private Key ke GitHub.
