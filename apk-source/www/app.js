@@ -9,6 +9,23 @@ const DEMO_TOGGLE = false;   // true = tampilkan sakelar "Mode Demo Premium" di 
 const PUBLIC_KEY = (window.TB_CONFIG && window.TB_CONFIG.TOKEN_PUBLIC_KEY) ? window.TB_CONFIG.TOKEN_PUBLIC_KEY : {"kty":"EC","crv":"P-256","x":"AT0Z8kHRr0VzlN6ijRZ_pvRj8gp3TJn71i3C9uTl3xs","y":"7IgJnqrQFa8W-WNoIcFZWdk_ndrrUhFWTWVyNFY9lLA"};
 const PLANS = { monthly: "Premium Bulanan", annual: "Premium Tahunan", demo: "Demo 3 Hari" };
 const b64d = s => Uint8Array.from(atob(s.replace(/-/g, "+").replace(/_/g, "/").padEnd(Math.ceil(s.length / 4) * 4, "=")), c => c.charCodeAt(0));
+function derToP1363(bytes, size) {
+  try {
+    if (bytes[0] !== 0x30) return null;
+    let p = 2;
+    if (bytes[1] & 0x80) p += (bytes[1] & 0x7f);
+    if (bytes[p++] !== 0x02) return null;
+    let lr = bytes[p++]; if (lr & 0x80) { const n = lr & 0x7f; lr = 0; for (let i=0;i<n;i++) lr = (lr<<8)|bytes[p++]; }
+    const r = bytes.slice(p, p+lr); p += lr;
+    if (bytes[p++] !== 0x02) return null;
+    let ls = bytes[p++]; if (ls & 0x80) { const n = ls & 0x7f; ls = 0; for (let i=0;i<n;i++) ls = (ls<<8)|bytes[p++]; }
+    const ss = bytes.slice(p, p+ls);
+    const out = new Uint8Array(size*2);
+    const rr = r[0]===0 ? r.slice(1) : r; const ss2 = ss[0]===0 ? ss.slice(1) : ss;
+    out.set(rr.slice(-size), size- Math.min(size,rr.length)); out.set(ss2.slice(-size), size*2-Math.min(size,ss2.length));
+    return out;
+  } catch { return null; }
+}
 async function verifyToken(raw) {
   const m = /^TB1\.([A-Za-z0-9_-]+)\.([A-Za-z0-9_-]+)$/.exec(String(raw).replace(/\s+/g, ""));
   if (!m) return { err: "Format token tidak dikenal" };
@@ -16,8 +33,15 @@ async function verifyToken(raw) {
   if (!(window.crypto && crypto.subtle)) return { err: "Perangkat tidak mendukung verifikasi token" };
   try {
     const key = await crypto.subtle.importKey("jwk", PUBLIC_KEY, { name: "ECDSA", namedCurve: "P-256" }, false, ["verify"]);
-    const ok = await crypto.subtle.verify({ name: "ECDSA", hash: "SHA-256" }, key, b64d(m[2]), new TextEncoder().encode("TB1." + m[1]));
-    if (!ok) return { err: "Token tidak valid" };
+    const message = new TextEncoder().encode("TB1." + m[1]);
+    const sig = b64d(m[2]);
+    let ok = await crypto.subtle.verify({ name: "ECDSA", hash: "SHA-256" }, key, sig, message);
+    // Kompatibilitas tambahan: beberapa implementasi lama dapat membawa ECDSA P-256 sebagai DER.
+    if (!ok) {
+      const raw = derToP1363(sig, 32);
+      if (raw) ok = await crypto.subtle.verify({ name: "ECDSA", hash: "SHA-256" }, key, raw, message);
+    }
+    if (!ok) return { err: "Signature token tidak cocok dengan kunci produksi" };
     const t = JSON.parse(new TextDecoder().decode(b64d(m[1])));
     if (t.v !== 1 || t.iss !== "TimeBalance" || typeof t.i !== "string" || !PLANS[t.p] || !Number.isInteger(t.d) || t.d < 1 || t.d > 400 || typeof t.n !== "string" || !t.n.trim()) return { err: "Token tidak valid" };
      if (t.p === "monthly" && t.d !== 31) return { err: "Token bulanan tidak valid" };
