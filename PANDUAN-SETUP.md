@@ -1,19 +1,19 @@
 # Panduan Setup: Akun & Pembayaran Otomatis TimeBalance
 
-Hasil akhirnya: pengguna daftar/masuk di aplikasi → klik **Bayar** → bayar QRIS di Midtrans → Premium aktif otomatis di akunnya.
+Hasil akhirnya: pengguna daftar/masuk di aplikasi → klik **Bayar** → bayar QRIS di QRIS + Token Aktivasi → Premium aktif otomatis di akunnya.
 Tidak ada token yang diketik, tidak ada konfirmasi manual.
 
 ```
 Aplikasi / Website ──login──▶ Firebase (akun email+password)
         │
-        └──"bayar"──▶ Server (Cloudflare Worker) ──▶ Midtrans (QRIS)
+        └──"bayar"──▶ Server (Cloudflare Worker) ──▶ QRIS + Token Aktivasi (QRIS)
                               ▲                          │
                               └──── webhook "lunas" ◀────┘
                               (server mencatat Premium untuk akun itu)
 Aplikasi ──"status saya?"──▶ Server ──▶ Premium aktif
 ```
 
-Anda perlu 3 akun gratis: **Firebase**, **Cloudflare**, **Midtrans**. Kerjakan berurutan. Semua langkah bisa lewat browser dan
+Anda perlu 3 akun gratis: **Firebase**, **Cloudflare**, **QRIS + Token Aktivasi**. Kerjakan berurutan. Semua langkah bisa lewat browser dan
 GitHub, tanpa menginstal apa pun di komputer.
 
 ---
@@ -35,7 +35,7 @@ GitHub, tanpa menginstal apa pun di komputer.
 5. Di repo GitHub proyek ini: **Settings → Secrets and variables → Actions → New repository secret**. Buat 3 secret:
    - `CLOUDFLARE_API_TOKEN` = token dari langkah 4
    - `CLOUDFLARE_ACCOUNT_ID` = Account ID
-   - `MIDTRANS_SERVER_KEY` = Server Key Midtrans (dari bagian C, **Sandbox** dulu)
+   - `MIDTRANS_SERVER_KEY` = Server Key QRIS + Token Aktivasi (dari bagian C, **Sandbox** dulu)
 6. Edit `worker/wrangler.toml` langsung di GitHub (ikon pensil):
    - `FIREBASE_PROJECT_ID` = Project ID dari A3
    - `SITE_URL` = alamat website Anda, mis. `https://timebalance.com` (tanpa `/` di akhir)
@@ -46,14 +46,14 @@ GitHub, tanpa menginstal apa pun di komputer.
 8. Alamat server Anda: `https://timebalance-api.<subdomain-akun-anda>.workers.dev`. Buka di browser. Jika muncul
    `{"ok":true,"service":"timebalance-api"}`, server hidup. (Subdomain terlihat di Workers & Pages → Overview.)
 
-## C. Midtrans (pembayaran QRIS) ±beberapa hari (verifikasi)
-1. Daftar di midtrans.com dan buat akun merchant. Verifikasi bisnis/identitas adalah proses mereka dan bisa memakan waktu. Cek syarat terbaru di situs Midtrans.
+## C. QRIS + Token Aktivasi (pembayaran QRIS) ±beberapa hari (verifikasi)
+1. Daftar di midtrans.com dan buat akun merchant. Verifikasi bisnis/identitas adalah proses mereka dan bisa memakan waktu. Cek syarat terbaru di situs QRIS + Token Aktivasi.
 2. Selama menunggu, pakai mode **Sandbox**: ganti ke environment **Sandbox** di dashboard, lalu **Settings → Access Keys**. Salin **Server Key**
    sandbox (bentuknya `SB-Mid-server-...`) ke secret `MIDTRANS_SERVER_KEY`.
 3. **Settings → Payment → Snap Preferences / Payment channels**: aktifkan **QRIS**.
 4. **Settings → Configuration → Payment Notification URL** isi:
    `https://timebalance-api.<subdomain>.workers.dev/webhook` lalu simpan.
-5. Midtrans umumnya meminta halaman **Privasi**, **Ketentuan**, dan kebijakan **refund** yang terisi di website. Di footer website Anda keduanya masih `#`. Isi sebelum go-live.
+5. QRIS + Token Aktivasi umumnya meminta halaman **Privasi**, **Ketentuan**, dan kebijakan **refund** yang terisi di website. Di footer website Anda keduanya masih `#`. Isi sebelum go-live.
 
 ## D. Website ±10 menit
 Salin dari folder `website/` ke repo website Anda (timpa file lama):
@@ -81,17 +81,17 @@ Lalu:
 ---
 
 ## Uji coba end-to-end (Sandbox)
-1. Di aplikasi: Profil → **Daftar** dengan email Anda → Premium → **Lanjut Bayar via QRIS** (halaman Midtrans terbuka).
-2. Selesaikan pembayaran dengan **simulator pembayaran Midtrans Sandbox** (QRIS tersedia di sana; cari "Midtrans payment simulator").
+1. Di aplikasi: Profil → **Daftar** dengan email Anda → Premium → **Lanjut Bayar via QRIS** (halaman QRIS + Token Aktivasi terbuka).
+2. Selesaikan pembayaran dengan **simulator pembayaran QRIS + Token Aktivasi Sandbox** (QRIS tersedia di sana; cari "QRIS + Token Aktivasi payment simulator").
 3. Kembali ke aplikasi. Premium harus aktif sendiri (jika belum, Profil → **Sinkronkan**).
 4. Uji juga: dari website `payment.html` → masuk dengan akun yang sama → bayar → halaman `sukses.html` menampilkan "Pembayaran berhasil".
 5. Keluar akun di aplikasi → masuk lagi → Premium harus pulih.
-6. Cek di Midtrans dashboard → **Transactions** bahwa transaksi tercatat, dan di Cloudflare → Workers → timebalance-api → **Logs** bila ada yang gagal.
+6. Cek di QRIS + Token Aktivasi dashboard → **Transactions** bahwa transaksi tercatat, dan di Cloudflare → Workers → timebalance-api → **Logs** bila ada yang gagal.
 
 ## Go-live
 1. Ubah `MIDTRANS_ENV = "production"` di `worker/wrangler.toml`.
 2. Ganti secret `MIDTRANS_SERVER_KEY` dengan Server Key **production**, lalu Run workflow Deploy.
-3. Di dashboard Midtrans **production**, isi lagi Payment Notification URL (pengaturan sandbox dan production terpisah) dan aktifkan QRIS.
+3. Di dashboard QRIS + Token Aktivasi **production**, isi lagi Payment Notification URL (pengaturan sandbox dan production terpisah) dan aktifkan QRIS.
 4. `DEMO_TOGGLE = false` di `www/app.js`.
 5. Bayar 1x dengan nominal asli, lalu refund bila perlu.
 
@@ -102,11 +102,11 @@ Untuk mengubah harga: edit `PLANS` di server **dan** teks harga di `payment.html
 ---
 
 ## Hal yang perlu Anda cek sendiri (jujur)
-Server dan alur sudah saya uji dengan Firebase dan Midtrans **tiruan**, bukan layanan aslinya. Pengujian asli hanya bisa dilakukan Anda di Sandbox:
-- **Rumus tanda tangan webhook Midtrans** (SHA-512 dari `order_id + status_code + gross_amount + Server Key`) saya tulis dari pengetahuan, bukan dari halaman dokumentasi yang terbaca utuh. Jika salah, webhook ditolak (HTTP 403) dan Premium tidak aktif. Jadi gagal dengan aman, tidak memberi Premium gratis. Tanda gejalanya: bayar di Sandbox berhasil tapi Premium tidak aktif, dan Midtrans menampilkan notifikasi gagal.
+Server dan alur sudah saya uji dengan Firebase dan QRIS + Token Aktivasi **tiruan**, bukan layanan aslinya. Pengujian asli hanya bisa dilakukan Anda di Sandbox:
+- **Rumus tanda tangan webhook QRIS + Token Aktivasi** (SHA-512 dari `order_id + status_code + gross_amount + Server Key`) saya tulis dari pengetahuan, bukan dari halaman dokumentasi yang terbaca utuh. Jika salah, webhook ditolak (HTTP 403) dan Premium tidak aktif. Jadi gagal dengan aman, tidak memberi Premium gratis. Tanda gejalanya: bayar di Sandbox berhasil tapi Premium tidak aktif, dan QRIS + Token Aktivasi menampilkan notifikasi gagal.
 - **Endpoint dan pesan error Firebase REST** juga dari pengetahuan. Jika ada pesan error aneh saat daftar/masuk, kirim ke saya.
-- **Cadangan cek status ke Midtrans** (saat webhook telat) mengandalkan balasan Midtrans memuat `signature_key`. Jika tidak, cadangan itu diabaikan dan webhook tetap jalan.
+- **Cadangan cek status ke QRIS + Token Aktivasi** (saat webhook telat) mengandalkan balasan QRIS + Token Aktivasi memuat `signature_key`. Jika tidak, cadangan itu diabaikan dan webhook tetap jalan.
 - **Aplikasi Android belum dijalankan di perangkat nyata.** Termasuk pembukaan halaman pembayaran lewat plugin Capacitor Browser.
-- **QRIS dari HP yang sama** merepotkan: QR harus discan aplikasi lain. Di halaman Midtrans, pengguna bisa memilih e-wallet (mis. GoPay/ShopeePay) jika Anda aktifkan, yang membuka aplikasi e-wallet langsung. Aktifkan lewat dashboard Midtrans.
+- **QRIS dari HP yang sama** merepotkan: QR harus discan aplikasi lain. Di halaman QRIS + Token Aktivasi, pengguna bisa memilih e-wallet (mis. GoPay/ShopeePay) jika Anda aktifkan, yang membuka aplikasi e-wallet langsung. Aktifkan lewat dashboard QRIS + Token Aktivasi.
 - Cloudflare KV bersifat *eventually consistent*: setelah bayar, Premium kadang baru terbaca sampai ±1 menit. Tombol **Sinkronkan** di Profil menyegarkannya.
 - Satu akun = satu Premium yang bisa dipakai di banyak HP (login yang sama). Ini wajar untuk model akun, tapi berarti akun bisa dibagikan.

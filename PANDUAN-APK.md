@@ -46,10 +46,10 @@ APK di atas adalah versi **debug** (untuk dipasang langsung / dibagikan). Play S
 3. Daftar akun Google Play Console (biaya sekali bayar ±US$25), siapkan ikon, screenshot, deskripsi, dan kebijakan privasi.
 
 ## 8. Akun & Premium otomatis
-Aplikasi sekarang punya akun (email + kata sandi) dan Premium terikat ke akun. Pembayaran lewat QRIS (Midtrans) diproses
+Aplikasi sekarang punya akun (email + kata sandi) dan Premium terikat ke akun. Pembayaran lewat QRIS (QRIS + Token Aktivasi) diproses
 otomatis: setelah bayar, Premium langsung aktif di akun, tanpa token atau kode.
 
-Cara memasang semuanya (Firebase, Cloudflare, Midtrans, website) ada di **PANDUAN-SETUP.md**. Kerjakan itu sekali, lalu isi
+Cara memasang semuanya (Firebase, Cloudflare, QRIS + Token Aktivasi, website) ada di **PANDUAN-SETUP.md**. Kerjakan itu sekali, lalu isi
 `www/tb-config.js` (2 nilai: API key Firebase dan alamat server). Selama masih berisi `GANTI-...`, tombol akun/bayar
 disembunyikan dan aplikasi tetap berjalan sebagai versi Gratis.
 

@@ -6,7 +6,7 @@ Versi ini diselaraskan dengan konfigurasi terbaru:
 - Mode Demo Premium dimatikan untuk rilis
 - Paket pembayaran default di aplikasi: Bulanan
 - SITE_URL website: https://timebalanceruang-rasamyid.biz.id/
-- Pembayaran otomatis menggunakan Firebase + Cloudflare Worker + Midtrans tetap memerlukan kredensial asli.
+- Pembayaran otomatis menggunakan Firebase + Cloudflare Worker + QRIS + Token Aktivasi tetap memerlukan kredensial asli.
 - Firebase API Key dan API_BASE sengaja tetap placeholder karena merupakan konfigurasi milik pemilik aplikasi.
 
 File utama:

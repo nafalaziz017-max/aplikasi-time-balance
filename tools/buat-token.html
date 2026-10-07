@@ -57,8 +57,7 @@
         <select id="plan">
           <option value="monthly">Premium Bulanan (31 hari)</option>
           <option value="annual">Premium Tahunan (366 hari)</option>
-          <option value="demo">Demo (3 hari)</option>
-        </select>
+                  </select>
       </div>
       <div>
         <label>Token harus diaktifkan dalam (hari)</label>
@@ -114,8 +113,8 @@ async function issueToken(privJwk, { plan, days, buyer, redeemDays }) {
 // CORE-END
 
 const $ = id => document.getElementById(id);
-const DAYS = { monthly: 31, annual: 366, demo: 3 };
-const NAMES = { monthly: "Premium Bulanan", annual: "Premium Tahunan", demo: "Demo 3 Hari" };
+const DAYS = { monthly: 31, annual: 366 };
+const NAMES = { monthly: "Premium Bulanan", annual: "Premium Tahunan" };
 let lastPriv = null;
 
 function say(msg, bad) { const s = $("status"); s.textContent = msg; s.className = bad ? "err" : "ok"; }

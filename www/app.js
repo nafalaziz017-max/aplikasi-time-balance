@@ -6,7 +6,7 @@ const EMAIL = "nafalaziz016@gmail.com";
 const DEMO_TOGGLE = false;   // true = tampilkan sakelar "Mode Demo Premium" di Profil. Ubah ke false saat rilis.
 /* Token Premium: dibuat pemilik lewat tools/buat-token.html, diverifikasi di sini dengan KUNCI PUBLIK (aman dibaca siapa pun).
    Isi PUBLIC_KEY dengan baris yang muncul di alat pembuat token. Selama masih null, aplikasi menolak semua token. */
-const PUBLIC_KEY = null;
+const PUBLIC_KEY = {"kty":"EC","crv":"P-256","x":"hqPldvjg-nW-4DLSDrFvwysHQcebZo4EuyKRg4SdSB4","y":"7l8IS7VwFixDLFaz45GHZovVjDjUSmevYYf1lzuQPRE"};
 const PLANS = { monthly: "Premium Bulanan", annual: "Premium Tahunan", demo: "Demo 3 Hari" };
 const b64d = s => Uint8Array.from(atob(s.replace(/-/g, "+").replace(/_/g, "/").padEnd(Math.ceil(s.length / 4) * 4, "=")), c => c.charCodeAt(0));
 async function verifyToken(raw) {
@@ -118,12 +118,10 @@ function openUrl(u) {
   const B = isNative() && CAP().Plugins && CAP().Plugins.Browser;
   if (B) B.open({ url: u }); else if (!window.open(u, "_blank", "noopener")) location.href = u;
 }
-async function buy() {
-  if (!AUTHOK()) return toast("Pembayaran belum dikonfigurasi");
-  if (!TBAuth.user()) return authSheet("in", "buy");
-  toast("Menyiapkan pembayaran…");
-  try { const o = await TBAuth.createOrder(S.plan); S.pendingOrder = o.orderId; save(); openUrl(o.redirectUrl); }
-  catch (e) { toast(e.message); }
+function buy() {
+  const base = SITE || "https://timebalanceruang-rasamyid.biz.id/";
+  const u = base.replace(/\/$/, "") + "/payment.html?plan=" + encodeURIComponent(S.plan);
+  openUrl(u);
 }
 function accountCard() {
   if (!AUTHOK()) return "";
@@ -310,7 +308,7 @@ function viewStats() {
 }
 
 /* ---------- paywall ---------- */
-const FEATS = [["lock", "Focus Lock", "Kunci distraksi saat sesi fokus"], ["shield", "Strict Mode", "Tanpa jeda & tanpa lewati"], ["bolt", "Dynamic Time Quota", "Rasio reward naik lewat streak"], ["chart", "Productivity Analytics", "Grafik harian, mingguan, bulanan"], ["star", "Achievement System", "Badge, level & XP"], ["sliders", "Custom Rule System", "Atur durasi & rasio sendiri"], ["file", "Export Laporan PDF", "Laporan evaluasi lengkap"], ["cloud", "Backup Data", "Cadangkan & pulihkan data"], ["crown", "Bebas Iklan", "Tanpa banner sama sekali"]];
+const FEATS = [["check", "Smart To-Do List", "Kelola tugas dan pantau tugas yang sudah selesai"], ["timer", "Pomodoro Timer", "Fokus dengan sesi kerja dan istirahat teratur"], ["wallet", "Leisure Time Wallet", "Dapatkan waktu santai sebagai reward produktivitas"], ["chart", "Productivity Analytics", "Pantau perkembangan produktivitas secara terukur"]];
 function paywall() {
   sheetKind = "paywall";
   const an = S.plan === "annual";
@@ -318,9 +316,9 @@ function paywall() {
   <div class="card">${FEATS.map(f => `<div class="li"><div class="ico gold">${ic(f[0])}</div><div>${f[1]}<small>${f[2]}</small></div><span class="ok">✓</span></div>`).join("")}</div>
   <div class="g2" style="margin:18px 0 8px"><button class="plan ${an ? "" : "on"}" data-act="plan" data-v="monthly"><span class="mu">Bulanan</span><b>${rp(19000)}</b><span class="mu">per bulan</span></button><button class="plan ${an ? "on" : ""}" data-act="plan" data-v="annual"><em>Hemat 78%</em><span class="mu">Tahunan</span><b>${rp(50000)}</b><span class="mu">≈ ${rp(4200)}/bulan</span></button></div>
   <p class="mu center" style="margin-bottom:12px">${an ? "+ Early Access, Premium Badge & prioritas support" : "Batalkan kapan saja"} · Garansi 7 hari</p>
-  <button class="b gold full" data-act="buy">Lanjut Bayar via QRIS</button>
-  <p class="mu center" style="margin-top:8px">Setelah bayar, kembali ke aplikasi. Premium aktif otomatis di akunmu.${AUTHOK() && !TBAuth.user() ? ` Sudah punya Premium? <a class="lnk" data-act="login">Masuk</a>` : ""}</p>
-  ${PUBLIC_KEY ? `<div class="card" style="margin-top:16px"><h3>Sudah bayar? Masukkan token aktivasi</h3><form data-form="code"><input name="code" placeholder="Tempel token di sini (TB1.…)" autocapitalize="off" autocomplete="off" autocorrect="off" spellcheck="false" required/><button class="b full">Aktifkan Premium</button></form><p class="mu">Token dikirim ke email setelah pembayaran diverifikasi.</p></div>` : ""}`, "full");
+  <button class="b gold full" data-act="buy">Bayar di Website</button>
+  <p class="mu center" style="margin-top:8px">QRIS hanya ditampilkan di website. Setelah pembayaran diverifikasi oleh admin, token Premium dikirim ke email pembeli.</p>
+  ${PUBLIC_KEY ? `<div class="card" style="margin-top:16px"><h3>Sudah bayar? Masukkan token aktivasi</h3><form data-form="code"><input name="code" placeholder="Tempel token di sini (TB1.… )" autocapitalize="off" autocomplete="off" autocorrect="off" spellcheck="false" required/><button class="b full">Aktifkan Premium</button></form><p class="mu">Token aktivasi dipakai langsung di aplikasi ini. QRIS tidak disimpan di aplikasi.</p></div>` : ""}`, "full");
 }
 
 /* ---------- onboarding ---------- */
@@ -350,7 +348,7 @@ function profile() {
   ${dp ? `<div class="card"><button class="b full" data-act="install">${ic("download")} Pasang Aplikasi ke Layar Utama</button></div>` : ""}
   <h2>Data ${p ? "" : "🔒"}</h2><div class="card"><p class="mu" style="margin-bottom:10px">Backup berupa file JSON — simpan di Drive/penyimpanan Anda.</p><div class="row wrap"><button class="b sm" data-act="export" ${dis}>${ic("cloud")} Backup</button><label class="b sm o" style="margin:0;${p ? "" : "opacity:.45"}">Pulihkan<input type="file" accept=".json" id="imp" hidden ${dis}/></label><button class="b sm red" data-act="reset">Hapus Data</button></div></div>
   <h2>Gratis vs Premium</h2><div class="card"><table class="c"><tr><th>Fitur</th><th>Gratis</th><th>Premium</th></tr>${tbl.map(r => `<tr><td>${r[0]}</td><td class="${r[1] ? "ok" : "no"}">${r[1] ? "✓" : "—"}</td><td class="ok">✓</td></tr>`).join("")}</table></div>
-  <h2>Bantuan</h2><div class="card" style="padding:4px 14px"><details><summary>Apa itu Work–Reward Mechanism?</summary><p class="mu">Kerja dulu, hiburan belakangan. Menit fokus dan tugas selesai mengisi dompet waktu santai yang bisa Anda pakai tanpa rasa bersalah.</p></details><details><summary>Bagaimana cara kerja Focus Lock?</summary><p class="mu">Versi web/PWA memakai layar penuh dan mendeteksi saat Anda meninggalkan aplikasi. Pemblokiran aplikasi lain secara paksa hanya bisa pada aplikasi Android native.</p></details><details><summary>Apakah data saya aman?</summary><p class="mu">Tugas, riwayat, dan dompet waktu tersimpan di perangkat Anda, tidak dikirim ke server. Jika Anda membuat akun, hanya email dan status Premium yang disimpan di server. Gunakan Backup untuk cadangan data.</p></details><details><summary>Bagaimana cara upgrade Premium?</summary><p class="mu">Pilih paket, bayar via QRIS, lalu masukkan kode aktivasi dari email.</p></details><details><summary>Notifikasi tidak muncul?</summary><p class="mu">Aktifkan izin notifikasi di Profil. Pengingat berjalan saat aplikasi terbuka/di latar belakang.</p></details></div>
+  <h2>Bantuan</h2><div class="card" style="padding:4px 14px"><details><summary>Apa itu Work–Reward Mechanism?</summary><p class="mu">Kerja dulu, hiburan belakangan. Menit fokus dan tugas selesai mengisi dompet waktu santai yang bisa Anda pakai tanpa rasa bersalah.</p></details><details><summary>Bagaimana cara kerja Focus Lock?</summary><p class="mu">Versi web/PWA memakai layar penuh dan mendeteksi saat Anda meninggalkan aplikasi. Pemblokiran aplikasi lain secara paksa hanya bisa pada aplikasi Android native.</p></details><details><summary>Apakah data saya aman?</summary><p class="mu">Tugas, riwayat, dan dompet waktu tersimpan di perangkat Anda, tidak dikirim ke server. Jika Anda membuat akun, hanya email dan status Premium yang disimpan di server. Gunakan Backup untuk cadangan data.</p></details><details><summary>Bagaimana cara upgrade Premium?</summary><p class="mu">Pilih paket di website, bayar melalui QRIS, lalu masukkan token aktivasi yang dikirim setelah pembayaran diverifikasi.</p></details><details><summary>Notifikasi tidak muncul?</summary><p class="mu">Aktifkan izin notifikasi di Profil. Pengingat berjalan saat aplikasi terbuka/di latar belakang.</p></details></div>
   <div class="card" style="padding:4px 14px"><details><summary>Tentang TimeBalance</summary><p class="mu">TimeBalance membantu mengurangi prokrastinasi dan menyeimbangkan kerja dengan hiburan lewat Work–Reward Mechanism. © 2026 · Made with 💚 in Indonesia.</p></details><details><summary>Kebijakan Privasi</summary><p class="mu">Kami tidak mengumpulkan, menjual, atau membagikan data pribadi Anda. Data tugas & progres disimpan lokal di perangkat.</p></details></div>
   <div class="row wrap" style="justify-content:center"><a class="b sm o" href="mailto:${EMAIL}">${ic("mail")} Email</a><a class="b sm o" href="https://www.instagram.com/timebalance_" target="_blank" rel="noopener">Instagram</a>${SITE ? `<a class="b sm o" href="${SITE}" target="_blank" rel="noopener">Website</a>` : ""}</div><p class="mu center" style="margin-top:14px">TimeBalance v2.0</p>`);
   const imp = $("#imp"); if (imp) imp.onchange = doImport;
