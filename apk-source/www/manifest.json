@@ -1,19 +1,26 @@
 {
-  "id": "./",
+  "id": "/",
   "name": "TimeBalance — Pomodoro & Work–Reward",
   "short_name": "TimeBalance",
   "description": "Kerja dulu, santai kemudian. Pomodoro Timer, To-Do, dan dompet waktu santai.",
   "lang": "id",
-  "start_url": "./index.html",
+  "dir": "ltr",
+  "start_url": "./index.html?source=pwa",
   "scope": "./",
   "display": "standalone",
+  "display_override": ["standalone", "minimal-ui"],
   "orientation": "portrait",
-  "background_color": "#f4f7f1",
-  "theme_color": "#3d6b35",
-  "categories": ["productivity"],
+  "background_color": "#f3f6ef",
+  "theme_color": "#2f5a28",
+  "categories": ["productivity", "education", "lifestyle"],
   "icons": [
     { "src": "icons/icon-192.png", "sizes": "192x192", "type": "image/png", "purpose": "any" },
     { "src": "icons/icon-512.png", "sizes": "512x512", "type": "image/png", "purpose": "any" },
     { "src": "icons/icon-maskable-512.png", "sizes": "512x512", "type": "image/png", "purpose": "maskable" }
+  ],
+  "shortcuts": [
+    { "name": "Mulai Fokus", "short_name": "Fokus", "url": "./index.html?tab=focus", "icons": [{ "src": "icons/icon-192.png", "sizes": "192x192" }] },
+    { "name": "Daftar Tugas", "short_name": "Tugas", "url": "./index.html?tab=tasks", "icons": [{ "src": "icons/icon-192.png", "sizes": "192x192" }] },
+    { "name": "Dompet Santai", "short_name": "Santai", "url": "./index.html?tab=wallet", "icons": [{ "src": "icons/icon-192.png", "sizes": "192x192" }] }
   ]
 }

@@ -4,30 +4,33 @@
 <meta charset="UTF-8"/>
 <meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover"/>
 <title>TimeBalance — Kerja Dulu, Santai Kemudian</title>
-<meta name="description" content="Pomodoro Timer & manajemen waktu dengan Work–Reward Mechanism."/>
+<meta name="description" content="Pomodoro Timer, To-Do, dan Leisure Time Wallet dengan Work–Reward Mechanism. Kerja dulu, santai kemudian."/>
 <meta name="theme-color" content="#2f5a28"/>
+<meta name="color-scheme" content="light dark"/>
 <link rel="manifest" href="manifest.json"/>
-<link rel="icon" href="icons/icon-192.png"/>
+<link rel="icon" type="image/png" href="icons/icon-192.png"/>
 <link rel="apple-touch-icon" href="icons/icon-192.png"/>
 <meta name="apple-mobile-web-app-capable" content="yes"/>
 <meta name="mobile-web-app-capable" content="yes"/>
+<meta name="apple-mobile-web-app-title" content="TimeBalance"/>
+<meta name="apple-mobile-web-app-status-bar-style" content="default"/>
+<meta name="format-detection" content="telephone=no"/>
 <link rel="stylesheet" href="style.css"/>
 </head>
-<body>
+<body class="locked">
 <div id="splash"><img src="icons/icon-192.png" alt=""/><b><span>Time</span>Balance</b><small>Kerja dulu, santai kemudian</small></div>
 <header class="top"><div><small id="sub"></small><h1 id="ttl">TimeBalance</h1></div>
   <div class="row"><span id="badge" class="pill"></span><button class="av" data-act="profile" id="av" aria-label="Profil"></button></div></header>
 <main id="view"></main>
 <nav id="nav"></nav>
 <div id="sheet" hidden></div>
-<div id="toast"></div>
+<div id="toast" role="status" aria-live="polite"></div>
 <div id="alert" class="alert" hidden></div>
 <section id="report"></section>
+<noscript><p style="padding:24px;font-family:sans-serif">TimeBalance membutuhkan JavaScript. Aktifkan JavaScript di peramban Anda.</p></noscript>
 <script src="tb-config.js"></script>
 <script src="tb-auth.js"></script>
 <script src="app.js"></script>
 <script src="pwa.js"></script>
 </body>
 </html>
-
-

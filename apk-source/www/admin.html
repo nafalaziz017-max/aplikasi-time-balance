@@ -1,0 +1,122 @@
+<!DOCTYPE html>
+<html lang="id">
+<head>
+<meta charset="UTF-8"/>
+<meta name="viewport" content="width=device-width, initial-scale=1"/>
+<meta name="robots" content="noindex,nofollow"/>
+<meta name="theme-color" content="#2f5a28"/>
+<title>Admin — TimeBalance</title>
+<style>
+:root{--g:#3d6b35;--gd:#2f5a28;--gold:#d4a937;--bg:#f3f6ef;--card:#fff;--bd:#e3eadd;--tx:#1b261a;--mu:#6a7766;--red:#d64545;--ok:#2e7d32}
+@media (prefers-color-scheme:dark){:root{--bg:#0e140e;--card:#182118;--bd:#273426;--tx:#ebf2e7;--mu:#9bad92}}
+*{box-sizing:border-box;margin:0;padding:0}
+body{font-family:system-ui,-apple-system,"Segoe UI",Roboto,sans-serif;background:var(--bg);color:var(--tx);padding:16px;min-height:100vh}
+.wrap{max-width:980px;margin:0 auto}
+h1{font-size:1.3rem}h2{font-size:1rem;margin-bottom:10px}
+.top{display:flex;justify-content:space-between;align-items:center;gap:10px;margin-bottom:16px}
+.top small{color:var(--mu)}
+.card{background:var(--card);border:1px solid var(--bd);border-radius:16px;padding:16px;margin-bottom:14px}
+.tiles{display:grid;grid-template-columns:repeat(auto-fit,minmax(130px,1fr));gap:10px;margin-bottom:14px}
+.tile{background:var(--card);border:1px solid var(--bd);border-radius:14px;padding:12px}.tile b{display:block;font-size:1.35rem;color:var(--g)}.tile span{font-size:.72rem;color:var(--mu)}
+.tabs{display:flex;gap:6px;margin-bottom:14px;flex-wrap:wrap}
+button,.btn{font:inherit;font-size:.82rem;font-weight:600;padding:9px 14px;border-radius:99px;border:1.5px solid var(--g);background:transparent;color:var(--g);cursor:pointer}
+button.on,button.pri{background:var(--g);color:#fff}button.red{border-color:var(--red);color:var(--red)}button.red.pri{background:var(--red);color:#fff}button.sm{padding:6px 11px;font-size:.76rem}
+button:disabled{opacity:.5}
+input,select{font:inherit;font-size:.9rem;padding:10px 12px;border:1.5px solid var(--bd);border-radius:12px;background:var(--bg);color:var(--tx);width:100%}
+label{font-size:.72rem;color:var(--mu);font-weight:600;display:block;margin:8px 0 4px}
+.row{display:flex;gap:8px;align-items:center;flex-wrap:wrap}.grow{flex:1;min-width:140px}
+table{width:100%;border-collapse:collapse;font-size:.82rem}th,td{padding:9px 6px;border-bottom:1px solid var(--bd);text-align:left;vertical-align:middle}th{color:var(--mu);font-size:.72rem;font-weight:600}
+.scroll{overflow-x:auto}
+.tag{display:inline-block;font-size:.68rem;font-weight:700;padding:3px 9px;border-radius:99px;background:var(--bd);color:var(--mu)}
+.tag.waiting{background:#fff0cc;color:#8a6500}.tag.paid,.tag.on{background:#e1f0dd;color:var(--ok)}.tag.rejected,.tag.failed,.tag.expired{background:#fde4e4;color:#b02a2a}
+.mu{color:var(--mu);font-size:.8rem}.amt{font-weight:800;font-variant-numeric:tabular-nums}
+#toast{position:fixed;left:50%;bottom:24px;transform:translateX(-50%);background:#263326;color:#fff;padding:11px 20px;border-radius:99px;font-size:.84rem;opacity:0;transition:.3s;pointer-events:none;max-width:90%;text-align:center}#toast.show{opacity:1}
+.login{max-width:380px;margin:12vh auto 0}
+[hidden]{display:none!important}
+</style>
+</head>
+<body>
+<div class="wrap">
+  <div id="loginBox" class="login card">
+    <h1>Admin TimeBalance</h1>
+    <p class="mu" style="margin:6px 0 10px">Masukkan Admin Secret (diatur di Cloudflare sebagai <code>ADMIN_SECRET</code>). Disimpan hanya selama tab ini terbuka.</p>
+    <form id="lf"><label for="sec">Admin Secret</label><input id="sec" type="password" autocomplete="current-password" required/><div style="margin-top:12px"><button class="pri" style="width:100%">Masuk</button></div></form>
+  </div>
+
+  <div id="app" hidden>
+    <div class="top"><div><h1>Panel Admin</h1><small>TimeBalance · langganan & pengguna</small></div><div class="row"><button class="sm" id="reload">↻ Muat ulang</button><button class="sm red" id="out">Keluar</button></div></div>
+    <div class="tiles" id="tiles"></div>
+    <div class="tabs"><button data-tab="pay" class="on">Pembayaran</button><button data-tab="users">Pengguna</button><button data-tab="hist">Riwayat</button><button data-tab="tools">Alat</button></div>
+
+    <section id="t-pay" class="card"><h2>Pembayaran menunggu</h2><p class="mu" style="margin-bottom:10px">Cocokkan <b>nominal persis</b> dengan mutasi e-wallet/rekening, lalu tekan Setujui. Akun pembeli langsung aktif — tanpa token. “Menunggu” = pembeli sudah menekan <i>Saya sudah bayar</i>.</p><div class="scroll"><table id="payTbl"></table></div></section>
+
+    <section id="t-users" class="card" hidden><h2>Pengguna terdaftar</h2><div class="row" style="margin-bottom:10px"><input id="q" class="grow" placeholder="Cari nama / email…"/></div><div class="scroll"><table id="userTbl"></table></div></section>
+
+    <section id="t-hist" class="card" hidden><h2>Riwayat pesanan</h2><div class="scroll"><table id="histTbl"></table></div></section>
+
+    <section id="t-tools" hidden>
+      <div class="card"><h2>Beri akses manual</h2><p class="mu">Untuk akun demo (mis. dosen penguji) atau kompensasi. Pengguna harus sudah mendaftar.</p>
+        <form id="gf"><label>Email pengguna</label><input id="gEmail" type="email" required/><div class="row"><div class="grow"><label>Paket / durasi</label><select id="gPlan"><option value="monthly">Bulanan (31 hari)</option><option value="annual">Tahunan (366 hari)</option><option value="days">Jumlah hari…</option></select></div><div class="grow" id="gDaysBox" hidden><label>Jumlah hari</label><input id="gDays" type="number" min="1" max="3660" value="30"/></div></div><div style="margin-top:12px"><button class="pri">Beri Akses</button></div></form></div>
+      <div class="card"><h2>Reset kata sandi pengguna</h2><p class="mu">Untuk pengguna yang lupa kata sandi. Semua sesi login pengguna itu akan keluar. Kirim kata sandi sementara lewat WhatsApp/email.</p>
+        <form id="rf"><label>Email pengguna</label><input id="rEmail" type="email" required/><label>Kata sandi sementara (min. 8 karakter)</label><input id="rPw" type="text" minlength="8" required/><div style="margin-top:12px"><button class="pri">Reset Kata Sandi</button></div></form></div>
+    </section>
+  </div>
+</div>
+<div id="toast"></div>
+<script>
+"use strict";
+const $ = s => document.querySelector(s), esc = s => String(s == null ? "" : s).replace(/[&<>"']/g, c => ({ "&": "&amp;", "<": "&lt;", ">": "&gt;", '"': "&quot;", "'": "&#39;" }[c]));
+const rp = n => "Rp " + Number(n || 0).toLocaleString("id-ID");
+const dt = t => t ? new Date(t).toLocaleString("id-ID", { dateStyle: "medium", timeStyle: "short" }) : "—";
+const LABEL = { pending: "Belum bayar", waiting: "Menunggu", paid: "Lunas", rejected: "Ditolak", expired: "Kedaluwarsa", failed: "Gagal", cancelled: "Dibatalkan" };
+let secret = ""; try { secret = sessionStorage.getItem("tb-admin") || ""; } catch (e) {}
+let toastT; const toast = m => { const t = $("#toast"); t.textContent = m; t.classList.add("show"); clearTimeout(toastT); toastT = setTimeout(() => t.classList.remove("show"), 2800); };
+
+async function api(path, body) {
+  const r = await fetch("/api/admin" + path, { method: body ? "POST" : "GET", headers: Object.assign({ "X-Admin-Secret": secret }, body ? { "Content-Type": "application/json" } : {}), body: body ? JSON.stringify(body) : undefined });
+  const j = await r.json().catch(() => ({}));
+  if (!r.ok) { if (r.status === 401) logout(true); throw new Error(j.error || "Gagal (" + r.status + ")"); }
+  return j;
+}
+function logout(silent) { secret = ""; try { sessionStorage.removeItem("tb-admin"); } catch (e) {} $("#app").hidden = true; $("#loginBox").hidden = false; if (!silent) toast("Keluar"); }
+async function start() {
+  try { await loadStats(); } catch (e) { if (secret) toast(e.message); return; }
+  $("#loginBox").hidden = true; $("#app").hidden = false; await Promise.all([loadPay(), loadUsers(), loadHist()]);
+}
+async function loadStats() {
+  const s = await api("/stats");
+  $("#tiles").innerHTML = [["Pengguna", s.users], ["Baru (7 hari)", s.newUsers7d], ["Langganan aktif", s.active], ["Menunggu verifikasi", s.waiting], ["Pesanan lunas", s.paidOrders], ["Total pemasukan", rp(s.revenue)]].map(x => `<div class="tile"><b>${esc(x[1])}</b><span>${x[0]}</span></div>`).join("");
+}
+async function loadPay() {
+  const { orders } = await api("/orders?status=open");
+  $("#payTbl").innerHTML = `<tr><th>Waktu</th><th>Pembeli</th><th>Paket</th><th>Nominal</th><th>Status</th><th></th></tr>` + (orders.map(o => `<tr><td>${dt(o.createdAt)}</td><td>${esc(o.name)}<br><span class="mu">${esc(o.email)}</span></td><td>${esc(o.planName)}</td><td class="amt">${rp(o.amount)}</td><td><span class="tag ${o.status}">${LABEL[o.status] || o.status}</span></td><td class="row"><button class="sm pri" data-ap="${esc(o.id)}">Setujui</button><button class="sm red" data-rj="${esc(o.id)}">Tolak</button></td></tr>`).join("") || `<tr><td colspan="6" class="mu" style="padding:18px">Tidak ada pesanan menunggu. 🎉</td></tr>`);
+}
+async function loadUsers() {
+  const { users } = await api("/users?q=" + encodeURIComponent($("#q").value));
+  $("#userTbl").innerHTML = `<tr><th>Nama</th><th>Email</th><th>Langganan</th><th>Daftar</th><th>Login terakhir</th><th></th></tr>` + (users.map(u => `<tr><td>${esc(u.name)}</td><td>${esc(u.email)}</td><td>${u.active ? `<span class="tag on">Aktif</span> ${esc(u.plan)}<br><span class="mu">s/d ${dt(u.until)}</span>` : `<span class="tag">${u.until ? "Berakhir" : "Belum"}</span>`}</td><td>${dt(u.createdAt)}</td><td>${dt(u.lastLogin)}<br><span class="mu">${u.logins}× masuk</span></td><td>${u.active ? `<button class="sm red" data-rv="${esc(u.email)}">Cabut</button>` : ""}</td></tr>`).join("") || `<tr><td colspan="6" class="mu" style="padding:18px">Tidak ada pengguna.</td></tr>`);
+}
+async function loadHist() {
+  const { orders } = await api("/orders?status=all");
+  $("#histTbl").innerHTML = `<tr><th>Waktu</th><th>Pembeli</th><th>Paket</th><th>Nominal</th><th>Metode</th><th>Status</th></tr>` + (orders.map(o => `<tr><td>${dt(o.createdAt)}</td><td>${esc(o.email)}</td><td>${esc(o.planName)}</td><td class="amt">${rp(o.amount)}</td><td>${o.method === "midtrans" ? "Otomatis" : "QRIS manual"}</td><td><span class="tag ${o.status}">${LABEL[o.status] || o.status}</span></td></tr>`).join("") || `<tr><td colspan="6" class="mu" style="padding:18px">Belum ada pesanan.</td></tr>`);
+}
+const refresh = () => Promise.all([loadStats(), loadPay(), loadUsers(), loadHist()]).catch(e => toast(e.message));
+async function act(fn, ok) { try { await fn(); toast(ok); await refresh(); } catch (e) { toast(e.message); } }
+
+$("#lf").onsubmit = e => { e.preventDefault(); secret = $("#sec").value; try { sessionStorage.setItem("tb-admin", secret); } catch (_) {} start(); };
+$("#out").onclick = () => logout();
+$("#reload").onclick = refresh;
+document.addEventListener("click", e => {
+  const b = e.target.closest("button"); if (!b) return;
+  if (b.dataset.tab) { document.querySelectorAll(".tabs button").forEach(x => x.classList.toggle("on", x === b)); ["pay", "users", "hist", "tools"].forEach(t => $("#t-" + t).hidden = t !== b.dataset.tab); }
+  if (b.dataset.ap) { if (confirm("Setujui pembayaran ini? Akun pembeli akan langsung aktif.")) act(() => api("/orders/approve", { id: b.dataset.ap }), "Disetujui — akun pembeli aktif ✅"); }
+  if (b.dataset.rj) { if (confirm("Tolak pesanan ini?")) act(() => api("/orders/reject", { id: b.dataset.rj }), "Pesanan ditolak"); }
+  if (b.dataset.rv) { if (confirm("Cabut langganan " + b.dataset.rv + "?")) act(() => api("/revoke", { email: b.dataset.rv }), "Akses dicabut"); }
+});
+let qT; $("#q").oninput = () => { clearTimeout(qT); qT = setTimeout(() => loadUsers().catch(e => toast(e.message)), 300); };
+$("#gPlan").onchange = () => $("#gDaysBox").hidden = $("#gPlan").value !== "days";
+$("#gf").onsubmit = e => { e.preventDefault(); const p = $("#gPlan").value; act(() => api("/grant", p === "days" ? { email: $("#gEmail").value, days: +$("#gDays").value } : { email: $("#gEmail").value, plan: p }), "Akses diberikan ✅").then(() => $("#gf").reset()); };
+$("#rf").onsubmit = e => { e.preventDefault(); act(() => api("/reset-password", { email: $("#rEmail").value, password: $("#rPw").value }), "Kata sandi direset ✅").then(() => $("#rf").reset()); };
+if (secret) start();
+</script>
+</body>
+</html>

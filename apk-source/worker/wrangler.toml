@@ -1,23 +1,31 @@
+# TimeBalance — satu Worker: melayani aplikasi PWA (../www) + API (/api/*) + database D1.
 name = "timebalance-api"
 main = "src/index.js"
-compatibility_date = "2024-11-01"
+compatibility_date = "2025-01-01"
+
+[assets]
+directory = "../www"
+binding = "ASSETS"
+# Permintaan /api/* selalu lewat kode Worker; file aplikasi disajikan langsung (cepat & gratis).
+run_worker_first = ["/api/*"]
 
 [vars]
-# ID proyek Firebase (Firebase Console → Project settings → Project ID)
-FIREBASE_PROJECT_ID = "GANTI-ID-PROYEK-FIREBASE"
-# "sandbox" untuk uji coba, ganti "production" saat go-live
+# Asal (origin) yang boleh memanggil API dari luar domain yang sama: aplikasi Android (Capacitor).
+# Tambahkan domain lain bila aplikasi web dihosting terpisah.
+ALLOWED_ORIGINS = "https://localhost,capacitor://localhost"
+# Gambar QRIS yang ditampilkan di aplikasi (file ada di folder www)
+QRIS_IMAGE = "/qris.jpeg"
+# --- Opsional: pembayaran otomatis QRIS Midtrans (aktif hanya jika secret MIDTRANS_SERVER_KEY diisi) ---
 MIDTRANS_ENV = "sandbox"
-# Alamat website Anda tanpa garis miring di akhir
-SITE_URL = "https://GANTI-DOMAIN-WEBSITE"
-# Daftar asal yang boleh memanggil server (website + aplikasi Android)
-ALLOWED_ORIGINS = "https://GANTI-DOMAIN-WEBSITE,https://localhost,capacitor://localhost"
-# Kosongkan agar metode bayar mengikuti pengaturan dashboard Midtrans (disarankan)
 ENABLED_PAYMENTS = ""
+# APP_URL = "https://app.domainanda.com"   # isi bila memakai domain sendiri (untuk halaman kembali dari Midtrans)
 
-[[kv_namespaces]]
-binding = "PREMIUM"
-# Isi dengan id dari: npx wrangler kv namespace create PREMIUM
-id = "GANTI-ID-KV"
+[[d1_databases]]
+binding = "DB"
+database_name = "timebalance"
+# Isi dengan ID dari: Cloudflare Dashboard → Storage & Databases → D1 → timebalance → Database ID
+database_id = "GANTI-ID-DATABASE-D1"
 
-# Rahasia (jangan ditulis di sini), simpan dengan:
-#   npx wrangler secret put MIDTRANS_SERVER_KEY
+# Rahasia (JANGAN ditulis di sini). Simpan lewat GitHub Secrets / `wrangler secret put`:
+#   ADMIN_SECRET          (wajib)  sandi panel admin /admin.html
+#   MIDTRANS_SERVER_KEY   (opsional) hanya bila ingin pembayaran otomatis

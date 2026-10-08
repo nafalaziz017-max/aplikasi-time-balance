@@ -32,8 +32,10 @@ jobs:
           python3 scripts/make_icons.py
           python3 scripts/patch_android.py
 
-      - name: Sinkronkan web ke Android
-        run: npx cap sync android
+      - name: Sinkronkan web ke Android (panel admin tidak ikut ke APK)
+        run: |
+          rm -f www/admin.html www/_headers
+          npx cap sync android
 
       - name: Build APK
         working-directory: android

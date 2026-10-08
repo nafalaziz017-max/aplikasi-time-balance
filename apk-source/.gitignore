@@ -4,3 +4,6 @@ android
 *.keystore
 *.jks
 kunci-rahasia*.json
+
+.wrangler
+.dev.vars

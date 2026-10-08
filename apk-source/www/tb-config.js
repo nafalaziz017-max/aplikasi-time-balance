@@ -1,7 +1,9 @@
-/* TimeBalance production configuration — Cloudflare only. */
+/* TimeBalance — konfigurasi. Aman dibaca publik (tidak ada rahasia di sini). */
 window.TB_CONFIG = {
-  API_BASE: "https://timebalance-api.nafalaziz016.workers.dev",
+  /* Web/PWA: kosong = API di domain yang sama dengan aplikasi (Worker menyajikan keduanya). */
+  API_BASE: "",
+  /* Aplikasi Android (APK): alamat Worker lengkap, karena APK tidak punya "domain yang sama". */
+  NATIVE_API_BASE: "https://timebalance-api.nafalaziz016.workers.dev",
   SITE_URL: "https://timebalanceruang-rasamyid.biz.id/",
-  REQUIRE_LOGIN: false,
-  TOKEN_PUBLIC_KEY: null
+  CONTACT_EMAIL: "nafalaziz016@gmail.com"
 };

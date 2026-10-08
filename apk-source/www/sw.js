@@ -1,63 +1,28 @@
-/* TimeBalance Service Worker - PWA */
-const CACHE_NAME = 'timebalance-pwa-v1';
-const SHELL = [
-  './',
-  './index.html',
-  './style.css',
-  './manifest.json',
-  './tb-config.js',
-  './tb-auth.js',
-  './app.js',
-  './pwa.js',
-  './icons/icon-192.png',
-  './icons/icon-512.png',
-  './icons/icon-maskable-512.png'
-];
+/* TimeBalance Service Worker — offline-first untuk aplikasi, API selalu langsung ke jaringan. */
+const VERSION = "v3.0.0";
+const CACHE = "timebalance-" + VERSION;
+const SHELL = ["./", "./index.html", "./style.css", "./manifest.json", "./tb-config.js", "./tb-auth.js", "./app.js", "./pwa.js",
+  "./icons/icon-192.png", "./icons/icon-512.png", "./icons/icon-maskable-512.png", "./qris.jpeg"];
 
-self.addEventListener('install', event => {
-  event.waitUntil(
-    caches.open(CACHE_NAME)
-      .then(cache => cache.addAll(SHELL))
-      .then(() => self.skipWaiting())
-  );
+self.addEventListener("install", e => {
+  e.waitUntil(caches.open(CACHE).then(c => c.addAll(SHELL.map(u => new Request(u, { cache: "reload" })))).then(() => self.skipWaiting()));
 });
-
-self.addEventListener('activate', event => {
-  event.waitUntil(
-    caches.keys()
-      .then(keys => Promise.all(
-        keys.filter(key => key !== CACHE_NAME).map(key => caches.delete(key))
-      ))
-      .then(() => self.clients.claim())
-  );
+self.addEventListener("activate", e => {
+  e.waitUntil(caches.keys().then(ks => Promise.all(ks.filter(k => k.startsWith("timebalance-") && k !== CACHE).map(k => caches.delete(k)))).then(() => self.clients.claim()));
 });
-
-self.addEventListener('fetch', event => {
-  const request = event.request;
-  if (request.method !== 'GET' || new URL(request.url).origin !== self.location.origin) return;
-
-  // HTML/JS/config/auth should prefer the network so token/login changes are not stuck in cache.
-  const pathname = new URL(request.url).pathname;
-  const dynamic = /\/(index\.html|app\.js|tb-auth\.js|tb-config\.js|pwa\.js)$/.test(pathname);
-
-  if (dynamic) {
-    event.respondWith(
-      fetch(request)
-        .then(response => {
-          const copy = response.clone();
-          caches.open(CACHE_NAME).then(cache => cache.put(request, copy));
-          return response;
-        })
-        .catch(() => caches.match(request))
-    );
+self.addEventListener("fetch", e => {
+  const req = e.request, url = new URL(req.url);
+  if (req.method !== "GET" || url.origin !== self.location.origin) return;
+  if (url.pathname.startsWith("/api/") || url.pathname.endsWith("/admin.html")) return;   // jangan pernah di-cache
+  // Kode aplikasi: jaringan dulu (selalu terbaru), cadangan dari cache saat offline.
+  const code = req.mode === "navigate" || /\.(html|js|css|json)$/.test(url.pathname) || url.pathname.endsWith("/");
+  if (code) {
+    e.respondWith(fetch(req).then(res => {
+      if (res.ok) { const copy = res.clone(); caches.open(CACHE).then(c => c.put(req.mode === "navigate" ? "./index.html" : req, copy)); }
+      return res;
+    }).catch(() => caches.match(req, { ignoreSearch: true }).then(r => r || caches.match("./index.html"))));
     return;
   }
-
-  event.respondWith(
-    caches.match(request).then(cached => cached || fetch(request).then(response => {
-      const copy = response.clone();
-      caches.open(CACHE_NAME).then(cache => cache.put(request, copy));
-      return response;
-    }))
-  );
+  // Gambar/ikon: cache dulu.
+  e.respondWith(caches.match(req).then(r => r || fetch(req).then(res => { if (res.ok) { const copy = res.clone(); caches.open(CACHE).then(c => c.put(req, copy)); } return res; })));
 });

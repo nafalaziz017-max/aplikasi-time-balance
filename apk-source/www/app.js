@@ -1,55 +1,11 @@
-/* TimeBalance PWA v2 — Work–Reward Mechanism */
+/* TimeBalance PWA v3 — Work–Reward Mechanism · akun wajib + langganan (semua fitur berbayar) */
 "use strict";
 /* ===================== KONFIGURASI ===================== */
-const SITE = (window.TB_CONFIG && window.TB_CONFIG.SITE_URL && !/GANTI/.test(window.TB_CONFIG.SITE_URL)) ? window.TB_CONFIG.SITE_URL : "";
-const EMAIL = "nafalaziz016@gmail.com";
-const DEMO_TOGGLE = false;   // true = tampilkan sakelar "Mode Demo Premium" di Profil. Ubah ke false saat rilis.
-/* Token Premium: dibuat pemilik lewat tools/buat-token.html, diverifikasi di sini dengan KUNCI PUBLIK (aman dibaca siapa pun).
-   Isi PUBLIC_KEY dengan baris yang muncul di alat pembuat token. Selama masih null, aplikasi menolak semua token. */
-const PUBLIC_KEY = (window.TB_CONFIG && window.TB_CONFIG.TOKEN_PUBLIC_KEY) ? window.TB_CONFIG.TOKEN_PUBLIC_KEY : {"kty":"EC","crv":"P-256","x":"AT0Z8kHRr0VzlN6ijRZ_pvRj8gp3TJn71i3C9uTl3xs","y":"7IgJnqrQFa8W-WNoIcFZWdk_ndrrUhFWTWVyNFY9lLA"};
-const PLANS = { monthly: "Premium Bulanan", annual: "Premium Tahunan", demo: "Demo 3 Hari" };
-const b64d = s => Uint8Array.from(atob(s.replace(/-/g, "+").replace(/_/g, "/").padEnd(Math.ceil(s.length / 4) * 4, "=")), c => c.charCodeAt(0));
-function derToP1363(bytes, size) {
-  try {
-    if (bytes[0] !== 0x30) return null;
-    let p = 2;
-    if (bytes[1] & 0x80) p += (bytes[1] & 0x7f);
-    if (bytes[p++] !== 0x02) return null;
-    let lr = bytes[p++]; if (lr & 0x80) { const n = lr & 0x7f; lr = 0; for (let i=0;i<n;i++) lr = (lr<<8)|bytes[p++]; }
-    const r = bytes.slice(p, p+lr); p += lr;
-    if (bytes[p++] !== 0x02) return null;
-    let ls = bytes[p++]; if (ls & 0x80) { const n = ls & 0x7f; ls = 0; for (let i=0;i<n;i++) ls = (ls<<8)|bytes[p++]; }
-    const ss = bytes.slice(p, p+ls);
-    const out = new Uint8Array(size*2);
-    const rr = r[0]===0 ? r.slice(1) : r; const ss2 = ss[0]===0 ? ss.slice(1) : ss;
-    out.set(rr.slice(-size), size- Math.min(size,rr.length)); out.set(ss2.slice(-size), size*2-Math.min(size,ss2.length));
-    return out;
-  } catch { return null; }
-}
-async function verifyToken(raw) {
-  const m = /^TB1\.([A-Za-z0-9_-]+)\.([A-Za-z0-9_-]+)$/.exec(String(raw).replace(/\s+/g, ""));
-  if (!m) return { err: "Format token tidak dikenal" };
-  if (!PUBLIC_KEY) return { err: "Aplikasi belum diatur untuk token" };
-  if (!(window.crypto && crypto.subtle)) return { err: "Perangkat tidak mendukung verifikasi token" };
-  try {
-    const key = await crypto.subtle.importKey("jwk", PUBLIC_KEY, { name: "ECDSA", namedCurve: "P-256" }, false, ["verify"]);
-    const message = new TextEncoder().encode("TB1." + m[1]);
-    const sig = b64d(m[2]);
-    let ok = await crypto.subtle.verify({ name: "ECDSA", hash: "SHA-256" }, key, sig, message);
-    // Kompatibilitas tambahan: beberapa implementasi lama dapat membawa ECDSA P-256 sebagai DER.
-    if (!ok) {
-      const raw = derToP1363(sig, 32);
-      if (raw) ok = await crypto.subtle.verify({ name: "ECDSA", hash: "SHA-256" }, key, raw, message);
-    }
-    if (!ok) return { err: "Signature token tidak cocok dengan kunci produksi" };
-    const t = JSON.parse(new TextDecoder().decode(b64d(m[1])));
-    if (t.v !== 1 || t.iss !== "TimeBalance" || typeof t.i !== "string" || !PLANS[t.p] || !Number.isInteger(t.d) || t.d < 1 || t.d > 400 || typeof t.n !== "string" || !t.n.trim()) return { err: "Token tidak valid" };
-     if (t.p === "monthly" && t.d !== 31) return { err: "Token bulanan tidak valid" };
-     if (t.p === "annual" && t.d !== 366) return { err: "Token tahunan tidak valid" };
-    if (t.x && Date.now() > t.x) return { err: "Token kedaluwarsa, hubungi admin" };
-    return { id: t.i, plan: t.p, days: t.d, email: t.n.trim().toLowerCase() };
-  } catch (e) { return { err: "Token tidak valid" }; }
-}
+const CFG = window.TB_CONFIG || {};
+const SITE = CFG.SITE_URL && !/GANTI/.test(CFG.SITE_URL) ? CFG.SITE_URL : "";
+const EMAIL = CFG.CONTACT_EMAIL || "nafalaziz016@gmail.com";
+/* Harga resmi ada di SERVER (worker/src/index.js → PLANS). Nilai di bawah hanya cadangan saat offline. */
+let PLANS = { monthly: { price: 19000, days: 31, name: "Premium Bulanan" }, annual: { price: 50000, days: 366, name: "Premium Tahunan" } };
 /* ======================================================= */
 const K = "tb-app-v2", DAY = 864e5;
 const $ = (s, e = document) => e.querySelector(s);
@@ -95,48 +51,73 @@ async function nativeInit() {
 }
 async function nShareFile(name, data, title) { const P = CAP().Plugins, f = await P.Filesystem.writeFile({ path: name, data, directory: "CACHE", encoding: "utf8" }); await P.Share.share({ title, files: [f.uri] }); }
 
-/* ---------- Akun & Premium dari server ---------- */
-let authLock = false, authMode = "in", authIntent = "", authBusy = false, sheetKind = "", lastSync = 0;
-const AUTHOK = () => !!(window.TBAuth && TBAuth.configured());
-const REQUIRE_LOGIN = !!(window.TB_CONFIG && window.TB_CONFIG.REQUIRE_LOGIN === true);
-function gate() { if (REQUIRE_LOGIN && AUTHOK() && !TBAuth.user()) { authLock = true; authSheet("in", ""); } }
-async function syncPremium(manual) {
-  if (!window.TBAuth || !TBAuth.user()) return;
-  if (!manual && !S.pendingOrder && Date.now() - lastSync < 15000) return;
+/* ---------- Akun, langganan & gerbang akses ---------- */
+let authLock = false, authMode = "in", authBusy = false, sheetKind = "", lastSync = 0, payOrder = null, payTimer = 0;
+const loggedIn = () => !!(window.TBAuth && TBAuth.user());
+const dstr = t => new Date(t).toLocaleDateString("id-ID", { day: "numeric", month: "long", year: "numeric" });
+const firstName = n => String(n || "").trim().split(" ")[0].slice(0, 20);
+/* Gerbang: belum login → layar masuk; belum berlangganan → layar paket. Aplikasi baru terbuka setelah keduanya terpenuhi. */
+function gate() {
+  const ok = loggedIn() && prem();
+  document.body.classList.toggle("locked", !ok);
+  if (!loggedIn()) { authLock = true; if (sheetKind !== "auth") authSheet(authMode === "reset" ? "in" : authMode); return; }
+  if (!prem()) { authLock = true; if (sheetKind !== "paywall" && sheetKind !== "pay") paywall(); return; }
+  if (authLock) { authLock = false; stopPayPoll(); closeSheet(); }
+  if (!S.onb && $("#sheet").hidden) onboarding();
+}
+function applyServer(j) {
+  const p = j.premium;
+  S.premium = p ? { plan: p.plan, until: p.until } : null;
+  if (p) S.lastUntil = p.until;
+  S.pendingOrder = j.pending ? j.pending.id : "";
+  if (j.user && j.user.name && !S.name) S.name = firstName(j.user.name);
+}
+async function loadPlans() {
+  try { const j = await TBAuth.plans(); if (j && j.plans) { PLANS = j.plans; if (sheetKind === "paywall") paywall(); } } catch (e) { /* pakai cadangan */ }
+}
+async function syncPremium(manual, quiet) {
+  if (!loggedIn()) return;
+  if (!manual && Date.now() - lastSync < 8000) return;
   lastSync = Date.now();
   try {
-    if (S.pendingOrder) { try { const st = await TBAuth.orderStatus(S.pendingOrder); if (st.status !== "pending") S.pendingOrder = ""; } catch (e) { if (e.code !== "NETWORK") S.pendingOrder = ""; } }
-    const p = await TBAuth.fetchPremium(), had = prem();
-    if (p) { if (!S.premium || S.premium.src !== "token" || p.until >= S.premium.until) S.premium = { plan: p.plan, until: p.until, src: "acct" }; }
-    else if (S.premium && S.premium.src === "acct") S.premium = null;
-    save(); render();
-    if (sheetKind === "profile") profile(); else if (sheetKind === "paywall") { if (prem()) closeSheet(); else paywall(); }
-    if (p && !had) toast("Premium aktif 🎉"); else if (manual) toast(p ? "Premium aktif s/d " + new Date(p.until).toLocaleDateString("id-ID") : "Belum ada Premium di akun ini");
-  } catch (e) { if (manual) toast(e.message); }
+    if (sheetKind === "pay" && payOrder) await checkPay(true);
+    const had = prem(), j = await TBAuth.me();
+    applyServer(j); save();
+    if (!had && prem()) { toast("Langganan aktif 🎉"); authLock = false; closeSheet(); }
+    render();
+    if (!prem() || !had) gate();
+    if (sheetKind === "profile") profile(); else if (sheetKind === "paywall" && !authLock) paywall();
+    if (manual && !quiet && !(!had && prem())) toast(prem() ? "Langganan aktif s/d " + dstr(S.premium.until) : "Belum ada langganan aktif di akun ini");
+  } catch (e) { if (manual && !quiet && e.code !== "AUTH") toast(e.message); }
 }
-function authSheet(mode, intent) {
-  authMode = mode || "in"; if (intent !== undefined) authIntent = intent; sheetKind = "auth";
+const eyeBtn = `<button type="button" class="eye" data-act="eye" aria-label="Tampilkan kata sandi">👁</button>`;
+function authSheet(mode) {
+  authMode = mode || "in"; sheetKind = "auth";
   const up = authMode === "up", rs = authMode === "reset";
-  const sub = rs ? "Masukkan email akun Anda. Kami kirim tautan untuk membuat kata sandi baru." : up ? "Akun menyimpan Premium Anda agar bisa dipulihkan di HP lain." : authIntent === "buy" ? "Masuk dulu agar Premium tersimpan di akunmu." : "Masuk ke akun TimeBalance Anda.";
+  const sub = rs ? "Kirim permintaan ke admin lewat email. Kata sandi sementara akan dikirim balik ke emailmu." : up ? "Buat akun untuk mulai memakai TimeBalance. Langganan tersimpan di akunmu dan bisa dipakai di HP lain." : "Masuk ke akun TimeBalance-mu.";
   const lnk = (m, t) => `<a class="lnk" data-act="authmode" data-v="${m}">${t}</a>`;
-  sheet(`<div class="row sp"><h2 style="margin:0">${rs ? "Lupa Kata Sandi" : up ? "Buat Akun" : "Masuk"}</h2>${authLock ? "" : `<button class="b sm o" data-act="close">${ic("close")}</button>`}</div>
-  <p class="mu" style="margin:8px 0 14px">${sub}</p>
-  <form data-form="auth"><label class="l">Email</label><input name="email" type="email" autocomplete="email" autocapitalize="off" required/>
-  ${rs ? "" : `<label class="l">Kata sandi${up ? " (minimal 8 karakter)" : ""}</label><input name="password" type="password" autocomplete="${up ? "new-password" : "current-password"}" minlength="${up ? 8 : 1}" required/>`}
-  <button class="b full">${rs ? "Kirim Tautan Reset" : up ? "Daftar" : "Masuk"}</button></form>
-  <p class="mu center" style="margin-top:14px">${rs ? lnk("in", "Kembali ke Masuk") : up ? "Sudah punya akun? " + lnk("in", "Masuk") : lnk("up", "Belum punya akun? Daftar") + " · " + lnk("reset", "Lupa kata sandi?")}</p>`);
+  sheet(`<div class="auth"><div class="brand"><img src="icons/icon-192.png" alt=""/><b><span>Time</span>Balance</b><small>Kerja dulu, santai kemudian</small></div>
+  <h2>${rs ? "Lupa Kata Sandi" : up ? "Buat Akun" : "Selamat Datang"}</h2><p class="mu" style="margin:6px 0 16px">${sub}</p>
+  <form data-form="auth">${up ? `<label class="l">Nama</label><input name="name" autocomplete="name" maxlength="40" minlength="2" placeholder="Nama lengkap" required/>` : ""}
+  <label class="l">Email</label><input name="email" type="email" inputmode="email" autocomplete="email" autocapitalize="off" placeholder="email@contoh.com" required/>
+  ${rs ? "" : `<label class="l">Kata sandi${up ? " (minimal 8 karakter)" : ""}</label><div class="pwf"><input name="password" type="password" autocomplete="${up ? "new-password" : "current-password"}" minlength="${up ? 8 : 1}" required/>${eyeBtn}</div>`}
+  <button class="b full">${rs ? "Kirim Permintaan" : up ? "Daftar" : "Masuk"}</button></form>
+  <p class="mu center" style="margin-top:16px">${rs ? lnk("in", "Kembali ke Masuk") : up ? "Sudah punya akun? " + lnk("in", "Masuk") : lnk("up", "Belum punya akun? Daftar") + " · " + lnk("reset", "Lupa kata sandi?")}</p>
+  ${dp ? `<button class="b sm o full" data-act="install" style="margin-top:14px">${ic("download")} Pasang Aplikasi</button>` : ""}
+  <p class="mu center" style="margin-top:18px;font-size:.68rem">Dengan masuk, kamu menyetujui bahwa nama & email disimpan di server untuk mengelola akun dan langganan. Data tugas tetap di perangkatmu.</p></div>`, "full");
 }
 async function doAuth(d) {
   if (authBusy) return; authBusy = true;
-  const email = String(d.get("email") || "").trim(), pw = d.get("password") || "", mode = authMode;
-  const btn = document.querySelector('form[data-form="auth"] button'); if (btn) btn.disabled = true;
+  const name = String(d.get("name") || "").trim(), email = String(d.get("email") || "").trim(), pw = d.get("password") || "", mode = authMode;
+  const btn = document.querySelector('form[data-form="auth"] button.full'); if (btn) btn.disabled = true;
   try {
-    if (mode === "reset") { await TBAuth.resetPassword(email); toast("Tautan reset dikirim. Cek email Anda."); authSheet("in"); return; }
-    if (mode === "up") await TBAuth.signUp(email, pw); else await TBAuth.signIn(email, pw);
-    authLock = false; sheetKind = ""; closeSheet(); render();
+    if (mode === "reset") { location.href = "mailto:" + EMAIL + "?subject=" + encodeURIComponent("Reset kata sandi TimeBalance") + "&body=" + encodeURIComponent("Halo Admin, saya lupa kata sandi akun TimeBalance dengan email: " + email); toast("Email permintaan dibuka. Kirim ke admin ✉️"); authSheet("in"); return; }
+    const r = mode === "up" ? await TBAuth.signUp(name, email, pw) : await TBAuth.signIn(email, pw);
+    S.premium = r.premium ? { plan: r.premium.plan, until: r.premium.until } : null; if (r.premium) S.lastUntil = r.premium.until;
+    if (!S.name) S.name = firstName(r.user.name);
+    save(); sheetKind = ""; authLock = false; closeSheet(); render();
     toast(mode === "up" ? "Akun dibuat 🎉" : "Berhasil masuk ✅");
-    await syncPremium(true);
-    const it = authIntent; authIntent = ""; if (it === "buy" && !prem()) buy();
+    gate(); syncPremium(true, true);
   } catch (e) { toast(e.message); if (btn) btn.disabled = false; }
   finally { authBusy = false; }
 }
@@ -144,30 +125,42 @@ function openUrl(u) {
   const B = isNative() && CAP().Plugins && CAP().Plugins.Browser;
   if (B) B.open({ url: u }); else if (!window.open(u, "_blank", "noopener")) location.href = u;
 }
-function buy() {
-  const base = SITE || "https://timebalanceruang-rasamyid.biz.id/";
-  const u = base.replace(/\/$/, "") + "/payment.html?plan=" + encodeURIComponent(S.plan);
-  openUrl(u);
-}
 function accountCard() {
-  if (!AUTHOK()) return "";
-  const u = TBAuth.user();
-  return u ? `<div class="card"><div class="row sp"><div><b>Akun</b><div class="mu">${esc(u.email)}</div></div><button class="b sm o" data-act="syncprem">Sinkronkan</button></div><button class="b sm red" data-act="logout" style="margin-top:10px">Keluar</button></div>`
-    : `<div class="card"><b>Akun</b><p class="mu" style="margin:4px 0 10px">Masuk agar Premium tersimpan di akun dan bisa dipulihkan di HP lain.</p><div class="row"><button class="b sm" data-act="login">Masuk</button><button class="b sm o" data-act="signup">Daftar</button></div></div>`;
+  const u = TBAuth.user(); if (!u) return "";
+  const p = S.premium, left = p ? Math.max(0, Math.ceil((p.until - Date.now()) / DAY)) : 0;
+  return `<div class="card"><div class="row sp"><div style="min-width:0"><b>${esc(u.name || "Akun")}</b><div class="mu" style="word-break:break-all">${esc(u.email)}</div></div><button class="b sm o" data-act="syncprem">Sinkronkan</button></div>
+  <div class="li" style="margin-top:8px"><div class="ico gold">${ic("crown")}</div><div>${p ? esc(p.plan) : "Belum berlangganan"}<small>${p ? "Aktif sampai " + dstr(p.until) + " · " + left + " hari lagi" : "Pilih paket untuk membuka aplikasi"}</small></div><button class="b sm" data-act="paywall">${p ? "Perpanjang" : "Berlangganan"}</button></div>
+  <div class="row wrap" style="margin-top:10px"><button class="b sm o" data-act="changepw">Ganti Kata Sandi</button><button class="b sm red" data-act="logout">Keluar</button></div></div>`;
 }
-if (window.TBAuth) TBAuth.onChange(u => { if (!u) { if (S.premium && S.premium.src === "acct") { S.premium = null; save(); } render(); gate(); } });
+function pwSheet(kind) {
+  sheetKind = "pw";
+  const del = kind === "del";
+  sheet(`<div class="row sp"><h2 style="margin:0">${del ? "Hapus Akun" : "Ganti Kata Sandi"}</h2><button class="b sm o" data-act="profile">${ic("close")}</button></div><br/>
+  ${del ? `<p class="mu" style="margin-bottom:12px">Akun, riwayat pembayaran, dan langganan akan dihapus permanen dari server. Data tugas di perangkat ini tidak ikut terhapus. Tindakan ini tidak bisa dibatalkan.</p>` : ""}
+  <form data-form="${del ? "delacc" : "pw"}">${del ? "" : `<label class="l">Kata sandi saat ini</label><div class="pwf"><input name="current" type="password" autocomplete="current-password" required/></div><label class="l">Kata sandi baru (minimal 8 karakter)</label><div class="pwf"><input name="next" type="password" autocomplete="new-password" minlength="8" required/>${eyeBtn}</div>`}
+  ${del ? `<label class="l">Kata sandi</label><div class="pwf"><input name="current" type="password" autocomplete="current-password" required/>${eyeBtn}</div>` : ""}
+  <button class="b full ${del ? "red" : ""}">${del ? "Hapus Akun Permanen" : "Simpan Kata Sandi"}</button></form>`);
+}
+async function doPw(f, d) {
+  const btn = document.querySelector('form[data-form] button.full'); if (btn) btn.disabled = true;
+  try {
+    if (f === "pw") { await TBAuth.changePassword(d.get("current"), d.get("next")); toast("Kata sandi diubah ✅"); profile(); }
+    else { await TBAuth.deleteAccount(d.get("current")); S.premium = null; S.pendingOrder = ""; save(); closeSheet(); toast("Akun dihapus"); gate(); }
+  } catch (e) { toast(e.message); if (btn) btn.disabled = false; }
+}
+if (window.TBAuth) TBAuth.onChange(u => { if (!u) { S.premium = null; S.pendingOrder = ""; payOrder = null; stopPayPoll(); save(); closeSheet(); authMode = "in"; render(); gate(); } });
 
 const DEF = { name: "", onb: 0, tasks: [], sched: [], log: [], wallet: 0, xp: 0, cyc: 0, streak: { last: "", n: 0 }, badges: {}, run: null, leisure: null, fired: {},
-  premium: null, pendingOrder: "", demo: false, theme: "auto", snd: true, vib: true, notif: false, goal: 120, tab: "home", seg: "todo", flt: "all", sseg: "an", range: 7, plan: "monthly",
+  premium: null, lastUntil: 0, pendingOrder: "", theme: "auto", snd: true, vib: true, notif: false, goal: 120, tab: "home", seg: "todo", flt: "all", sseg: "an", range: 7, plan: "monthly",
   rules: { focus: 25, brk: 5, long: 15, ratio: 25, strict: false, lock: false } };
 let S, q = "", dp = null, ovOpen = false;
 try { S = Object.assign({}, DEF, JSON.parse(localStorage.getItem(K) || "{}")); S.rules = Object.assign({}, DEF.rules, S.rules); } catch (e) { S = JSON.parse(JSON.stringify(DEF)); }
 const save = () => { try { localStorage.setItem(K, JSON.stringify(S)); } catch (e) {} nQueue(); };
-const prem = () => (DEMO_TOGGLE && S.demo) || !!(S.premium && S.premium.until > Date.now());
+const prem = () => !!(S.premium && S.premium.until > Date.now());
 const R = () => prem() ? S.rules : Object.assign({}, S.rules, { focus: 25, brk: 5, long: 15, ratio: 25, strict: false, lock: false });
 const ratio = () => R().ratio + (prem() ? Math.min(10, S.streak.n * 2) : 0);   // Dynamic Time Quota
 const level = () => Math.floor(S.xp / 100) + 1;
-const planName = () => DEMO_TOGGLE && S.demo ? "Premium (Demo)" : S.premium && S.premium.until > Date.now() ? S.premium.plan : "Gratis";
+const planName = () => S.premium && S.premium.until > Date.now() ? S.premium.plan : "Belum berlangganan";
 
 /* ---------- UI util ---------- */
 let tt, reg = null;
@@ -311,10 +304,14 @@ function viewHome() {
   <div class="card"><div class="row sp"><h3>Streak ${S.streak.n} hari 🔥</h3><span class="pill">Level ${level()}</span></div><div class="days">${wk}</div><br/><div class="bar"><i style="width:${S.xp % 100}%"></i></div><p class="mu" style="margin-top:6px">${S.xp % 100}/100 XP menuju level ${level() + 1}</p></div>
   <div class="row sp"><h2 style="margin:6px 2px">Tugas berikutnya</h2><a class="mu" data-act="tab" data-v="tasks" style="color:var(--g);font-weight:700">Semua</a></div>
   <div class="card" style="padding:4px 14px">${next.length ? taskRows(next) : `<p class="mu center" style="padding:18px">Belum ada tugas. <a data-act="newTask" style="color:var(--g);font-weight:700">Tambah sekarang</a></p>`}</div>
-  ${prem() ? "" : `<div class="card promo"><div class="row"><div class="ico gold">${ic("crown")}</div><div><b>Buka semua fitur Premium</b><div class="mu">Focus Lock, Analytics, Achievement & bebas iklan.</div></div></div><br/><button class="b full" data-act="paywall">Lihat Paket</button></div>`}`;
+  ${renewHint()}`;
 }
 
 /* ---------- statistik ---------- */
+function renewHint() {
+  if (!S.premium) return ""; const left = Math.ceil((S.premium.until - Date.now()) / DAY);
+  return left <= 5 ? `<div class="card promo row sp"><div><b>Langganan berakhir ${left <= 0 ? "hari ini" : left + " hari lagi"}</b><div class="mu">Perpanjang agar tidak terkunci.</div></div><button class="b sm" data-act="paywall">Perpanjang</button></div>` : "";
+}
 function byDay(n) { const o = []; for (let i = n - 1; i >= 0; i--) { const k = dkey(Date.now() - i * DAY), L = S.log.filter(l => dkey(l.ts) === k); o.push({ k, f: L.filter(l => l.type === "focus").reduce((a, l) => a + l.min, 0), t: L.filter(l => l.type === "task").length }); } return o; }
 function chart(d) { const W = 320, H = 140, m = Math.max(30, ...d.map(x => x.f)), bw = W / d.length; return `<svg viewBox="0 0 ${W} ${H + 20}" width="100%">${d.map((x, i) => { const h = x.f / m * H; return `<rect x="${i * bw + 2}" y="${H - h}" width="${Math.max(2, bw - 4)}" height="${Math.max(2, h)}" rx="4" fill="var(--g)" opacity="${x.f ? 1 : .2}"/>${d.length <= 7 ? `<text x="${i * bw + bw / 2}" y="${H + 14}" font-size="9" text-anchor="middle" fill="var(--mu)">${x.k.slice(8)}</text>` : ""}`; }).join("")}<text x="2" y="10" font-size="9" fill="var(--mu)">maks ${m} mnt</text></svg>`; }
 function analytics() {
@@ -329,31 +326,73 @@ function achievements() {
 function viewStats() {
   const seg = `<div class="seg"><button data-act="sseg" data-v="an" class="${S.sseg === "an" ? "on" : ""}">Analitik</button><button data-act="sseg" data-v="ac" class="${S.sseg === "ac" ? "on" : ""}">Prestasi</button></div>`;
   const body = S.sseg === "an" ? analytics() : achievements();
-  if (prem()) return seg + body;
-  return seg + `<div class="blurw"><div class="blur">${body}</div><div class="ovl"><div class="card center" style="margin:0"><div class="ico gold" style="margin:0 auto 8px">${ic("lock")}</div><h3>${S.sseg === "an" ? "Productivity Analytics" : "Achievement System"}</h3><p class="mu" style="margin-bottom:12px">Fitur Premium. Pantau grafik harian, mingguan, bulanan & kumpulkan badge.</p><button class="b gold" data-act="paywall">Buka Premium</button></div></div></div>`;
+  return seg + body;
 }
 
-/* ---------- paywall ---------- */
-const FEATS = [["check", "Smart To-Do List", "Kelola tugas dan pantau tugas yang sudah selesai"], ["timer", "Pomodoro Timer", "Fokus dengan sesi kerja dan istirahat teratur"], ["wallet", "Leisure Time Wallet", "Dapatkan waktu santai sebagai reward produktivitas"], ["chart", "Productivity Analytics", "Pantau perkembangan produktivitas secara terukur"]];
+/* ---------- paket & pembayaran ---------- */
+const FEATS = [["check", "Smart To-Do & Checklist", "Tugas berprioritas, sub-tugas, dan tenggat"], ["timer", "Pomodoro + Focus Lock", "Sesi fokus, istirahat, dan Strict Mode"], ["wallet", "Leisure Time Wallet", "Waktu santai sebagai reward produktivitas"], ["chart", "Analytics & Achievement", "Grafik progres, streak, level, dan badge"], ["sliders", "Aturan Fokus Kustom", "Atur durasi & rasio reward + Dynamic Time Quota"], ["cloud", "Backup & Laporan PDF", "Simpan dan bagikan progres belajarmu"]];
+const planCard = (k, label, per, sub, on, tag) => `<button class="plan ${on ? "on" : ""}" data-act="plan" data-v="${k}">${tag ? `<em>${tag}</em>` : ""}<span class="mu">${label}</span><b>${rp(PLANS[k].price)}</b><span class="mu">${per}</span>${sub ? `<span class="mu">${sub}</span>` : ""}</button>`;
 function paywall() {
   sheetKind = "paywall";
-  const an = S.plan === "annual";
-  sheet(`<div class="pw"><button class="b sm" data-act="close" style="position:absolute;right:16px;top:calc(14px + env(safe-area-inset-top));background:rgba(255,255,255,.2)">${ic("close")}</button><div class="crown">${ic("crown")}</div><h1 style="font-size:1.5rem">TimeBalance Premium</h1><p style="opacity:.85;font-size:.85rem;margin-top:4px">Produktif tanpa batas, santai tanpa rasa bersalah.</p></div>
+  const an = S.plan === "annual", M = PLANS.monthly, Y = PLANS.annual, u = TBAuth.user() || {};
+  const hemat = Math.max(0, Math.round((1 - Y.price / (M.price * 12)) * 100)), expired = S.lastUntil && S.lastUntil <= Date.now();
+  const title = prem() ? "Perpanjang Langganan" : expired ? "Langgananmu Berakhir" : "Mulai Berlangganan";
+  const lead = prem() ? "Masa aktif baru ditambahkan di akhir masa langgananmu saat ini." : expired ? "Perpanjang untuk membuka kembali semua fitur. Datamu di perangkat ini tetap aman." : "Satu langkah lagi" + (S.name ? ", " + esc(S.name) : "") + "! Pilih paket untuk membuka semua fitur.";
+  sheet(`<div class="pw">${authLock ? "" : `<button class="b sm" data-act="close" style="position:absolute;right:16px;top:calc(14px + env(safe-area-inset-top));background:rgba(255,255,255,.2)">${ic("close")}</button>`}<div class="crown">${ic("crown")}</div><h1 style="font-size:1.5rem">${title}</h1><p style="opacity:.88;font-size:.85rem;margin-top:6px">${lead}</p></div>
+  <div class="g2" style="margin:22px 0 12px">${planCard("monthly", "Bulanan", "per " + M.days + " hari", "", !an)}${planCard("annual", "Tahunan", "per " + Y.days + " hari", "≈ " + rp(Math.round(Y.price / 12 / 100) * 100) + " / bulan", an, hemat ? "Hemat " + hemat + "%" : "")}</div>
+  ${S.pendingOrder ? `<div class="card promo row sp"><div><b>Ada pembayaran yang belum selesai</b><div class="mu">Lanjutkan atau cek statusnya.</div></div><button class="b sm" data-act="openpay">Lihat</button></div>` : ""}
+  <button class="b gold full" data-act="pay">Bayar ${rp(an ? Y.price : M.price)} via QRIS</button>
+  <p class="mu center" style="margin:8px 0 16px">Tanpa perpanjangan otomatis · tanpa token · langganan aktif di akunmu</p>
   <div class="card">${FEATS.map(f => `<div class="li"><div class="ico gold">${ic(f[0])}</div><div>${f[1]}<small>${f[2]}</small></div><span class="ok">✓</span></div>`).join("")}</div>
-  <div class="g2" style="margin:18px 0 8px"><button class="plan ${an ? "" : "on"}" data-act="plan" data-v="monthly"><span class="mu">Bulanan</span><b>${rp(19000)}</b><span class="mu">per bulan</span></button><button class="plan ${an ? "on" : ""}" data-act="plan" data-v="annual"><em>Hemat 78%</em><span class="mu">Tahunan</span><b>${rp(50000)}</b><span class="mu">≈ ${rp(4200)}/bulan</span></button></div>
-  <p class="mu center" style="margin-bottom:12px">${an ? "+ Early Access, Premium Badge & prioritas support" : "Batalkan kapan saja"} · Garansi 7 hari</p>
-  <button class="b gold full" data-act="buy">Bayar di Website</button>
-  <p class="mu center" style="margin-top:8px">QRIS hanya ditampilkan di website. Setelah pembayaran diverifikasi oleh admin, token Premium dikirim ke email pembeli.</p>
-  ${PUBLIC_KEY ? `<div class="card" style="margin-top:16px"><h3>Sudah bayar? Masukkan token aktivasi</h3><form data-form="code"><p class="mu" style="margin:4px 0 10px">Token terhubung ke email akun yang digunakan saat pembayaran. Masuk ke akun TimeBalance dengan email yang sama.</p><input name="code" placeholder="Tempel token di sini (TB1.… )" autocapitalize="off" autocomplete="off" autocorrect="off" spellcheck="false" required/><button class="b full">Aktifkan Premium</button></form><p class="mu">Token aktivasi dipakai langsung di aplikasi ini. QRIS tidak disimpan di aplikasi.</p></div>` : ""}`, "full");
+  <div class="row wrap" style="justify-content:center;gap:10px"><button class="b sm o" data-act="syncprem">Cek status langganan</button>${authLock ? `<button class="b sm o" data-act="logout">Keluar</button>` : ""}</div>
+  <p class="mu center" style="margin-top:12px">Masuk sebagai <b>${esc(u.email || "")}</b></p>`, "full");
+}
+async function pay() {
+  const btn = document.querySelector('[data-act="pay"]'); if (btn) btn.disabled = true;
+  try { const o = await TBAuth.createOrder(S.plan); S.pendingOrder = o.id; save(); openPay(o, true); }
+  catch (e) { toast(e.message); if (btn) btn.disabled = false; }
+}
+function openPay(o, fresh) {
+  payOrder = o; sheetKind = "pay"; renderPay(); startPayPoll();
+  if (fresh && o.method === "midtrans" && o.status === "pending" && o.redirectUrl) openUrl(o.redirectUrl);
+}
+const stopPayPoll = () => { clearInterval(payTimer); payTimer = 0; };
+function startPayPoll() { stopPayPoll(); payTimer = setInterval(() => { if (sheetKind !== "pay") return stopPayPoll(); checkPay(); }, 5000); }
+async function checkPay(quiet) {
+  if (!payOrder) return;
+  try {
+    const j = await TBAuth.orderStatus(payOrder.id), changed = j.order.status !== payOrder.status;
+    payOrder = j.order;
+    if (j.order.status === "paid" && j.premium) {
+      S.premium = { plan: j.premium.plan, until: j.premium.until }; S.lastUntil = j.premium.until; S.pendingOrder = ""; save(); stopPayPoll(); authLock = false; closeSheet(); render(); toast("Pembayaran diterima — langganan aktif 🎉"); gate(); return;
+    }
+    if (["rejected", "expired", "failed", "cancelled"].includes(j.order.status) && S.pendingOrder === j.order.id) { S.pendingOrder = ""; save(); }
+    if (changed && sheetKind === "pay") renderPay();
+  } catch (e) { if (!quiet && e.code !== "NETWORK" && e.code !== "AUTH") toast(e.message); }
+}
+function renderPay() {
+  const o = payOrder; if (!o) return paywall();
+  const man = o.method === "manual", st = o.status, until = new Date(o.expiresAt).toLocaleString("id-ID", { dateStyle: "medium", timeStyle: "short" });
+  const top = `<div class="row sp"><h2 style="margin:0">Pembayaran</h2><button class="b sm o" data-act="paywall">← Paket</button></div><p class="mu" style="margin:4px 0 14px">${esc(o.planName)} · Pesanan ${esc(o.id)}</p>`;
+  const again = `<button class="b gold full" data-act="paywall">Pilih paket lagi</button>`;
+  let body;
+  if (st === "paid") body = `<div class="card center"><div class="em" style="font-size:3rem">🎉</div><h3>Pembayaran diterima</h3><p class="mu">Langganan aktif di akunmu.</p></div>`;
+  else if (st === "waiting") body = `<div class="card center"><div class="spin"></div><h3>Menunggu verifikasi admin</h3><p class="mu">Terima kasih! Pembayaran <b>${rp(o.amount)}</b> sedang diperiksa. Biasanya kurang dari 1 jam. Halaman ini otomatis berubah dan akunmu langsung aktif — <b>tidak perlu memasukkan token</b>. Boleh ditutup, langganan tetap masuk ke akunmu.</p></div><button class="b o full" data-act="checkpay">Cek status sekarang</button>`;
+  else if (["rejected", "expired", "failed", "cancelled"].includes(st)) body = `<div class="card center"><div class="em" style="font-size:3rem">⚠️</div><h3>${st === "rejected" ? "Pembayaran ditolak" : st === "expired" ? "Pesanan kedaluwarsa" : st === "cancelled" ? "Pesanan dibatalkan" : "Pembayaran gagal"}</h3><p class="mu">${st === "rejected" ? "Pembayaran tidak dapat diverifikasi. Hubungi admin bila sudah membayar." : "Silakan buat pesanan baru."}</p></div>${again}<p class="mu center" style="margin-top:12px"><a class="lnk" href="mailto:${EMAIL}?subject=${encodeURIComponent("Pembayaran TimeBalance " + o.id)}">Hubungi admin</a></p>`;
+  else if (!man) body = `<div class="card center"><p class="mu">Total</p><div class="payamt">${rp(o.amount)}</div><p class="mu">Selesaikan pembayaran QRIS di halaman pembayaran. Setelah lunas, langganan aktif otomatis.</p></div><button class="b gold full" data-act="openpayurl">Buka halaman pembayaran</button><button class="b o full" data-act="checkpay" style="margin-top:10px">Cek status</button>`;
+  else body = `<div class="card center"><p class="mu">Bayar tepat sebesar</p><div class="payamt">${rp(o.amount)}</div><button class="b sm o" data-act="copyamt">Salin nominal</button><p class="mu" style="margin-top:10px">Dua digit terakhir adalah <b>kode unik</b> agar pembayaranmu dikenali otomatis. Nominal harus persis.</p></div>
+  <div class="card center"><img class="qrisimg" src="${esc(o.qris || "qris.jpeg")}" alt="QRIS TimeBalance"/><a class="b sm o" href="${esc(o.qris || "qris.jpeg")}" download="QRIS-TimeBalance.jpg" style="margin-top:10px">${ic("download")} Unduh QRIS</a><p class="mu" style="margin-top:8px">Bayar dari HP yang sama? Unduh QRIS, lalu pilih gambar dari galeri di aplikasi e-wallet / m-banking.</p></div>
+  <div class="card"><ol class="steps"><li>Buka e-wallet / m-banking → <b>Scan QRIS</b>.</li><li>Masukkan nominal <b>${rp(o.amount)}</b> lalu bayar.</li><li>Kembali ke sini dan tekan <b>Saya sudah bayar</b>.</li><li>Admin memverifikasi → <b>akunmu aktif otomatis</b>, tanpa token.</li></ol></div>
+  <button class="b gold full" data-act="markpaid">Saya sudah bayar</button><div class="row" style="justify-content:center;margin-top:12px"><button class="b sm o" data-act="cancelpay">Batalkan pesanan</button></div><p class="mu center" style="margin-top:10px">Pesanan berlaku sampai ${until}</p>`;
+  sheet(top + body, "full");
 }
 
 /* ---------- onboarding ---------- */
-const OB = [["⚖️", "Kerja dulu, santai kemudian", "Selesaikan tugas atau sesi fokus untuk mengisi dompet waktu santai. Hiburan jadi hadiah, bukan jebakan."], ["🍅", "Fokus dengan Pomodoro", "25 menit fokus, 5 menit istirahat. Tambahkan Focus Lock & Strict Mode dengan Premium."], ["🎮", "Nikmati tanpa rasa bersalah", "2 jam belajar = 30 menit hiburan. Pantau progres, streak, dan raih achievement."]];
+const OB = [["⚖️", "Kerja dulu, santai kemudian", "Selesaikan tugas atau sesi fokus untuk mengisi dompet waktu santai. Hiburan jadi hadiah, bukan jebakan."], ["🍅", "Fokus dengan Pomodoro", "25 menit fokus, 5 menit istirahat. Atur sendiri aturannya, aktifkan Focus Lock & Strict Mode."], ["🎮", "Nikmati tanpa rasa bersalah", "2 jam belajar = 30 menit hiburan. Pantau progres, streak, dan raih achievement."]];
 let obI = 0;
 function onboarding() {
-  const last = obI === OB.length;
-  sheet(last ? `<div class="ob"><div class="em">👋</div><h1>Siapa namamu?</h1><p class="mu">Agar sapaan terasa personal. Bisa diubah nanti.</p><form data-form="onb" style="width:100%"><input name="name" placeholder="Nama panggilan" maxlength="20" required/><button class="b full">Mulai Sekarang</button></form></div>` : `<div class="ob"><div class="em">${OB[obI][0]}</div><h1>${OB[obI][1]}</h1><p class="mu">${OB[obI][2]}</p><div class="dots">${OB.map((_, i) => `<i class="${i === obI ? "on" : ""}"></i>`).join("")}</div><button class="b full" data-act="obNext">Lanjut</button></div>`, "full");
-  $("#sheet .bk").removeAttribute("data-act");
+  const last = obI >= OB.length - 1;
+  sheet(`<div class="ob"><div class="em">${OB[obI][0]}</div><h1>${OB[obI][1]}</h1><p class="mu">${OB[obI][2]}</p><div class="dots">${OB.map((_, i) => `<i class="${i === obI ? "on" : ""}"></i>`).join("")}</div><button class="b full" data-act="${last ? "obDone" : "obNext"}">${last ? "Mulai Sekarang" : "Lanjut"}</button></div>`, "full");
 }
 
 /* ---------- profil ---------- */
@@ -364,19 +403,16 @@ function profile() {
   sheet(`<div class="row sp"><h2 style="margin:0">Profil & Pengaturan</h2><button class="b sm o" data-act="close">${ic("close")}</button></div><br/>
   <div class="card row"><div class="av" style="width:56px;height:56px;font-size:1.4rem;display:flex;align-items:center;justify-content:center">${ini}</div><div style="flex:1"><b>${esc(S.name || "Pengguna")}</b><div class="mu">Level ${level()} · Streak ${S.streak.n} hari</div><span class="pill ${p ? "p" : ""}" style="margin-top:4px;display:inline-block">${planName()}</span>${p && S.premium ? `<span class="mu"> s/d ${new Date(S.premium.until).toLocaleDateString("id-ID")}</span>` : ""}</div></div>
   ${accountCard()}
-  ${p ? "" : `<div class="card promo row sp"><div><b>Upgrade ke Premium</b><div class="mu">Mulai Rp 19.000 / bulan</div></div><button class="b sm" data-act="paywall">Lihat</button></div>`}
-  ${DEMO_TOGGLE ? `<div class="card"><h3>🧪 Mode Uji Coba</h3>${switchRow("crown", "Aktifkan Premium (Demo)", "Nyalakan/matikan semua fitur Premium untuk mencoba. Matikan untuk melihat versi Gratis.", "demo", S.demo, false)}</div>` : ""}
-  <h2>Aturan Fokus ${p ? "" : "🔒"}</h2><div class="card"><form data-form="rules"><div class="g2"><div><label class="l">Fokus (menit)</label><input name="focus" type="number" min="5" max="120" value="${rr.focus}" ${dis}/></div><div><label class="l">Istirahat</label><input name="brk" type="number" min="1" max="30" value="${rr.brk}" ${dis}/></div><div><label class="l">Istirahat panjang</label><input name="long" type="number" min="5" max="60" value="${rr.long}" ${dis}/></div><div><label class="l">Rasio reward (%)</label><input name="ratio" type="number" min="5" max="100" value="${rr.ratio}" ${dis}/></div></div><button class="b full" ${dis}>Simpan Aturan</button>${p ? "" : `<p class="mu center" style="margin-top:8px">Gratis: 25/5 menit, rasio 25%.</p>`}</form></div>
+  <h2>Aturan Fokus</h2><div class="card"><form data-form="rules"><div class="g2"><div><label class="l">Fokus (menit)</label><input name="focus" type="number" min="5" max="120" value="${rr.focus}" ${dis}/></div><div><label class="l">Istirahat</label><input name="brk" type="number" min="1" max="30" value="${rr.brk}" ${dis}/></div><div><label class="l">Istirahat panjang</label><input name="long" type="number" min="5" max="60" value="${rr.long}" ${dis}/></div><div><label class="l">Rasio reward (%)</label><input name="ratio" type="number" min="5" max="100" value="${rr.ratio}" ${dis}/></div></div><button class="b full" ${dis}>Simpan Aturan</button></form></div>
   <h2>Umum</h2><div class="card"><form data-form="goal" class="row"><div style="flex:1"><label class="l">Target fokus harian (menit)</label><input name="goal" type="number" min="10" max="600" value="${S.goal}" style="margin:0"/></div><button class="b sm" style="margin-top:18px">Simpan</button></form><br/>
   <label class="l">Tema</label><div class="seg"><button data-act="theme" data-v="auto" class="${S.theme === "auto" ? "on" : ""}">Otomatis</button><button data-act="theme" data-v="light" class="${S.theme === "light" ? "on" : ""}">Terang</button><button data-act="theme" data-v="dark" class="${S.theme === "dark" ? "on" : ""}">Gelap</button></div>
   ${switchRow("bell", "Notifikasi", "Pengingat jadwal & deadline", "notif", S.notif)}${switchRow("bolt", "Suara", "Bunyi saat sesi selesai", "snd", S.snd)}${switchRow("timer", "Getar", "Getar saat sesi selesai", "vib", S.vib)}
   <form data-form="name" class="row" style="margin-top:12px"><input name="name" value="${esc(S.name)}" placeholder="Nama panggilan" style="margin:0"/><button class="b sm">Ubah</button></form></div>
   ${dp ? `<div class="card"><button class="b full" data-act="install">${ic("download")} Pasang Aplikasi ke Layar Utama</button></div>` : ""}
-  <h2>Data ${p ? "" : "🔒"}</h2><div class="card"><p class="mu" style="margin-bottom:10px">Backup berupa file JSON — simpan di Drive/penyimpanan Anda.</p><div class="row wrap"><button class="b sm" data-act="export" ${dis}>${ic("cloud")} Backup</button><label class="b sm o" style="margin:0;${p ? "" : "opacity:.45"}">Pulihkan<input type="file" accept=".json" id="imp" hidden ${dis}/></label><button class="b sm red" data-act="reset">Hapus Data</button></div></div>
-  <h2>Gratis vs Premium</h2><div class="card"><table class="c"><tr><th>Fitur</th><th>Gratis</th><th>Premium</th></tr>${tbl.map(r => `<tr><td>${r[0]}</td><td class="${r[1] ? "ok" : "no"}">${r[1] ? "✓" : "—"}</td><td class="ok">✓</td></tr>`).join("")}</table></div>
-  <h2>Bantuan</h2><div class="card" style="padding:4px 14px"><details><summary>Apa itu Work–Reward Mechanism?</summary><p class="mu">Kerja dulu, hiburan belakangan. Menit fokus dan tugas selesai mengisi dompet waktu santai yang bisa Anda pakai tanpa rasa bersalah.</p></details><details><summary>Bagaimana cara kerja Focus Lock?</summary><p class="mu">Versi web/PWA memakai layar penuh dan mendeteksi saat Anda meninggalkan aplikasi. Pemblokiran aplikasi lain secara paksa hanya bisa pada aplikasi Android native.</p></details><details><summary>Apakah data saya aman?</summary><p class="mu">Tugas, riwayat, dan dompet waktu tersimpan di perangkat Anda, tidak dikirim ke server. Jika Anda membuat akun, hanya email dan status Premium yang disimpan di server. Gunakan Backup untuk cadangan data.</p></details><details><summary>Bagaimana cara upgrade Premium?</summary><p class="mu">Pilih paket di website, bayar melalui QRIS, lalu masukkan token aktivasi yang dikirim setelah pembayaran diverifikasi.</p></details><details><summary>Notifikasi tidak muncul?</summary><p class="mu">Aktifkan izin notifikasi di Profil. Pengingat berjalan saat aplikasi terbuka/di latar belakang.</p></details></div>
-  <div class="card" style="padding:4px 14px"><details><summary>Tentang TimeBalance</summary><p class="mu">TimeBalance membantu mengurangi prokrastinasi dan menyeimbangkan kerja dengan hiburan lewat Work–Reward Mechanism. © 2026 · Made with 💚 in Indonesia.</p></details><details><summary>Kebijakan Privasi</summary><p class="mu">Kami tidak mengumpulkan, menjual, atau membagikan data pribadi Anda. Data tugas & progres disimpan lokal di perangkat.</p></details></div>
-  <div class="row wrap" style="justify-content:center"><a class="b sm o" href="mailto:${EMAIL}">${ic("mail")} Email</a><a class="b sm o" href="https://www.instagram.com/timebalance_" target="_blank" rel="noopener">Instagram</a>${SITE ? `<a class="b sm o" href="${SITE}" target="_blank" rel="noopener">Website</a>` : ""}</div><p class="mu center" style="margin-top:14px">TimeBalance v2.0</p>`);
+  <h2>Data</h2><div class="card"><p class="mu" style="margin-bottom:10px">Backup berupa file JSON — simpan di Drive/penyimpanan Anda.</p><div class="row wrap"><button class="b sm" data-act="export" ${dis}>${ic("cloud")} Backup</button><label class="b sm o" style="margin:0;${p ? "" : "opacity:.45"}">Pulihkan<input type="file" accept=".json" id="imp" hidden ${dis}/></label><button class="b sm red" data-act="reset">Hapus Data</button></div><p class="mu" style="margin-top:12px"><a class="lnk" data-act="delacc" style="color:var(--red)">Hapus akun saya</a></p></div>
+  <h2>Bantuan</h2><div class="card" style="padding:4px 14px"><details><summary>Apa itu Work–Reward Mechanism?</summary><p class="mu">Kerja dulu, hiburan belakangan. Menit fokus dan tugas selesai mengisi dompet waktu santai yang bisa Anda pakai tanpa rasa bersalah.</p></details><details><summary>Bagaimana cara kerja Focus Lock?</summary><p class="mu">Versi web/PWA memakai layar penuh dan mendeteksi saat Anda meninggalkan aplikasi. Pemblokiran aplikasi lain secara paksa hanya bisa pada aplikasi Android native.</p></details><details><summary>Apakah data saya aman?</summary><p class="mu">Tugas, riwayat, dan dompet waktu tersimpan di perangkat Anda, tidak dikirim ke server. Server hanya menyimpan nama, email, kata sandi (terenkripsi/di-hash), serta status dan riwayat pembayaran langganan. Gunakan Backup untuk cadangan data.</p></details><details><summary>Bagaimana cara berlangganan / memperpanjang?</summary><p class="mu">Buka Profil → Perpanjang (atau layar paket), pilih Bulanan/Tahunan, bayar lewat QRIS, lalu tekan “Saya sudah bayar”. Setelah diverifikasi, langganan aktif otomatis di akunmu — tanpa token.</p></details><details><summary>Notifikasi tidak muncul?</summary><p class="mu">Aktifkan izin notifikasi di Profil. Pengingat berjalan saat aplikasi terbuka/di latar belakang.</p></details></div>
+  <div class="card" style="padding:4px 14px"><details><summary>Tentang TimeBalance</summary><p class="mu">TimeBalance membantu mengurangi prokrastinasi dan menyeimbangkan kerja dengan hiburan lewat Work–Reward Mechanism. © 2026 · Made with 💚 in Indonesia.</p></details><details><summary>Kebijakan Privasi</summary><p class="mu">Kami tidak menjual atau membagikan data pribadi Anda. Data tugas & progres disimpan lokal di perangkat. Server hanya menyimpan data akun dan langganan yang diperlukan untuk layanan ini. Anda dapat menghapus akun kapan saja di Profil.</p></details></div>
+  <div class="row wrap" style="justify-content:center"><a class="b sm o" href="mailto:${EMAIL}">${ic("mail")} Email</a><a class="b sm o" href="https://www.instagram.com/timebalance_" target="_blank" rel="noopener">Instagram</a>${SITE ? `<a class="b sm o" href="${SITE}" target="_blank" rel="noopener">Website</a>` : ""}</div><p class="mu center" style="margin-top:14px">TimeBalance v3.0</p>`);
   const imp = $("#imp"); if (imp) imp.onchange = doImport;
 }
 
@@ -388,19 +424,27 @@ function render() {
   applyTheme(); const T = TABS.find(t => t[0] === S.tab);
   $("#ttl").textContent = T[3]; $("#sub").textContent = new Date().toLocaleDateString("id-ID", { weekday: "long", day: "numeric", month: "long" });
   $("#av").textContent = (S.name || "T")[0].toUpperCase();
-  $("#view").innerHTML = (prem() ? "" : `<div class="ad">📢 Iklan ringan · <a data-act="paywall">Bebas iklan dengan Premium</a></div>`) + VIEWS[S.tab]();
+  $("#view").innerHTML = VIEWS[S.tab]();
   $("#nav").innerHTML = TABS.map(t => `<button data-tab="${t[0]}" class="${t[0] === S.tab ? "on" : ""}"><span>${ic(t[2])}</span>${t[1]}</button>`).join("");
-  const bd = $("#badge"); bd.textContent = prem() ? "⭐ Premium" : "Gratis"; bd.className = "pill" + (prem() ? " p" : "");
+  const bd = $("#badge"); bd.textContent = prem() ? "⭐ Aktif" : "Terkunci"; bd.className = "pill" + (prem() ? " p" : "");
   tick();
 }
 const gotoPaywall = () => { paywall(); };
 const A = {
   tab: e => { S.tab = e.dataset.v; closeSheet(); save(); render(); scrollTo(0, 0); },
-  close: () => { if ((obI < OB.length + 1 && !S.onb) || authLock) return; closeSheet(); }, profile: () => profile(), paywall: gotoPaywall, newTask: () => taskSheet(), editTask: e => taskSheet(e.dataset.id),
+  close: () => { if (!S.onb || authLock) return; closeSheet(); }, profile: () => profile(), paywall: gotoPaywall, newTask: () => taskSheet(), editTask: e => taskSheet(e.dataset.id),
   seg: e => { S.seg = e.dataset.v; save(); render(); }, sseg: e => { S.sseg = e.dataset.v; save(); render(); }, flt: e => { S.flt = e.dataset.v; save(); render(); },
   plan: e => { S.plan = e.dataset.v; save(); paywall(); },
-  buy: () => buy(), login: () => authSheet("in", ""), signup: () => authSheet("up", ""), authmode: e => authSheet(e.dataset.v), syncprem: () => syncPremium(true),
-  logout: () => { if (confirm("Keluar dari akun ini?")) { TBAuth.signOut(); closeSheet(); toast("Anda sudah keluar"); } },
+  pay: () => pay(), authmode: e => authSheet(e.dataset.v), syncprem: () => syncPremium(true),
+  eye: e => { const i = e.parentElement.querySelector("input"); i.type = i.type === "password" ? "text" : "password"; },
+  openpay: async () => { try { const j = await TBAuth.me(); if (j.pending) openPay(j.pending); else { S.pendingOrder = ""; save(); paywall(); toast("Tidak ada pembayaran tertunda"); } } catch (e) { toast(e.message); } },
+  openpayurl: () => payOrder && payOrder.redirectUrl && openUrl(payOrder.redirectUrl),
+  checkpay: async () => { await checkPay(); if (sheetKind === "pay") toast("Status: " + ({ pending: "menunggu pembayaran", waiting: "menunggu verifikasi" }[payOrder.status] || payOrder.status)); },
+  markpaid: async () => { try { payOrder = await TBAuth.markPaid(payOrder.id); renderPay(); } catch (e) { toast(e.message); } },
+  cancelpay: async () => { if (!confirm("Batalkan pesanan ini?")) return; try { await TBAuth.cancelOrder(payOrder.id); S.pendingOrder = ""; payOrder = null; save(); paywall(); } catch (e) { toast(e.message); } },
+  copyamt: () => { const v = String(payOrder.amount); (navigator.clipboard ? navigator.clipboard.writeText(v) : Promise.reject()).then(() => toast("Nominal " + v + " disalin"), () => toast("Nominal: " + v)); },
+  changepw: () => pwSheet("pw"), delacc: () => pwSheet("del"),
+  logout: () => { if (confirm("Keluar dari akun ini?")) { TBAuth.signOut(); toast("Anda sudah keluar"); } },
   done: e => completeTask(e.dataset.id),
   sub: e => { const t = S.tasks.find(x => x.id === e.dataset.id), s = t.subs[+e.dataset.i]; s.d = !s.d; save(); render(); },
   delTask: e => { if (confirm("Hapus tugas ini?")) { S.tasks = S.tasks.filter(t => t.id !== e.dataset.id); save(); closeSheet(); render(); } },
@@ -415,37 +459,26 @@ const A = {
   install: async () => { if (dp) { dp.prompt(); await dp.userChoice; dp = null; render(); } },
   hideInst: () => { S.hideInst = true; save(); render(); },
   obNext: () => { obI++; onboarding(); },
+  obDone: () => { S.onb = 1; if (!S.name) S.name = firstName((TBAuth.user() || {}).name); save(); closeSheet(); render(); },
   export: async () => { if (isNative()) { try { await nShareFile("timebalance-backup-" + dkey(Date.now()) + ".json", JSON.stringify(S), "Backup TimeBalance"); } catch (e) { toast("Gagal membagikan backup"); } return; } const a = document.createElement("a"); a.href = URL.createObjectURL(new Blob([JSON.stringify(S)], { type: "application/json" })); a.download = "timebalance-backup-" + dkey(Date.now()) + ".json"; a.click(); },
   reset: () => { if (confirm("Hapus SEMUA data? Tidak bisa dibatalkan.")) { localStorage.removeItem(K); location.reload(); } },
   tg: async e => {
     const k = e.dataset.k, on = e.checked;
     if (["lock", "strict"].includes(k)) { if (!prem()) { e.checked = false; return paywall(); } S.rules[k] = on; }
-    else if (k === "demo") { S.demo = on; }
     else if (k === "notif") { if (on) { const ok = isNative() ? await nPerm() : ("Notification" in window && (await Notification.requestPermission()) === "granted"); S.notif = ok; if (!ok) { e.checked = false; toast("Izin notifikasi ditolak"); } } else S.notif = false; }
     else S[k] = on;
     save(); render(); if (!$("#sheet").hidden && k !== "lock" && k !== "strict") profile(); else if (!$("#sheet").hidden) { /* biarkan */ }
   }
 };
-function doImport(ev) { const f = ev.target.files[0]; if (!f) return; const fr = new FileReader(); fr.onload = () => { try { const d = JSON.parse(fr.result); if (!Array.isArray(d.tasks)) throw 0; S = Object.assign({}, DEF, d, { premium: S.premium, demo: S.demo, used: S.used, pendingOrder: S.pendingOrder }); save(); closeSheet(); render(); toast("Data dipulihkan ✅"); } catch (e) { toast("File backup tidak valid"); } }; fr.readAsText(f); }
+function doImport(ev) { const f = ev.target.files[0]; if (!f) return; const fr = new FileReader(); fr.onload = () => { try { const d = JSON.parse(fr.result); if (!Array.isArray(d.tasks)) throw 0; S = Object.assign({}, DEF, d, { premium: S.premium, lastUntil: S.lastUntil, pendingOrder: S.pendingOrder, onb: 1 }); save(); closeSheet(); render(); toast("Data dipulihkan ✅"); } catch (e) { toast("File backup tidak valid"); } }; fr.readAsText(f); }
 document.addEventListener("click", e => { const b = e.target.closest("[data-act]"); if (b && A[b.dataset.act] && b.dataset.act !== "tg") A[b.dataset.act](b); });
 document.addEventListener("change", e => { const b = e.target; if (b.dataset && b.dataset.act === "tg") A.tg(b); });
 $("#nav").addEventListener("click", e => { const b = e.target.closest("button"); if (b) { S.tab = b.dataset.tab; closeSheet(); save(); render(); scrollTo(0, 0); } });
 document.addEventListener("input", e => { if (e.target.id === "q") { q = e.target.value; const l = $("#tlist"); if (l) l.innerHTML = tasksList(); } });
-async function redeem(raw) {
-  const r = await verifyToken(raw);
-  if (r.err) return toast(r.err);
-  const account = window.TBAuth && TBAuth.user ? TBAuth.user() : null;
-  if (!account || !account.email) return toast("Masuk ke akun TimeBalance terlebih dahulu");
-  if (String(account.email).trim().toLowerCase() !== r.email) return toast("Token ini terdaftar untuk email akun yang berbeda");
-  S.used = S.used || [];
-  if (S.used.includes(r.id)) return toast("Token ini sudah dipakai di perangkat ini");
-  const base = S.premium && S.premium.until > Date.now() ? S.premium.until : Date.now();
-  S.premium = { plan: PLANS[r.plan], until: base + r.days * DAY, src: "token", tokenId: r.id, email: r.email };
-  S.used.push(r.id); save(); closeSheet(); render(); toast("Premium aktif 🎉");
-}
 document.addEventListener("submit", e => {
   const f = e.target.dataset.form; if (!f) return; e.preventDefault(); const d = new FormData(e.target);
   if (f === "auth") { doAuth(d); return; }
+  if (f === "pw" || f === "delacc") { doPw(f, d); return; }
   if (f === "task") {
     const subsTxt = (d.get("subs") || "").split("\n").map(x => x.trim()).filter(Boolean), id = d.get("id"), old = S.tasks.find(x => x.id === id);
     const subs = subsTxt.map(t => ({ t, d: !!(old && (old.subs || []).find(s => s.t === t && s.d)) }));
@@ -456,8 +489,6 @@ document.addEventListener("submit", e => {
   if (f === "rules") { const c = (n, lo, hi) => Math.min(hi, Math.max(lo, +d.get(n) || lo)); Object.assign(S.rules, { focus: c("focus", 5, 120), brk: c("brk", 1, 30), long: c("long", 5, 60), ratio: c("ratio", 5, 100) }); toast("Aturan disimpan ✅"); }
   if (f === "goal") { S.goal = Math.min(600, Math.max(10, +d.get("goal") || 120)); toast("Target disimpan ✅"); }
   if (f === "name") { S.name = d.get("name").trim().slice(0, 20); toast("Nama diperbarui"); }
-  if (f === "onb") { S.name = d.get("name").trim().slice(0, 20); S.onb = 1; closeSheet(); setTimeout(gate, 50); }
-  if (f === "code") { redeem(d.get("code")); return; }
   save(); render(); if (["rules", "goal", "name"].includes(f)) profile();
 });
 function report() {
@@ -473,6 +504,7 @@ function tick() {
   const now = Date.now(), r = S.run;
   if (r && S.tab === "focus") { const rem = r.paused ? r.remain : (r.end - now) / 1000, tm = $("#tm"), arc = $("#arc"); if (tm) tm.textContent = mmss(rem); if (arc) { const C = 2 * Math.PI * ((250 - 14) / 2); arc.style.strokeDashoffset = C * (1 - rem / r.total); } document.title = mmss(rem) + " · TimeBalance"; } else document.title = "TimeBalance — Kerja Dulu, Santai Kemudian";
   if (r && !r.paused && r.end <= now) finishRun();
+  if (!authLock && S.onb && !prem() && window.TBAuth) gate();
   const l = S.leisure; if (l) { const lt = $("#ltm"); if (lt) lt.textContent = mmss((l.end - now) / 1000); if (l.end <= now) stopLeisure(true); }
   const hm = P(new Date().getHours()) + ":" + P(new Date().getMinutes());
   if (hm !== lastMin) { lastMin = hm; const today = dkey(now);
@@ -489,8 +521,20 @@ document.addEventListener("visibilitychange", () => {
 window.addEventListener("beforeunload", e => { if (S.run && S.run.phase === "focus" && R().lock) { e.preventDefault(); e.returnValue = ""; } });
 window.addEventListener("beforeinstallprompt", e => { e.preventDefault(); dp = e; render(); });
 window.addEventListener("appinstalled", () => { dp = null; render(); toast("Aplikasi terpasang 🎉"); });
-if ("serviceWorker" in navigator && !isNative()) window.addEventListener("load", () => navigator.serviceWorker.register("sw.js").then(r => reg = r).catch(() => {}));
-render();
+if ("serviceWorker" in navigator && !isNative()) navigator.serviceWorker.ready.then(r => reg = r).catch(() => {});
 nativeInit();
-setTimeout(() => { $("#splash").classList.add("off"); if (!S.onb) onboarding(); else gate(); syncPremium(false); }, 900);
+/* ---------- mulai ---------- */
+(function boot() {
+  const qs = new URLSearchParams(location.search), tab = qs.get("tab"), ord = qs.get("order");
+  if (tab && VIEWS[tab]) S.tab = tab;
+  if (tab || ord) history.replaceState(null, "", location.pathname);
+  render();
+  setTimeout(async () => {
+    $("#splash").classList.add("off"); gate(); loadPlans();
+    if (loggedIn()) {
+      await syncPremium(true, true);
+      if (ord && loggedIn()) { try { const j = await TBAuth.orderStatus(ord); if (j.order.status !== "paid") openPay(j.order); } catch (e) {} }
+    }
+  }, 900);
+})();
 document.addEventListener("visibilitychange", () => { if (!document.hidden) syncPremium(false); });

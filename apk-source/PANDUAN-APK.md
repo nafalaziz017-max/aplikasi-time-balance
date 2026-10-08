@@ -5,7 +5,7 @@ Anda **tidak perlu Android Studio**. GitHub akan membangun file `.apk` untuk And
 ## 1. Unggah proyek ke GitHub
 1. Ekstrak `timebalance-apk.zip`.
 2. github.com → **New repository** → nama `timebalance-apk` → Create.
-3. **uploading an existing file** → seret **isi** folder (folder `www`, `scripts`, `.github`, `worker`, `tools`, `package.json`, `capacitor.config.json`, `.gitignore`, kedua file PANDUAN) → **Commit changes**.
+3. **uploading an existing file** → seret **isi** folder (folder `www`, `scripts`, `.github`, `worker`, `website`, `package.json`, `capacitor.config.json`, `.gitignore`, file PANDUAN) → **Commit changes**.
 
 > ⚠️ Folder `.github` kadang tersembunyi di komputer dan tidak ikut terseret. Pastikan di GitHub ada folder
 > `.github/workflows/build-apk.yml`. Jika tidak ada: **Add file → Create new file**, ketik nama
@@ -45,27 +45,21 @@ APK di atas adalah versi **debug** (untuk dipasang langsung / dibagikan). Play S
 2. Beri tahu saya, dan saya tambahkan job release (menyimpan keystore sebagai GitHub Secret) agar GitHub menghasilkan `.aab` bertanda tangan.
 3. Daftar akun Google Play Console (biaya sekali bayar ±US$25), siapkan ikon, screenshot, deskripsi, dan kebijakan privasi.
 
-## 8. Akun & Premium otomatis
-Aplikasi sekarang punya akun (email + kata sandi) dan Premium terikat ke akun. Pembayaran lewat QRIS (QRIS + Token Aktivasi) diproses
-otomatis: setelah bayar, Premium langsung aktif di akun, tanpa token atau kode.
-
-Cara memasang semuanya (Firebase, Cloudflare, QRIS + Token Aktivasi, website) ada di **PANDUAN-SETUP.md**. Kerjakan itu sekali, lalu isi
-`www/tb-config.js` (2 nilai: API key Firebase dan alamat server). Selama masih berisi `GANTI-...`, tombol akun/bayar
-disembunyikan dan aplikasi tetap berjalan sebagai versi Gratis.
-
-Opsi di `www/tb-config.js`:
-- `REQUIRE_LOGIN: true` = wajib login sebelum memakai aplikasi. `false` (bawaan) = login hanya untuk membeli/memulihkan Premium.
+## 8. Akun & langganan
+Aplikasi mewajibkan akun (email + kata sandi) dan langganan aktif (Bulanan/Tahunan) yang terikat ke akun. Pembayaran QRIS dilakukan di dalam
+aplikasi; admin menyetujui di `/admin.html` (atau otomatis lewat Midtrans) dan aplikasi terbuka sendiri, tanpa token.
+Setup server ada di **PANDUAN-DEPLOY.md**. Di `www/tb-config.js` isi:
+- `NATIVE_API_BASE` = alamat Worker lengkap (wajib untuk APK).
 - `SITE_URL` = alamat website untuk tombol "Website" di Profil.
 
-**Cadangan manual (opsional):** `tools/buat-token.html` masih bisa membuat token bertanda tangan untuk pembayaran yang
-diproses manual. Kolom token di aplikasi hanya muncul jika `PUBLIC_KEY` di `www/app.js` diisi dengan kunci dari alat itu.
-
 ## 9. Sebelum rilis
-- `www/app.js`: ubah `DEMO_TOGGLE = false` (menghilangkan sakelar Premium Demo).
-- `worker/wrangler.toml`: ubah `MIDTRANS_ENV` ke `"production"` dan ganti Server Key sandbox dengan Server Key production.
-- Lakukan 1 pembayaran asli dengan nominal sebenarnya untuk memastikan Premium aktif.
+- Pastikan `NATIVE_API_BASE` benar, lalu uji daftar → bayar → aktif di APK.
+- Bila memakai Midtrans: `MIDTRANS_ENV = "production"` di `worker/wrangler.toml` dan Server Key production.
 
 ## 10. Batasan jujur
 - **Focus Lock** di versi ini mendeteksi saat Anda keluar dari aplikasi, tetapi belum bisa memblokir aplikasi lain secara paksa. Itu butuh fitur Android khusus (Accessibility Service) yang dikerjakan sebagai tahap lanjutan.
 - APK ini belum saya jalankan di perangkat nyata. Build-nya berjalan di server GitHub, jadi jika ada error, kirim pesannya dan saya perbaiki.
-- Premium disimpan juga di perangkat supaya jalan tanpa internet. Pada HP yang di-root atau datanya diedit manual, Premium lokal bisa dipalsukan. Setiap kali online dan login, aplikasi menyamakan statusnya dengan server.
+- Status langganan disimpan juga di perangkat supaya jalan tanpa internet. Pada HP yang di-root atau datanya diedit manual, status lokal bisa dipalsukan. Setiap kali online, aplikasi menyamakan statusnya dengan server.
+
+
+Panel admin (`admin.html`) otomatis tidak ikut ke APK.

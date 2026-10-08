@@ -1,62 +1,21 @@
-/* TimeBalance PWA installer + service worker registration */
+/* TimeBalance PWA — pendaftaran service worker + pembaruan otomatis yang aman. */
 (() => {
-  'use strict';
-
-  const isLocal = ['localhost', '127.0.0.1'].includes(location.hostname);
-  const isHttps = location.protocol === 'https:';
-
-  if ('serviceWorker' in navigator && (isHttps || isLocal)) {
-    window.addEventListener('load', () => {
-      navigator.serviceWorker.register('./sw.js', { scope: './' })
-        .then(() => console.log('[TimeBalance] PWA service worker aktif.'))
-        .catch(err => console.warn('[TimeBalance] Service worker gagal:', err));
-    });
-  }
-
-  let deferredPrompt = null;
-
-  window.addEventListener('beforeinstallprompt', event => {
-    event.preventDefault();
-    deferredPrompt = event;
-    showInstallButton();
+  "use strict";
+  if (!("serviceWorker" in navigator) || (window.Capacitor && Capacitor.isNativePlatform && Capacitor.isNativePlatform())) return;
+  const ok = location.protocol === "https:" || ["localhost", "127.0.0.1"].includes(location.hostname);
+  if (!ok) return;
+  const busy = () => { try { const s = JSON.parse(localStorage.getItem("tb-app-v2") || "{}"); return !!(s.run || s.leisure); } catch (e) { return false; } };
+  let hadController = !!navigator.serviceWorker.controller, reloaded = false;
+  navigator.serviceWorker.addEventListener("controllerchange", () => {
+    if (!hadController) { hadController = true; return; }          // pemasangan pertama: tidak perlu muat ulang
+    if (reloaded) return;
+    if (busy()) { const t = document.getElementById("toast"); if (t) { t.textContent = "Versi baru siap — akan dipakai setelah sesi selesai"; t.classList.add("show"); setTimeout(() => t.classList.remove("show"), 4000); } return; }
+    reloaded = true; location.reload();
   });
-
-  window.addEventListener('appinstalled', () => {
-    deferredPrompt = null;
-    const btn = document.getElementById('tb-install-app');
-    if (btn) btn.remove();
+  window.addEventListener("load", () => {
+    navigator.serviceWorker.register("sw.js", { scope: "./" }).then(reg => {
+      setInterval(() => reg.update().catch(() => {}), 60 * 60 * 1000);
+      document.addEventListener("visibilitychange", () => { if (!document.hidden) reg.update().catch(() => {}); });
+    }).catch(err => console.warn("[TimeBalance] Service worker gagal:", err));
   });
-
-  function showInstallButton() {
-    if (document.getElementById('tb-install-app') || window.matchMedia('(display-mode: standalone)').matches) return;
-
-    const btn = document.createElement('button');
-    btn.id = 'tb-install-app';
-    btn.type = 'button';
-    btn.textContent = '📲 Install TimeBalance';
-    Object.assign(btn.style, {
-      position: 'fixed',
-      right: '16px',
-      bottom: '16px',
-      zIndex: '9999',
-      border: '0',
-      borderRadius: '999px',
-      padding: '12px 16px',
-      background: '#3d6b35',
-      color: '#fff',
-      font: '600 14px system-ui, sans-serif',
-      boxShadow: '0 8px 24px rgba(0,0,0,.18)',
-      cursor: 'pointer'
-    });
-
-    btn.addEventListener('click', async () => {
-      if (!deferredPrompt) return;
-      deferredPrompt.prompt();
-      await deferredPrompt.userChoice;
-      deferredPrompt = null;
-      btn.remove();
-    });
-
-    document.body.appendChild(btn);
-  }
 })();

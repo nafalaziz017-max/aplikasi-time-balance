@@ -1,10 +1,10 @@
-name: Deploy Server Pembayaran
+name: Deploy TimeBalance (Aplikasi PWA + Server)
 
 on:
   workflow_dispatch:
   push:
     branches: [main]
-    paths: ["worker/**"]
+    paths: ["www/**", "worker/**"]
 
 jobs:
   deploy:
@@ -14,18 +14,22 @@ jobs:
 
       - uses: actions/setup-node@v4
         with:
-          node-version: 20
+          node-version: 22
 
-      - name: Uji server (harus lolos semua)
-        run: node worker/test/worker.test.mjs
+      - name: Uji server & klien (harus lolos semua)
+        run: |
+          node worker/test/worker.test.mjs
+          node worker/test/auth.test.mjs
 
-      - name: Deploy ke Cloudflare
+      - name: Deploy ke Cloudflare (siapkan tabel database lalu unggah aplikasi + server)
         uses: cloudflare/wrangler-action@v3
         with:
           apiToken: ${{ secrets.CLOUDFLARE_API_TOKEN }}
           accountId: ${{ secrets.CLOUDFLARE_ACCOUNT_ID }}
+          wranglerVersion: "4"
           workingDirectory: worker
+          preCommands: npx wrangler d1 execute timebalance --remote --file=./schema.sql
           secrets: |
-            MIDTRANS_SERVER_KEY
+            ADMIN_SECRET
         env:
-          MIDTRANS_SERVER_KEY: ${{ secrets.MIDTRANS_SERVER_KEY }}
+          ADMIN_SECRET: ${{ secrets.ADMIN_SECRET }}
