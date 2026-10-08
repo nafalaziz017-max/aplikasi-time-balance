@@ -20,7 +20,11 @@
     var r;
     try { r = await g.fetch(base() + path, { method: opt.method || "GET", headers: headers, body: opt.body === undefined ? undefined : JSON.stringify(opt.body) }); }
     catch (e) { throw fail("NETWORK", "Tidak bisa terhubung ke server. Periksa koneksi Anda."); }
-    var j = {}; try { j = await r.json(); } catch (e) {}
+    var j = {}, isJson = true; try { j = await r.json(); } catch (e) { isJson = false; }
+    if (!isJson || (r.ok && !j)) {
+      if (r.status === 404 || r.status === 405 || r.ok) throw fail("NO_API", "Server TimeBalance tidak ditemukan di alamat ini (" + (base() || location.host) + "). Buka aplikasi dari alamat Worker, atau isi API_BASE di tb-config.js.");
+      throw fail("OTHER", "Server bermasalah (kode " + r.status + "). Coba lagi sebentar lagi.");
+    }
     if (r.status === 401 && s && s.token && !opt.anon) { write(null); emit(); throw fail("AUTH", "Sesi login berakhir, silakan masuk lagi."); }
     if (!r.ok) throw fail(r.status === 401 ? "BAD_LOGIN" : "OTHER", j.error || j.message || "Server bermasalah, coba lagi.");
     return j;

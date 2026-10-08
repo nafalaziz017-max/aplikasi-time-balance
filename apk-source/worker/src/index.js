@@ -365,6 +365,8 @@ export default {
     } catch (e) {
       if (e instanceof HttpError) return json({ error: e.message }, e.status, cors);
       console.log("error", e && e.stack || e);
+      if (/no such table/i.test(String(e && e.message))) return json({ error: "Database belum disiapkan (tabel D1 belum dibuat). Jalankan ulang workflow Deploy, atau jalankan worker/schema.sql di D1." }, 500, cors);
+      if (/no such column|D1_ERROR/i.test(String(e && e.message))) return json({ error: "Database bermasalah: " + String(e.message).slice(0, 120) }, 500, cors);
       return json({ error: "Terjadi kesalahan di server, coba lagi." }, 500, cors);
     }
   },
