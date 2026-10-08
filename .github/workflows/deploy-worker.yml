@@ -27,9 +27,9 @@ jobs:
           CLOUDFLARE_API_TOKEN: ${{ secrets.CLOUDFLARE_API_TOKEN }}
           CLOUDFLARE_ACCOUNT_ID: ${{ secrets.CLOUDFLARE_ACCOUNT_ID }}
         run: |
-          find_id() { npx -y wrangler@4 d1 list --json | node -e 'let s="";process.stdin.on("data",d=>s+=d).on("end",()=>{const a=JSON.parse(s);const x=a.find(d=>d.name==="timebalance");console.log(x?(x.uuid||x.id):"")})'; }
+          find_id() { npx -y wrangler@4 d1 list --json | node -e 'let s="";process.stdin.on("data",d=>s+=d).on("end",()=>{const a=JSON.parse(s);const x=a.find(d=>d.name==="timebalance-db");console.log(x?(x.uuid||x.id):"")})'; }
           ID=$(find_id)
-          if [ -z "$ID" ]; then npx -y wrangler@4 d1 create timebalance; ID=$(find_id); fi
+          if [ -z "$ID" ]; then npx -y wrangler@4 d1 create timebalance-db; ID=$(find_id); fi
           if [ -z "$ID" ]; then echo "Gagal mendapat ID database. Pastikan token API punya izin D1: Edit."; exit 1; fi
           sed -i "s/^database_id = .*/database_id = \"$ID\"/" wrangler.toml
           grep database_id wrangler.toml
@@ -41,7 +41,7 @@ jobs:
           accountId: ${{ secrets.CLOUDFLARE_ACCOUNT_ID }}
           wranglerVersion: "4"
           workingDirectory: worker
-          preCommands: npx wrangler d1 execute timebalance --remote --file=./schema.sql
+          preCommands: npx wrangler d1 execute timebalance-db --remote --file=./schema.sql
           secrets: |
             ADMIN_SECRET
         env:

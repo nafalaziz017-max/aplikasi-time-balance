@@ -22,7 +22,7 @@ ENABLED_PAYMENTS = ""
 
 [[d1_databases]]
 binding = "DB"
-database_name = "timebalance"
+database_name = "timebalance-db"
 # Isi dengan ID dari: Cloudflare Dashboard → Storage & Databases → D1 → timebalance → Database ID
 database_id = "GANTI-ID-DATABASE-D1"
 
