@@ -42,7 +42,13 @@ jobs:
           wranglerVersion: "4"
           workingDirectory: worker
           preCommands: npx wrangler d1 execute timebalance-db --remote --file=./schema.sql
-          secrets: |
-            ADMIN_SECRET
+
+      - name: Simpan ADMIN_SECRET ke Worker (setelah Worker ada)
+        working-directory: worker
         env:
+          CLOUDFLARE_API_TOKEN: ${{ secrets.CLOUDFLARE_API_TOKEN }}
+          CLOUDFLARE_ACCOUNT_ID: ${{ secrets.CLOUDFLARE_ACCOUNT_ID }}
           ADMIN_SECRET: ${{ secrets.ADMIN_SECRET }}
+        run: |
+          if [ -z "$ADMIN_SECRET" ]; then echo "Secret ADMIN_SECRET di GitHub masih kosong."; exit 1; fi
+          printf '%s' "$ADMIN_SECRET" | npx -y wrangler@4 secret put ADMIN_SECRET
