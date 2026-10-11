@@ -141,5 +141,32 @@ t("CORS: origin asing tidak diizinkan", !pre2.headers.get("Access-Control-Allow-
   globalThis.fetch = realFetch;
 }
 
+// ---------- Bukti bayar -> Google Drive ----------
+{
+  const sent = []; const realFetch = globalThis.fetch; let driveOk = true;
+  globalThis.fetch = async (url, init) => { if (String(url).startsWith("https://script.google.com/")) { sent.push(JSON.parse(init.body)); return new Response(JSON.stringify(driveOk ? { ok: true, url: "https://drive.google.com/file/d/ABC/view" } : { ok: false })); } return realFetch(url, init); };
+  const penv = { ...base, DB: makeD1(), PROOF_WEBHOOK_URL: "https://script.google.com/macros/s/X/exec", PROOF_SECRET: "bukti-rahasia" };
+  const r = await call("POST", "/api/register", { e: penv, body: { name: "Sari", email: "sari@x.com", password: "rahasia123" } });
+  const tk = r.j.token, mk = await call("POST", "/api/order", { e: penv, token: tk, body: { plan: "monthly" } });
+  t("bukti: pesanan manual memberi tanda needProof", mk.j.order.needProof === true);
+  t("bukti: tanpa foto -> 400, status tetap pending", (await call("POST", "/api/order/paid", { e: penv, token: tk, body: { id: mk.j.order.id } })).s === 400 && (await call("GET", "/api/order?id=" + mk.j.order.id, { e: penv, token: tk })).j.order.status === "pending");
+  t("bukti: bukan gambar ditolak", (await call("POST", "/api/order/paid", { e: penv, token: tk, body: { id: mk.j.order.id, proof: "data:text/html;base64,AAAA" } })).s === 400);
+  driveOk = false;
+  t("bukti: Drive gagal -> 502, tetap pending", (await call("POST", "/api/order/paid", { e: penv, token: tk, body: { id: mk.j.order.id, proof: "data:image/jpeg;base64,/9j/AAAA" } })).s === 502);
+  driveOk = true;
+  const ok = await call("POST", "/api/order/paid", { e: penv, token: tk, body: { id: mk.j.order.id, proof: "data:image/jpeg;base64,/9j/AAAA" } });
+  t("bukti: foto valid -> waiting, diteruskan ke Drive dengan secret & nama file", ok.s === 200 && ok.j.order.status === "waiting" && sent.at(-1).secret === "bukti-rahasia" && sent.at(-1).filename.includes(mk.j.order.id) && sent.at(-1).filename.includes("sari@x.com") && sent.at(-1).mime === "image/jpeg");
+  const ao = await call("GET", "/api/admin/orders?status=open", { e: penv, admin: ADMIN });
+  t("bukti: admin melihat tautan Drive", ao.j.orders[0].proofUrl === "https://drive.google.com/file/d/ABC/view");
+  const tk2 = (await call("POST", "/api/register", { e: penv, body: { name: "Tono", email: "tono@x.com", password: "rahasia123" } })).j.token;
+  const mk2 = await call("POST", "/api/order", { e: penv, token: tk2, body: { plan: "monthly" } });
+  t("bukti: foto terlalu besar ditolak 413", (await call("POST", "/api/order/paid", { e: penv, token: tk2, body: { id: mk2.j.order.id, proof: "data:image/jpeg;base64," + "A".repeat(2600000) } })).s === 413);
+  const noenv = { ...base, DB: makeD1() };
+  const r3 = await call("POST", "/api/register", { e: noenv, body: { name: "Dewi", email: "dewi@x.com", password: "rahasia123" } });
+  const mk3 = await call("POST", "/api/order", { e: noenv, token: r3.j.token, body: { plan: "monthly" } });
+  t("bukti: Drive belum disambungkan -> tidak wajib, alur lama tetap jalan", mk3.j.order.needProof === false && (await call("POST", "/api/order/paid", { e: noenv, token: r3.j.token, body: { id: mk3.j.order.id } })).j.order.status === "waiting");
+  globalThis.fetch = realFetch;
+}
+
 console.log(fail ? `\n${fail} UJI GAGAL` : "\nSEMUA UJI LOLOS");
 process.exit(fail ? 1 : 0);

@@ -45,3 +45,10 @@ CREATE TABLE IF NOT EXISTS attempts (
   n        INTEGER NOT NULL,
   reset_at INTEGER NOT NULL
 );
+
+-- bukti bayar: foto diteruskan ke Google Drive admin (lewat Google Apps Script), di sini hanya tautannya
+CREATE TABLE IF NOT EXISTS order_proofs (
+  order_id   TEXT PRIMARY KEY,
+  url        TEXT NOT NULL,
+  created_at INTEGER NOT NULL
+);

@@ -89,7 +89,7 @@ async function loadStats() {
 }
 async function loadPay() {
   const { orders } = await api("/orders?status=open");
-  $("#payTbl").innerHTML = `<tr><th>Waktu</th><th>Pembeli</th><th>Paket</th><th>Nominal</th><th>Status</th><th></th></tr>` + (orders.map(o => `<tr><td>${dt(o.createdAt)}</td><td>${esc(o.name)}<br><span class="mu">${esc(o.email)}</span></td><td>${esc(o.planName)}</td><td class="amt">${rp(o.amount)}</td><td><span class="tag ${o.status}">${LABEL[o.status] || o.status}</span></td><td class="row"><button class="sm pri" data-ap="${esc(o.id)}">Setujui</button><button class="sm red" data-rj="${esc(o.id)}">Tolak</button></td></tr>`).join("") || `<tr><td colspan="6" class="mu" style="padding:18px">Tidak ada pesanan menunggu. 🎉</td></tr>`);
+  $("#payTbl").innerHTML = `<tr><th>Waktu</th><th>Pembeli</th><th>Paket</th><th>Nominal</th><th>Bukti</th><th>Status</th><th></th></tr>` + (orders.map(o => `<tr><td>${dt(o.createdAt)}</td><td>${esc(o.name)}<br><span class="mu">${esc(o.email)}</span></td><td>${esc(o.planName)}</td><td class="amt">${rp(o.amount)}</td><td>${o.proofUrl ? `<a href="${esc(o.proofUrl)}" target="_blank" rel="noopener">Lihat bukti</a>` : '<span class="mu">—</span>'}</td><td><span class="tag ${o.status}">${LABEL[o.status] || o.status}</span></td><td class="row"><button class="sm pri" data-ap="${esc(o.id)}">Setujui</button><button class="sm red" data-rj="${esc(o.id)}">Tolak</button></td></tr>`).join("") || `<tr><td colspan="7" class="mu" style="padding:18px">Tidak ada pesanan menunggu. 🎉</td></tr>`);
 }
 async function loadUsers() {
   const { users } = await api("/users?q=" + encodeURIComponent($("#q").value));
@@ -97,7 +97,7 @@ async function loadUsers() {
 }
 async function loadHist() {
   const { orders } = await api("/orders?status=all");
-  $("#histTbl").innerHTML = `<tr><th>Waktu</th><th>Pembeli</th><th>Paket</th><th>Nominal</th><th>Metode</th><th>Status</th></tr>` + (orders.map(o => `<tr><td>${dt(o.createdAt)}</td><td>${esc(o.email)}</td><td>${esc(o.planName)}</td><td class="amt">${rp(o.amount)}</td><td>${o.method === "midtrans" ? "Otomatis" : "QRIS manual"}</td><td><span class="tag ${o.status}">${LABEL[o.status] || o.status}</span></td></tr>`).join("") || `<tr><td colspan="6" class="mu" style="padding:18px">Belum ada pesanan.</td></tr>`);
+  $("#histTbl").innerHTML = `<tr><th>Waktu</th><th>Pembeli</th><th>Paket</th><th>Nominal</th><th>Metode</th><th>Bukti</th><th>Status</th></tr>` + (orders.map(o => `<tr><td>${dt(o.createdAt)}</td><td>${esc(o.email)}</td><td>${esc(o.planName)}</td><td class="amt">${rp(o.amount)}</td><td>${o.method === "midtrans" ? "Otomatis" : "QRIS manual"}</td><td>${o.proofUrl ? `<a href="${esc(o.proofUrl)}" target="_blank" rel="noopener">Lihat</a>` : "—"}</td><td><span class="tag ${o.status}">${LABEL[o.status] || o.status}</span></td></tr>`).join("") || `<tr><td colspan="7" class="mu" style="padding:18px">Belum ada pesanan.</td></tr>`);
 }
 const refresh = () => Promise.all([loadStats(), loadPay(), loadUsers(), loadHist()]).catch(e => toast(e.message));
 async function act(fn, ok) { try { await fn(); toast(ok); await refresh(); } catch (e) { toast(e.message); } }

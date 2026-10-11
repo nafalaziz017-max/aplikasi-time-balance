@@ -52,7 +52,7 @@ async function nativeInit() {
 async function nShareFile(name, data, title) { const P = CAP().Plugins, f = await P.Filesystem.writeFile({ path: name, data, directory: "CACHE", encoding: "utf8" }); await P.Share.share({ title, files: [f.uri] }); }
 
 /* ---------- Akun, langganan & gerbang akses ---------- */
-let authLock = false, authMode = "in", authBusy = false, sheetKind = "", lastSync = 0, payOrder = null, payTimer = 0;
+let authLock = false, authMode = "in", authBusy = false, sheetKind = "", lastSync = 0, payOrder = null, payTimer = 0, payProof = "";
 const loggedIn = () => !!(window.TBAuth && TBAuth.user());
 const dstr = t => new Date(t).toLocaleDateString("id-ID", { day: "numeric", month: "long", year: "numeric" });
 const firstName = n => String(n || "").trim().split(" ")[0].slice(0, 20);
@@ -383,6 +383,7 @@ function renderPay() {
   else body = `<div class="card center"><p class="mu">Bayar tepat sebesar</p><div class="payamt">${rp(o.amount)}</div><button class="b sm o" data-act="copyamt">Salin nominal</button><p class="mu" style="margin-top:10px">Dua digit terakhir adalah <b>kode unik</b> agar pembayaranmu dikenali otomatis. Nominal harus persis.</p></div>
   <div class="card center"><img class="qrisimg" src="${esc(o.qris || "qris.jpeg")}" alt="QRIS TimeBalance"/><a class="b sm o" href="${esc(o.qris || "qris.jpeg")}" download="QRIS-TimeBalance.jpg" style="margin-top:10px">${ic("download")} Unduh QRIS</a><p class="mu" style="margin-top:8px">Bayar dari HP yang sama? Unduh QRIS, lalu pilih gambar dari galeri di aplikasi e-wallet / m-banking.</p></div>
   <div class="card"><ol class="steps"><li>Buka e-wallet / m-banking → <b>Scan QRIS</b>.</li><li>Masukkan nominal <b>${rp(o.amount)}</b> lalu bayar.</li><li>Kembali ke sini dan tekan <b>Saya sudah bayar</b>.</li><li>Admin memverifikasi → <b>akunmu aktif otomatis</b>, tanpa token.</li></ol></div>
+  ${o.needProof ? `<div class="card"><b>Bukti bayar</b><p class="mu" style="margin:6px 0 10px">Unggah tangkapan layar atau foto bukti transfer. Foto hanya dipakai admin untuk memverifikasi pembayaranmu.</p><input type="file" id="proofFile" accept="image/*" style="display:none"/><button class="b o full" data-act="pickproof">${payProof ? "Ganti foto bukti" : "Pilih foto bukti bayar"}</button>${payProof ? `<img src="${payProof}" alt="Bukti bayar" style="width:100%;max-height:220px;object-fit:contain;margin-top:10px;border-radius:12px"/><p class="mu center" style="margin-top:6px">✅ Foto siap dikirim</p>` : ""}</div>` : ""}
   <button class="b gold full" data-act="markpaid">Saya sudah bayar</button><div class="row" style="justify-content:center;margin-top:12px"><button class="b sm o" data-act="cancelpay">Batalkan pesanan</button></div><p class="mu center" style="margin-top:10px">Pesanan berlaku sampai ${until}</p>`;
   sheet(top + body, "full");
 }
@@ -440,7 +441,11 @@ const A = {
   openpay: async () => { try { const j = await TBAuth.me(); if (j.pending) openPay(j.pending); else { S.pendingOrder = ""; save(); paywall(); toast("Tidak ada pembayaran tertunda"); } } catch (e) { toast(e.message); } },
   openpayurl: () => payOrder && payOrder.redirectUrl && openUrl(payOrder.redirectUrl),
   checkpay: async () => { await checkPay(); if (sheetKind === "pay") toast("Status: " + ({ pending: "menunggu pembayaran", waiting: "menunggu verifikasi" }[payOrder.status] || payOrder.status)); },
-  markpaid: async () => { try { payOrder = await TBAuth.markPaid(payOrder.id); renderPay(); } catch (e) { toast(e.message); } },
+  pickproof: () => { const f = $("#proofFile"); if (f) f.click(); },
+  markpaid: async () => {
+    if (payOrder.needProof && !payProof) return toast("Unggah foto bukti bayar dulu.");
+    try { payOrder = await TBAuth.markPaid(payOrder.id, payOrder.needProof ? payProof : ""); payProof = ""; renderPay(); } catch (e) { toast(e.message); }
+  },
   cancelpay: async () => { if (!confirm("Batalkan pesanan ini?")) return; try { await TBAuth.cancelOrder(payOrder.id); S.pendingOrder = ""; payOrder = null; save(); paywall(); } catch (e) { toast(e.message); } },
   copyamt: () => { const v = String(payOrder.amount); (navigator.clipboard ? navigator.clipboard.writeText(v) : Promise.reject()).then(() => toast("Nominal " + v + " disalin"), () => toast("Nominal: " + v)); },
   changepw: () => pwSheet("pw"), delacc: () => pwSheet("del"),
@@ -472,7 +477,19 @@ const A = {
 };
 function doImport(ev) { const f = ev.target.files[0]; if (!f) return; const fr = new FileReader(); fr.onload = () => { try { const d = JSON.parse(fr.result); if (!Array.isArray(d.tasks)) throw 0; S = Object.assign({}, DEF, d, { premium: S.premium, lastUntil: S.lastUntil, pendingOrder: S.pendingOrder, onb: 1 }); save(); closeSheet(); render(); toast("Data dipulihkan ✅"); } catch (e) { toast("File backup tidak valid"); } }; fr.readAsText(f); }
 document.addEventListener("click", e => { const b = e.target.closest("[data-act]"); if (b && A[b.dataset.act] && b.dataset.act !== "tg") A[b.dataset.act](b); });
-document.addEventListener("change", e => { const b = e.target; if (b.dataset && b.dataset.act === "tg") A.tg(b); });
+function compressImage(file, max, q) {
+  return new Promise((res, rej) => {
+    const img = new Image(), url = URL.createObjectURL(file);
+    img.onload = () => { const k = Math.min(1, max / Math.max(img.width, img.height)), c = document.createElement("canvas"); c.width = Math.round(img.width * k); c.height = Math.round(img.height * k); c.getContext("2d").drawImage(img, 0, 0, c.width, c.height); URL.revokeObjectURL(url); res(c.toDataURL("image/jpeg", q)); };
+    img.onerror = () => { URL.revokeObjectURL(url); rej(new Error("Foto tidak bisa dibaca. Coba foto lain.")); };
+    img.src = url;
+  });
+}
+document.addEventListener("change", async e => {
+  if (e.target.id === "proofFile" && e.target.files && e.target.files[0]) {
+    try { payProof = await compressImage(e.target.files[0], 1280, 0.72); renderPay(); } catch (er) { toast(er.message); }
+    return;
+  } const b = e.target; if (b.dataset && b.dataset.act === "tg") A.tg(b); });
 $("#nav").addEventListener("click", e => { const b = e.target.closest("button"); if (b) { S.tab = b.dataset.tab; closeSheet(); save(); render(); scrollTo(0, 0); } });
 document.addEventListener("input", e => { if (e.target.id === "q") { q = e.target.value; const l = $("#tlist"); if (l) l.innerHTML = tasksList(); } });
 document.addEventListener("submit", e => {

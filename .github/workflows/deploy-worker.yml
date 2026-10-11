@@ -43,12 +43,21 @@ jobs:
           workingDirectory: worker
           preCommands: npx wrangler d1 execute timebalance-db --remote --file=./schema.sql
 
-      - name: Simpan ADMIN_SECRET ke Worker (setelah Worker ada)
+      - name: Simpan secret server (ADMIN_SECRET, dan Google Drive bila diisi)
         working-directory: worker
         env:
           CLOUDFLARE_API_TOKEN: ${{ secrets.CLOUDFLARE_API_TOKEN }}
           CLOUDFLARE_ACCOUNT_ID: ${{ secrets.CLOUDFLARE_ACCOUNT_ID }}
           ADMIN_SECRET: ${{ secrets.ADMIN_SECRET }}
+          PROOF_WEBHOOK_URL: ${{ secrets.PROOF_WEBHOOK_URL }}
+          PROOF_SECRET: ${{ secrets.PROOF_SECRET }}
         run: |
           if [ -z "$ADMIN_SECRET" ]; then echo "Secret ADMIN_SECRET di GitHub masih kosong."; exit 1; fi
           printf '%s' "$ADMIN_SECRET" | npx -y wrangler@4 secret put ADMIN_SECRET
+          if [ -n "$PROOF_WEBHOOK_URL" ] && [ -n "$PROOF_SECRET" ]; then
+            printf '%s' "$PROOF_WEBHOOK_URL" | npx -y wrangler@4 secret put PROOF_WEBHOOK_URL
+            printf '%s' "$PROOF_SECRET" | npx -y wrangler@4 secret put PROOF_SECRET
+            echo "Bukti bayar -> Google Drive: AKTIF"
+          else
+            echo "Bukti bayar -> Google Drive: belum diaktifkan (secret PROOF_WEBHOOK_URL / PROOF_SECRET kosong)"
+          fi

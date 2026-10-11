@@ -46,7 +46,7 @@
     plans: function () { return request("/api/plans", { anon: true }); },
     createOrder: function (plan) { return request("/api/order", { method: "POST", body: { plan: plan } }).then(function (j) { return j.order; }); },
     orderStatus: function (id) { return request("/api/order?id=" + encodeURIComponent(id)); },
-    markPaid: function (id) { return request("/api/order/paid", { method: "POST", body: { id: id } }).then(function (j) { return j.order; }); },
+    markPaid: function (id, proof) { return request("/api/order/paid", { method: "POST", body: { id: id, proof: proof || undefined } }).then(function (j) { return j.order; }); },
     cancelOrder: function (id) { return request("/api/order/cancel", { method: "POST", body: { id: id } }); },
     changePassword: function (current, next) { return request("/api/password", { method: "POST", body: { current: current, next: next } }); },
     deleteAccount: function (password) { return request("/api/account/delete", { method: "POST", body: { password: password } }).then(function () { write(null); emit(); }); },

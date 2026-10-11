@@ -94,12 +94,31 @@ async function extendPremium(db, userId, days, planName) {
   await db.prepare("UPDATE users SET premium_until = MAX(premium_until, ?1) + ?2, premium_plan = ?3 WHERE id = ?4").bind(Date.now(), days * DAY, planName, userId).run();
 }
 
+
+/* ---------- Bukti bayar -> Google Drive (lewat Google Apps Script) ---------- */
+const PROOF_MAX_B64 = 2.5e6;   // ~1,9 MB setelah dikompres di aplikasi
+async function saveProof(env, user, order, proof) {
+  const m = /^data:image\/(jpeg|png|webp);base64,([A-Za-z0-9+/=]+)$/.exec(String(proof || ""));
+  if (!m) bad(400, "Unggah foto bukti bayar dulu (format JPG/PNG).");
+  if (m[2].length > PROOF_MAX_B64) bad(413, "Foto terlalu besar. Pilih foto lain atau potong tangkapan layarnya.");
+  const stamp = new Date().toISOString().slice(0, 16).replace(/[-:T]/g, "");
+  const safe = String(user.email || "user").replace(/[^a-z0-9@._-]/gi, "_").slice(0, 60);
+  const filename = `${stamp}_${order.id}_${safe}_Rp${order.amount}.${m[1] === "jpeg" ? "jpg" : m[1]}`;
+  let j = null;
+  try {
+    const r = await fetch(env.PROOF_WEBHOOK_URL, { method: "POST", redirect: "follow", headers: { "Content-Type": "text/plain;charset=utf-8" }, body: JSON.stringify({ secret: env.PROOF_SECRET || "", filename, mime: "image/" + m[1], data: m[2] }) });
+    j = await r.json();
+  } catch (e) { j = null; }
+  if (!j || !j.ok || !/^https:\/\/(drive|docs)\.google\.com\//.test(String(j.url || ""))) bad(502, "Bukti bayar gagal disimpan. Coba lagi sebentar lagi.");
+  await env.DB.prepare("INSERT INTO order_proofs(order_id,url,created_at) VALUES(?,?,?) ON CONFLICT(order_id) DO UPDATE SET url=excluded.url, created_at=excluded.created_at").bind(order.id, j.url, Date.now()).run();
+}
+
 /* ---------- Pesanan ---------- */
 const ttlOf = o => (o.method === "midtrans" ? 3600e3 : MANUAL_TTL);
 function effStatus(o) { return o.status === "pending" && Date.now() > o.created_at + ttlOf(o) ? "expired" : o.status; }
 function publicOrder(o, env) {
   const out = { id: o.id, plan: o.plan, planName: (PLANS[o.plan] || {}).name || o.plan, amount: o.amount, baseAmount: o.base_amount, method: o.method, status: effStatus(o), createdAt: o.created_at, expiresAt: o.created_at + ttlOf(o) };
-  if (o.method === "manual") out.qris = env.QRIS_IMAGE || "/qris.jpeg";
+  if (o.method === "manual") { out.qris = env.QRIS_IMAGE || "/qris.jpeg"; out.needProof = !!env.PROOF_WEBHOOK_URL; }
   if (o.method === "midtrans" && o.note && /^https:/.test(o.note)) out.redirectUrl = o.note;
   return out;
 }
@@ -266,10 +285,13 @@ async function userRoutes(req, env, path, cors) {
     return json({ order: publicOrder(o, env), premium: premiumOf(fresh) }, 200, cors);
   }
   if (path === "/api/order/paid" && req.method === "POST") {     // pengguna: "Saya sudah bayar"
-    const o = await ownOrder(env, u, (await readBody(req)).id);
+    const body = await readBody(req), o = await ownOrder(env, u, body.id);
     if (o.method !== "manual") bad(400, "Pesanan ini diproses otomatis.");
     if (effStatus(o) === "expired") bad(410, "Pesanan sudah kedaluwarsa. Buat pesanan baru.");
-    if (o.status === "pending") await env.DB.prepare("UPDATE orders SET status='waiting', updated_at=? WHERE id=? AND status='pending'").bind(Date.now(), o.id).run();
+    if (o.status === "pending") {
+      if (env.PROOF_WEBHOOK_URL) await saveProof(env, u, o, body.proof);   // bukti wajib bila Google Drive sudah disambungkan
+      await env.DB.prepare("UPDATE orders SET status='waiting', updated_at=? WHERE id=? AND status='pending'").bind(Date.now(), o.id).run();
+    }
     return json({ order: publicOrder(await ownOrder(env, u, o.id), env) }, 200, cors);
   }
   if (path === "/api/order/cancel" && req.method === "POST") {
@@ -306,9 +328,9 @@ async function adminRoutes(req, env, path, cors) {
   if (path === "/api/admin/orders" && req.method === "GET") {
     const st = url.searchParams.get("status") || "open";
     const where = st === "all" ? "1=1" : st === "open" ? "o.status IN ('pending','waiting')" : "o.status = ?";
-    const stmt = db.prepare(`SELECT o.*, u.email, u.name FROM orders o JOIN users u ON u.id=o.user_id WHERE ${where} ORDER BY (o.status='waiting') DESC, o.created_at DESC LIMIT 200`);
+    const stmt = db.prepare(`SELECT o.*, u.email, u.name, p.url AS proof_url FROM orders o JOIN users u ON u.id=o.user_id LEFT JOIN order_proofs p ON p.order_id=o.id WHERE ${where} ORDER BY (o.status='waiting') DESC, o.created_at DESC LIMIT 200`);
     const rows = (st === "all" || st === "open" ? await stmt.all() : await stmt.bind(st).all()).results;
-    return json({ orders: rows.map(o => ({ ...publicOrder(o, env), email: o.email, name: o.name, note: undefined })) }, 200, cors);
+    return json({ orders: rows.map(o => ({ ...publicOrder(o, env), email: o.email, name: o.name, proofUrl: o.proof_url || "", note: undefined })) }, 200, cors);
   }
   if (path === "/api/admin/orders/approve" && req.method === "POST") {
     const o = await db.prepare("SELECT * FROM orders WHERE id=?").bind(String((await readBody(req)).id || "")).first();
